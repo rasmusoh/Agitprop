@@ -5,7 +5,14 @@ function KeyControl(Player) {
     this.initialize(Player);
 }
 
-
+    KEYCODE_W=87;
+    KEYCODE_UP=38;
+    KEYCODE_DOWN=40;
+    KEYCODE_S=83;
+    KEYCODE_A=65;
+    KEYCODE_LEFT=37;
+    KEYCODE_SPACE=32;
+    KEYCODE_ENTER = 13;
 
 KeyControl.prototype.initialize = function(Player){
     this.dodgePressed = false;
@@ -15,8 +22,23 @@ KeyControl.prototype.initialize = function(Player){
     this.Hero = Player;
 }
 
+KeyControl.prototype.tick = function(event){
+    if(this.Hero.inControl()){
+       if((this.Hero.currentAnimation=="highstance"&& !this.upPressed) || (this.Hero.currentAnimation=="lowstance"&& !this.downPressed)){
+        this.Hero.gotoAndPlay("normstance");
+        }
+        else if(!this.Hero.currentAnimation=="highstance"&& this.upPressed){
+            this.Hero.gotoAndPlay("highstance");
+        }
+        else if(!this.Hero.currentAnimation=="lowstance"&& this.downPressed){
+            this.Hero.gotoAndPlay("lowstance");
+        }
+    }
+}
+
+
 KeyControl.prototype.handleKeyDown = function(event){
-    switch (e.keyCode) {
+    switch (event.keyCode) {
     case KEYCODE_W: ;
     case KEYCODE_UP:
             this.Hero.gotoAndPlay("highstance");
@@ -40,19 +62,20 @@ KeyControl.prototype.handleKeyDown = function(event){
             if(this.Hero.currentAnimation=="highstance"){
                 this.Hero.gotoAndPlay("highattack");
             }
-            else if(Hero.currentAnimation=="lowstance"){
+            else if(this.Hero.currentAnimation=="lowstance"){
                 this.Hero.gotoAndPlay("lowattack");
             }
-            else if(Hero.currentAnimation=="normstance"){
+            else if(this.Hero.currentAnimation=="normstance"){
                 this.Hero.gotoAndPlay("aggattack");
             }
         }
         break;
+    }
 }
 
-KeyControl.prototype.handleKeyUp = function(event)  {
+KeyControl.prototype.handleKeyUp = function(event){
     if (this.Hero.inControl()) {
-        switch (e.keyCode) {
+        switch (event.keyCode) {
             case KEYCODE_W: ;
             case KEYCODE_UP: ;  
             case KEYCODE_S: ;
@@ -61,7 +84,7 @@ KeyControl.prototype.handleKeyUp = function(event)  {
                 break;
         }
     }
-    switch(e.keyCode){
+    switch(event.keyCode){
         case KEYCODE_LEFT: ;
          case KEYCODE_A: 
              this.dodgePressed = false;
@@ -78,7 +101,7 @@ KeyControl.prototype.handleKeyUp = function(event)  {
          case KEYCODE_S: ;
          case KEYCODE_DOWN: 
              this.downPressed = false;
-             break
+             break;
     }
 }
 
