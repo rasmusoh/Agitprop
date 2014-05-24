@@ -6,16 +6,14 @@
     <script src="http://code.createjs.com/createjs-2013.12.12.min.js"> </script>
     <script src="loadxmldoc.js" ></script>
     <script src="Player.js" ></script>
+    <script src="KeyControl.js" ></script>
     <script src="Opponent.js" ></script>
     <script>
         //att göra: 
         //freezzeframes!
         //snygga upp AI-koden, kanske ett markovkedjeobjekt eller så
         //ändra tangentbordslogiken som så att det tittar på förändringar i tangentbordslogik ist för current states
-        var dodgePressed;
-        var attackPressed;
-        var downPressed;
-        var upPressed;
+        var KeyboardCont;
         var freezetimer;
         var isPaused = false;
         var countdown;
@@ -27,14 +25,6 @@
         var heroPP;
         var villainPP;
         var start;
-        KEYCODE_W=87;
-        KEYCODE_UP=38;
-        KEYCODE_DOWN=40;
-        KEYCODE_S=83;
-        KEYCODE_A=65;
-        KEYCODE_LEFT=37;
-        KEYCODE_SPACE=32;
-        KEYCODE_ENTER = 13;
         
         //initializes the game and loads components
         function init() {
@@ -50,18 +40,8 @@
         //tick function, uppdates game environment
         function gameTick(event){
             if(!createjs.Ticker.getPaused()){
+                KeyboardCont.tick(event);
                 Hero.tick(event);
-                if(Hero.inControl()){
-                   if((Hero.currentAnimation=="highstance"&& !upPressed) || (Hero.currentAnimation=="lowstance"&& !downPressed)){
-                    Hero.gotoAndPlay("normstance");
-                    }
-                    else if(!Hero.currentAnimation=="highstance"&& upPressed){
-                        Hero.gotoAndPlay("highstance");
-                    }
-                    else if(!Hero.currentAnimation=="lowstance"&& downPressed){
-                        Hero.gotoAndPlay("lowstance");
-                    }
-                }
                 Villain.tick(event);
                 handleVillainAttacks(event);
                 handleHeroAttacks(event);
@@ -133,6 +113,8 @@
             start.x=350;
             villainPP.alpha =100;
             heroPP.alpha =100;
+            villainPP.text ="PP:"+Villain.PP;
+            heroPP.text ="PP:"+Hero.PP;
             Hero.reset();
             Villain.reset();
             stage.addChild(Hero);
@@ -143,9 +125,8 @@
         //starts the game, places the sprites on the canvas and adds nescessary eventListeners
         function startGame(){
             //Villain.disable();
-            dodgePressed = false;
-            attackPressed = false;
             start.alpha=0;
+            KeyboardCont = new KeyControl(Hero);
             document.onkeydown = handleKeyDown;
             document.onkeyup = handleKeyUp;
             createjs.Ticker.addEventListener("tick", gameTick);
@@ -170,52 +151,8 @@
                     stage.update();
                 }
             }
-            if (Hero.inControl()  && !createjs.Ticker.getPaused()) {
-                switch (e.keyCode) {
-                    case KEYCODE_W: ;
-                    case KEYCODE_UP:
-                            Hero.gotoAndPlay("highstance");
-                            upPressed = true;
-                        break;
-                    case KEYCODE_S: ;
-                    case KEYCODE_DOWN:
-                            Hero.gotoAndPlay("lowstance");
-                            downPressed = true;
-                        break;
-                    case KEYCODE_LEFT: ;
-                    case KEYCODE_A:
-                        if (dodgePressed==false){
-                            Hero.gotoAndPlay("dodge");
-                            dodgePressed = true;
-                        }
-                        break;
-                    case KEYCODE_SPACE:
-                        if (attackPressed ==false){
-                            attackPressed = true;
-                            if(Hero.currentAnimation=="highstance"){
-                                Hero.gotoAndPlay("highattack");
-                            }
-                            else if(Hero.currentAnimation=="lowstance"){
-                                Hero.gotoAndPlay("lowattack");
-                            }
-                            else if(Hero.currentAnimation=="normstance"){
-                                Hero.gotoAndPlay("aggattack");
-                            }
-                        }
-                        break;
-                }
-            }
-            else{
-                switch (e.keyCode) {
-                    case KEYCODE_W: ;
-                    case KEYCODE_UP:
-                            upPressed = true;
-                        break;
-                    case KEYCODE_S: ;
-                    case KEYCODE_DOWN:
-                            downPressed = true;
-                        break;
-                }
+            if (!createjs.Ticker.getPaused()) {
+                KeyboardCont.handleKeyDown(e);
             }
         }
 
@@ -223,36 +160,9 @@
         function handleKeyUp(e) {
             //cross browser issues exist
             if (!e) { var e = window.event; }
-            if (Hero.inControl() && !createjs.Ticker.getPaused()) {
-                switch (e.keyCode) {
-                    case KEYCODE_W: ;
-                    case KEYCODE_UP: ;  
-                    case KEYCODE_S: ;
-                    case KEYCODE_DOWN: ;
-                        Hero.gotoAndPlay("normstance");
-                        break;
-                }
+            if (!createjs.Ticker.getPaused()) {
+                KeyboardCont.handleKeyUp(e);
             }
-            switch(e.keyCode){
-                case KEYCODE_LEFT: ;
-                 case KEYCODE_A: 
-                     dodgePressed = false;
-                     break;
-                 case KEYCODE_SPACE:
-                     attackPressed = false;
-                     break;
-                     
-                 case KEYCODE_W: ;
-                 case KEYCODE_UP: 
-                     upPressed = false;
-                     break;
-                     
-                 case KEYCODE_S: ;
-                 case KEYCODE_DOWN: 
-                     downPressed = false;
-                     break
-            }
-            
         }
         
         //checks for landed player attacks. If player avatar displays a "landed attack" frame 
