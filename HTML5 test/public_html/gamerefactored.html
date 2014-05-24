@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <link href='http://fonts.googleapis.com/css?family=Oswald' rel='stylesheet' type='text/css'>
+    <link href="style.css" rel="stylesheet" type="text/css">
+    <script src="http://code.createjs.com/createjs-2013.12.12.min.js"> </script>
+    <script src="loadxmldoc.js" ></script>
+    <script src="Player.js" ></script>
+    <script src="Opponent.js" ></script>
+    <script>
+        //att göra: 
+        //freezzeframes!
+        //snygga upp AI-koden, kanske ett markovkedjeobjekt eller så
+        //ändra tangentbordslogiken som så att det tittar på förändringar i tangentbordslogik ist för current states
+        var dodgePressed;
+        var attackPressed;
+        var downPressed;
+        var upPressed;
+        var freezetimer;
+        var isPaused = false;
+        var countdown;
+        var background;
+        var stage; 
+        var queue;
+        var Hero;
+        var Villain;
+        var heroPP;
+        var villainPP;
+        var start;
+        KEYCODE_W=87;
+        KEYCODE_UP=38;
+        KEYCODE_DOWN=40;
+        KEYCODE_S=83;
+        KEYCODE_A=65;
+        KEYCODE_LEFT=37;
+        KEYCODE_SPACE=32;
+        KEYCODE_ENTER = 13;
+        
+        //initializes the game and loads components
+        function init() {
+            stage = new createjs.Stage("demoCanvas");
+            queue = new createjs.LoadQueue(false);
+            Hero = new Player("img/A1textures.png");
+            Villain = new Opponent("img/A2textures.png");
+            queue.installPlugin(createjs.Sound);
+            queue.addEventListener("complete", handleComplete);
+            queue.loadManifest([{id:"bg",src:"img/bakgrunder/4f95b45798c9e.jpg"},{id:"sound", src:"img/VEC2 Bass 007 A.mp3"}]);
+        }
+        
+        //tick function, uppdates game environment
+        function gameTick(event){
+            if(!createjs.Ticker.getPaused()){
+                Hero.tick(event);
+                if(Hero.inControl()){
+                   if((Hero.currentAnimation=="highstance"&& !upPressed) || (Hero.currentAnimation=="lowstance"&& !downPressed)){
+                    Hero.gotoAndPlay("normstance");
+                    }
+                    else if(!Hero.currentAnimation=="highstance"&& upPressed){
+                        Hero.gotoAndPlay("highstance");
+                    }
+                    else if(!Hero.currentAnimation=="lowstance"&& downPressed){
+                        Hero.gotoAndPlay("lowstance");
+                    }
+                }
+                Villain.tick(event);
+                handleVillainAttacks(event);
+                handleHeroAttacks(event);
+                heroPP.text = "PP: "+Hero.PP;
+                villainPP.text = "PP: "+Villain.PP;
+                stage.update(event);
+            }
+            else if(!isPaused){
+                freezetimer-=event.delta;
+                if(freezetimer<=0){
+                    createjs.Ticker.setPaused(false);
+                    background.alpha = 100;
+                }
+            }
+        }
+        
+        function countdownTick(event){
+            countdown-=event.delta;
+            if (countdown<=0){
+                createjs.Ticker.removeEventListener("tick", countdownTick)
+                startGame();
+            }
+            start.text = Math.floor(countdown/1000+1);
+            stage.update(event);
+
+        }
+        
+        //called on loadcomplete- sets bg and startbutton, connected to handlestart
+        function handleComplete(event){
+            background = new createjs.Bitmap(queue.getResult("bg"));
+
+            start = new createjs.Text();
+            start.text = "START";
+            start.font = "96px Oswald";
+            start.color = "#FF7700";
+            start.addEventListener("click",handleCountdown);
+            start.x = 250;
+            start.y = 200;
+            
+            heroPP = new createjs.Text();
+            villainPP = new createjs.Text();
+            heroPP.font = "96px Oswald";
+            heroPP.color = "#FF7700";
+            heroPP.alpha = 0;
+            
+            villainPP.font = "96px Oswald";
+            villainPP.color = "#FF0000";
+            villainPP.alpha = 0;
+            villainPP.x = 500;
+            Hero.x = 100;
+            Hero.y = 200;
+            Villain.x = 300;
+            Villain.y = 200;
+
+
+            stage.addChild(background);  
+            stage.addChild(heroPP);
+            stage.addChild(villainPP);
+            stage.addChild(start);
+            
+            stage.update();
+        }
+        
+        function handleCountdown(event){
+            countdown = 3000;
+            start.removeEventListener("click",countdown);
+            createjs.Ticker.addEventListener("tick", countdownTick);
+            start.alpha =100;
+            start.x=350;
+            villainPP.alpha =100;
+            heroPP.alpha =100;
+            Hero.reset();
+            Villain.reset();
+            stage.addChild(Hero);
+            stage.addChild(Villain);
+        }
+        
+        
+        //starts the game, places the sprites on the canvas and adds nescessary eventListeners
+        function startGame(){
+            //Villain.disable();
+            dodgePressed = false;
+            attackPressed = false;
+            start.alpha=0;
+            document.onkeydown = handleKeyDown;
+            document.onkeyup = handleKeyUp;
+            createjs.Ticker.addEventListener("tick", gameTick);
+        }
+        
+        //translates keyPresses into avatar animation change
+        function handleKeyDown(e) {
+            if (!e) { var e = window.event; }
+            if(e.keyCode==KEYCODE_ENTER){
+                if(isPaused){
+                    start.alpha = 0;
+                    isPaused=false;
+                    createjs.Ticker.setPaused(false);
+                }
+                else{
+                    createjs.Ticker.setPaused(true);
+                    isPaused=true;
+                    start.x=225;
+                    start.alpha=100;
+                    start.text="PAUSED";
+                    stage.addChild(start);
+                    stage.update();
+                }
+            }
+            if (Hero.inControl()  && !createjs.Ticker.getPaused()) {
+                switch (e.keyCode) {
+                    case KEYCODE_W: ;
+                    case KEYCODE_UP:
+                            Hero.gotoAndPlay("highstance");
+                            upPressed = true;
+                        break;
+                    case KEYCODE_S: ;
+                    case KEYCODE_DOWN:
+                            Hero.gotoAndPlay("lowstance");
+                            downPressed = true;
+                        break;
+                    case KEYCODE_LEFT: ;
+                    case KEYCODE_A:
+                        if (dodgePressed==false){
+                            Hero.gotoAndPlay("dodge");
+                            dodgePressed = true;
+                        }
+                        break;
+                    case KEYCODE_SPACE:
+                        if (attackPressed ==false){
+                            attackPressed = true;
+                            if(Hero.currentAnimation=="highstance"){
+                                Hero.gotoAndPlay("highattack");
+                            }
+                            else if(Hero.currentAnimation=="lowstance"){
+                                Hero.gotoAndPlay("lowattack");
+                            }
+                            else if(Hero.currentAnimation=="normstance"){
+                                Hero.gotoAndPlay("aggattack");
+                            }
+                        }
+                        break;
+                }
+            }
+            else{
+                switch (e.keyCode) {
+                    case KEYCODE_W: ;
+                    case KEYCODE_UP:
+                            upPressed = true;
+                        break;
+                    case KEYCODE_S: ;
+                    case KEYCODE_DOWN:
+                            downPressed = true;
+                        break;
+                }
+            }
+        }
+
+        //translates key releases into avatar animation change
+        function handleKeyUp(e) {
+            //cross browser issues exist
+            if (!e) { var e = window.event; }
+            if (Hero.inControl() && !createjs.Ticker.getPaused()) {
+                switch (e.keyCode) {
+                    case KEYCODE_W: ;
+                    case KEYCODE_UP: ;  
+                    case KEYCODE_S: ;
+                    case KEYCODE_DOWN: ;
+                        Hero.gotoAndPlay("normstance");
+                        break;
+                }
+            }
+            switch(e.keyCode){
+                case KEYCODE_LEFT: ;
+                 case KEYCODE_A: 
+                     dodgePressed = false;
+                     break;
+                 case KEYCODE_SPACE:
+                     attackPressed = false;
+                     break;
+                     
+                 case KEYCODE_W: ;
+                 case KEYCODE_UP: 
+                     upPressed = false;
+                     break;
+                     
+                 case KEYCODE_S: ;
+                 case KEYCODE_DOWN: 
+                     downPressed = false;
+                     break
+            }
+            
+        }
+        
+        //checks for landed player attacks. If player avatar displays a "landed attack" frame 
+        //while opponent isnt blocking, opponent gets stunned
+        function handleHeroAttacks(event){
+
+            if(!Villain.stunned && Villain.alive){
+                hCurrent = Hero.currentFrame;
+                vCurrent = Villain.currentAnimation.slice(0,3);
+                if(hCurrent==3 && vCurrent!="dod"){ //aggattack landed
+                    Villain.gotoAndPlay("stunned");
+                    Villain.stunned = true;
+                    Villain.stunTimer=1000;
+                    Villain.PP -=20;
+                    freezeframe(70,Villain);
+                }
+                if(hCurrent==7 && (vCurrent != "low"&& vCurrent!="dod")){ //highattack landed
+                    Villain.gotoAndPlay("stunned");
+                    Villain.stunned = true;
+                    Villain.stunTimer=300;
+                    Villain.PP -=10;
+                    freezeframe(50,Villain);
+                } 
+                if(hCurrent==12 && (vCurrent != "high"&& vCurrent!="dod")){ //normattack landed
+                    Villain.gotoAndPlay("stunned");
+                    Villain.stunned = true;
+                    Villain.stunTimer=500;
+                    Villain.PP -=10;
+                    freezeframe(50,Villain);
+                }
+                if (Villain.PP<=0){
+                        handleDeath("Red Guy");
+                }
+            }
+        }
+        
+        function freezeframe(time, guy){
+            freezetimer = time;
+            if (time>50){background.alpha = 0;}
+            createjs.Ticker.setPaused(true);
+        }
+        
+        //checks for landed opponent attacks. If opponent displays a "landed attack" frame 
+        //while player avatar isnt blocking, player gets stunned
+        function handleVillainAttacks(event){
+
+            if(!Hero.stunned && Hero.alive){
+                hCurrent = Villain.currentFrame;
+                vCurrent = Hero.currentAnimation.slice(0,3);
+                if(hCurrent==3 && vCurrent!="dod"){ //aggattack landed
+                    Hero.gotoAndPlay("stunned");
+                    Hero.stunned = true;
+                    Hero.stunTimer=1000;
+                    Hero.PP -=20;
+                    freezeframe(70,Hero);
+                }
+                if(hCurrent==7 && (vCurrent != "low" && vCurrent != "dod") ){ //highattack landed
+                    Hero.gotoAndPlay("stunned");
+                    Hero.stunned = true;
+                    Hero.stunTimer=300;
+                    Hero.PP -=10;
+                    freezeframe(30,Hero);
+                } 
+                if(hCurrent==12 && (vCurrent!="hig" && vCurrent!="dod")){ //normattack landed
+                    Hero.gotoAndPlay("stunned");
+                    Hero.stunned = true;
+                    Hero.stunTimer=500;
+                    Hero.PP -=10;
+                    freezeframe(40,Hero);
+                }
+                if (Hero.PP<=0){
+                        handleDeath("Blue Guy");
+                }
+            }
+        }
+        
+        function handleDeath(winner){
+            Hero.alive=false;
+            Villain.alive=false;
+            start.x=200;
+            start.text = "RESTART?"; 
+            start.alpha = 100;
+            background.alpha=100;
+            start.addEventListener("click",handleCountdown);
+            stage.addChild(start);
+            createjs.Ticker.removeEventListener("tick", gameTick);
+        }
+        
+    </script>
+</head>
+<body onLoad="init();">
+    <canvas id="demoCanvas" width="800" height="600">
+        alternate content
+    </canvas>
+</body>
+</html>

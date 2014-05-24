@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Created with TexturePacker http://texturepacker.com-->
+<!-- $TexturePacker:SmartUpdate:fa9add1cb29d0a39889b7a342af6782a$ -->
+<!--Format:
+n  => name of the sprite
+x  => sprite x pos in texture
+y  => sprite y pos in texture
+w  => sprite width (may be trimmed)
+h  => sprite height (may be trimmed)
+oX => sprite's x-corner offset (only available if trimmed)
+oY => sprite's y-corner offset (only available if trimmed)
+oW => sprite's original width (only available if trimmed)
+oH => sprite's original height (only available if trimmed)
+r => 'y' only set if sprite is rotated
+offsetX = adjustment of x pos of destination rectangle 
+offsety = adjustment of y pos of destination rectangle
+-->
+<TextureAtlas imagePath="A2textures.png" width="2048" height="2048">
+    <sprite n="Avatar2 -aggattack -1" x="2" y="2" w="437" h="402" oX="66" oY="23" oW="591" oH="430" offsetX = "-10" offsetY = "0"/>
+    <sprite n="Avatar2 -aggattack -2" x="441" y="2" w="323" h="380" oX="229" oY="43" oW="591" oH="430" offsetX = "-200" offsetY = "0"/>
+    <sprite n="Avatar2 -aggattack -3" x="766" y="2" w="357" h="384" oX="156" oY="46" oW="591" oH="430" offsetX = "-70" offsetY = "0"/>
+    <sprite n="Avatar2 -aggattack -4" x="1125" y="2" w="469" h="372" oX="45" oY="35" oW="591" oH="430" offsetX = "20" offsetY = "0"/>
+    <sprite n="Avatar2 -aggattack -5" x="2" y="406" w="479" h="372" oX="56" oY="33" oW="591" oH="430" offsetX = "30" offsetY = "0"/>
+    <sprite n="Avatar2 -dodge" x="483" y="406" w="258" h="380" offsetX = "-200" offsetY = "0"/>
+    <sprite n="Avatar2 -highattack -1" x="743" y="406" w="445" h="388" oX="92" oY="6" oW="591" oH="430" offsetX = "50" offsetY = "10"/>
+    <sprite n="Avatar2 -highattack -2" x="1190" y="406" w="445" h="378" oX="75" oY="0" oW="591" oH="430" offsetX = "50" offsetY = "10"/>
+    <sprite n="Avatar2 -highattack -3" x="2" y="796" w="445" h="418" oX="88" oY="12" oW="591" oH="430" offsetX = "50" offsetY = "10"/>
+    <sprite n="Avatar2 -highstance" x="449" y="796" w="443" h="392" offsetX = "50" offsetY = "10"/>
+    <sprite n="Avatar2 -lowattack -1" x="894" y="796" w="305" h="368" oX="250" oY="62" oW="591" oH="430" offsetX = "-110" offsetY = "0"/>
+    <sprite n="Avatar2 -lowattack -2" x="1201" y="796" w="307" h="372" oX="207" oY="58" oW="591" oH="430" offsetX = "-50" offsetY = "0"/>
+    <sprite n="Avatar2 -lowattack -3" x="1510" y="796" w="353" h="374" oX="161" oY="49" oW="591" oH="430" offsetX = "-30" offsetY = "0"/>
+    <sprite n="Avatar2 -lowattack -4" x="2" y="1216" w="347" h="374" oX="180" oY="54" oW="591" oH="430" offsetX = "-30" offsetY = "0"/>
+    <sprite n="Avatar2 -lowstance" x="351" y="1216" w="288" h="367" offsetX = "-100" offsetY = "-20"/>
+    <sprite n="Avatar2 -normstance" x="641" y="1216" w="439" h="376" offsetX = "0" offsetY = "0"/>
+    <sprite n="Avatar2 -stun" x="1082" y="1216" w="308" h="380" offsetX = "-140" offsetY = "0"/>
+</TextureAtlas>

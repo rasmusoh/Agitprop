@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <script src="http://code.createjs.com/createjs-2013.12.12.min.js"> </script>
+    <script src="loadxmldoc.js" ></script>
+    <script src="Hero.js" ></script>
+    <script>
+        //att göra: villain och hero som subclasser av sprite
+        
+        var stage; 
+        var queue;
+        var Hero;
+        var Villain;
+        var villainStunned;
+        var currentPattern;
+        var patternDone;
+        var patternNrAttacks;
+        var time;
+        var heroTime;
+        KEYCODE_W=87;
+        KEYCODE_UP=38;
+        KEYCODE_DOWN=40;
+        KEYCODE_S=83;
+        KEYCODE_A=65;
+        KEYCODE_LEFT=37;
+        KEYCODE_SPACE=32;
+        
+        function init() {
+            stage = new createjs.Stage("demoCanvas");
+            queue = new createjs.LoadQueue(false);
+            Hero = new createjs.Sprite(createSpriteSheetRed(),"normstance");
+            Villain = new createjs.Sprite(createSpriteSheetBlue(),"highstance");
+            queue.installPlugin(createjs.Sound);
+            queue.addEventListener("complete", handleComplete);
+            queue.loadManifest([{id:"bg",src:"img/bakgrunder/4f95b45798c9e.jpg"},{id:"sound", src:"img/VEC2 Bass 007 A.mp3"}]);
+        }
+        
+        function tick(event){
+            handleVillainUpdate(event);
+            handleHeroUpdate(event);
+            stage.update(event);
+        }
+        
+        function handleComplete(event){
+            var background = new createjs.Bitmap(queue.getResult("bg"));
+            background.x=0;
+            background.y=0;
+            Hero.x = 100;
+            Hero.y = 200;
+            Villain.x = 300;
+            Villain.y = 200;
+            time=0;
+            currentPattern=0;
+            patternNrAttacks = 0;
+            patternDone = true;
+            villainStunned = false;
+            heroStunned = false;
+            
+            document.onkeydown = handleKeyDown;
+            document.onkeyup = handleKeyUp;
+            createjs.Ticker.addEventListener("tick", tick);
+            
+            stage.addChild(background);
+            stage.addChild(Hero);
+            stage.addChild(Villain);
+        }
+        function handleKeyDown(e) {
+            //cross browser issues exist
+            if (!e) { var e = window.event; }
+            if (!heroStunned) {
+            switch (e.keyCode) {
+                case KEYCODE_W: ;
+                case KEYCODE_UP:
+                        Hero.gotoAndPlay("highstance");
+                        Hero.isInIdleMode = false;
+                    break;
+                case KEYCODE_S: ;
+                case KEYCODE_DOWN:
+
+                        Hero.gotoAndPlay("lowstance");
+                        Hero.isInIdleMode = false;
+                    break;
+                case KEYCODE_LEFT: ;
+                case KEYCODE_A:
+                    Hero.gotoAndPlay("dodge");
+                    break;
+                case KEYCODE_SPACE:
+                    if(Hero.currentAnimation=="highstance"){
+                        Hero.gotoAndPlay("highattack");
+                    }
+                    else if(Hero.currentAnimation=="lowstance"){
+                        Hero.gotoAndPlay("lowattack");
+                    }
+                    else if(Hero.currentAnimation=="normstance"){
+                        Hero.gotoAndPlay("aggattack");
+                    }
+                    break;
+            }
+            }
+        }
+
+        function handleKeyUp(e) {
+            //cross browser issues exist
+            if (!e) { var e = window.event; }
+            if (!heroStunned) {
+            switch (e.keyCode) {
+                case KEYCODE_W: ;
+                case KEYCODE_UP: ;  
+                case KEYCODE_S: ;
+                case KEYCODE_DOWN: ;
+                case KEYCODE_LEFT: ;
+                case KEYCODE_A:
+                    //if (Hero.alive) {
+                        Hero.isInIdleMode = true;
+                        Hero.gotoAndPlay("normstance");
+                    //}
+                    break;
+            }
+        }
+        }
+        function handleHeroUpdate(event){
+            hCurrent = Hero.currentFrame;
+            vCurrent = Villain.currentAnimation;
+            if(     (hCurrent==4 && vCurrent!="dodge") || 
+                    (hCurrent==9 && vCurrent.slice(0,4) == "high" ) || 
+                    (hCurrent==14 && vCurrent.slice(0,3) == "low"))
+            {
+                Villain.gotoAndPlay("stunned");
+                villainStunned = true;
+                time=0;
+            }
+            if(heroStunned){
+                heroTime+=event.delta;
+                if(heroTime>1000){heroStunned=false; Hero.gotoAndPlay("normstance");}
+            } 
+        }
+        
+        function handleVillainCollisions(event){
+            hCurrent = Villain.currentFrame;
+            vCurrent = Hero.currentAnimation;
+            if(!heroStunned){
+            if(     (hCurrent==3 && vCurrent!="dodge") || 
+                    (hCurrent==7 && vCurrent.slice(0,4) == "high") || 
+                    (hCurrent==12 && vCurrent.slice(0,3) == "low"))
+            {
+                Hero.gotoAndPlay("stunned");
+                heroStunned = true;
+                heroTime=0;
+            }
+        }
+        }
+        
+        function handleVillainUpdate(event){
+//            if (Villain.currentAnimation=="highstance" || Villain.currentAnimation=="lowstance"){
+//                currentPattern = Math.floor(Math.random()*2);
+//                if (currentPattern==0){Villain.gotoAndPlay("highattack");}
+//                else {Villain.gotoAndPlay("lowattack");}
+//            }
+            //var current = Villain.currentFrame;
+            //if(current==)
+            handleVillainCollisions(event);
+            patterns =["idle1200high","idle1200low","highattack3x", "dodge1000", "lowattack2x", "aggattack"]; 
+            if (!villainStunned){
+            if (patternDone == true){
+                currentPattern = Math.floor(Math.random()*patterns.length);
+                switch(patterns[currentPattern]){
+                    case "idle1200high":
+                        Villain.gotoAndPlay("highstance");
+                        break;
+                    case "idle1200low":
+                        Villain.gotoAndPlay("lowstance");
+                        break;
+                    case "highattack3x":
+                        Villain.gotoAndPlay("highattack");
+                        break;
+                    case "dodge1000":
+                        Villain.gotoAndPlay("dodge");
+                        break;
+                    case "lowattack2x":
+                        Villain.gotoAndPlay("lowattack");
+                        break;
+                    case "aggattack":
+                        Villain.gotoAndPlay("aggattack");
+                        break;
+                }
+                patternDone=false;
+            }
+            else{
+                switch(patterns[currentPattern]){
+                    case "idle1200high": ;
+                    case "idle1200low":
+                        time+=event.delta;
+                        if(time>1200){
+                            time=0;
+                            Villain.gotoAndPlay("normstance");
+                            patternDone=true;
+                        }
+                        break;
+                    case "highattack3x":
+                        if(Villain.currentAnimation=="highstance"){
+                            Villain.gotoAndPlay("highattack");
+                            patternNrAttacks++;
+                        if(patternNrAttacks>=3){
+                            patternNrAttacks=0;
+                            Villain.gotoAndPlay("normstance");
+                            patternDone=true;
+                        }}
+                    
+                        break;
+                    case "dodge1000":
+                        time+=event.delta;
+                        if(time>1000){
+                            time=0;
+                            Villain.gotoAndPlay("normstance");
+                            patternDone=true;
+                        }
+                        break;
+                    case "lowattack2x":
+                        if(Villain.currentAnimation=="lowstance"){
+                            Villain.gotoAndPlay("lowattack");
+                            patternNrAttacks++;
+                        
+                        if(patternNrAttacks==2){
+                            patternNrAttacks=0;
+                            Villain.gotoAndPlay("lowstance");
+                            patternDone=true;
+                        }
+                        }
+                    case "aggattack":
+                        if(Villain.currentAnimation=="normstance"){
+                            patternDone=true;
+                        }
+                        break;
+                }
+            }
+        }
+        else{
+            time+=event.delta;
+            if(time>1000){
+                villainStunned=false;
+                time=0;
+                patternDone = true;
+            }
+        }
+        }
+     
+
+        function createSpriteSheetRed(){
+              var xmlDoc = loadXMLDoc("img/A1textures.xml");
+              var frames=xmlDoc.getElementsByTagName("sprite");
+              var sheetFrames =[];
+              for (var i = 0; i < frames.length; i++)
+              {
+                var frame = frames[i].attributes;
+                // Access each of the data values and construct the sourceRect.
+                var Name = frame.getNamedItem("n").nodeValue;
+                var x = frame.getNamedItem("x").nodeValue;
+                var y = frame.getNamedItem("y").nodeValue;
+                var w = frame.getNamedItem("w").nodeValue;
+                var h = frame.getNamedItem("h").nodeValue;
+                if(Name=="Avatar1 -dodge"){sheetFrames.push([x,y,w,h,0,70,0]);}
+                else if(Name.slice(9,13)=="high"){sheetFrames.push([x,y,w,h,0,0,20]);}
+                else if(Name=="Avatar1 -lowstance"){sheetFrames.push([x,y,w,h,0,0,-10]);}
+                else if(Name=="Avatar1 -stunned"){sheetFrames.push([x,y,w,h,0,80,0]);}
+                else{sheetFrames.push([x,y,w,h]);}
+              }
+              
+              data = {
+                  framerate: 10,
+                  images: ["img/A1textures.png"],
+                  frames: sheetFrames,
+                  animations: {
+                      aggattack: [0,5,"normstance"],
+                      dodge: 6,
+                      highattack: [7,10,"highstance"],
+                      highstance: 11,
+                      lowattack: [12,15,"lowstance"],
+                      lowstance: 16,
+                      normstance: 17,
+                      stunned: 18
+                  }
+              }
+              return new createjs.SpriteSheet(data);         
+        }
+        
+        function createSpriteSheetBlue(){
+              var xmlDoc = loadXMLDoc("img/A2textures.xml");
+              var frames=xmlDoc.getElementsByTagName("sprite");
+              var sheetFrames =[];
+              for (var i = 0; i < frames.length; i++)
+              {
+                var frame = frames[i].attributes;
+                // Access each of the data values and construct the sourceRect.
+                var Name = frame.getNamedItem("n").nodeValue;
+                var x = frame.getNamedItem("x").nodeValue;
+                var y = frame.getNamedItem("y").nodeValue;
+                var w = frame.getNamedItem("w").nodeValue;
+                var h = frame.getNamedItem("h").nodeValue;
+                if(Name=="Avatar2 -dodge"){sheetFrames.push([x,y,w,h,0,-200,0]);}
+                else if(Name.slice(9,13)=="high"){sheetFrames.push([x,y,w,h,0,50,10]);}
+                else if(Name=="Avatar2 -lowstance"){sheetFrames.push([x,y,w,h,0,-100,-20]);}
+                else if(Name=="Avatar2 -lowattack -1"){sheetFrames.push([x,y,w,h,0,-110,0]);}
+                else if(Name=="Avatar2 -lowattack -2"){sheetFrames.push([x,y,w,h,0,-50,0]);}
+                else if(Name=="Avatar2 -lowattack -3"){sheetFrames.push([x,y,w,h,0,-30,0]);}
+                else if(Name=="Avatar2 -lowattack -4"){sheetFrames.push([x,y,w,h,0,-30,0]);}
+                else if(Name=="Avatar2 -aggattack -1"){sheetFrames.push([x,y,w,h,0,-10,0]);}
+                else if(Name=="Avatar2 -aggattack -2"){sheetFrames.push([x,y,w,h,0,-200,0]);}
+                else if(Name=="Avatar2 -aggattack -3"){sheetFrames.push([x,y,w,h,0,-70,0]);}
+                else if(Name=="Avatar2 -aggattack -4"){sheetFrames.push([x,y,w,h,0,20,0]);}
+                else if(Name=="Avatar2 -aggattack -5"){sheetFrames.push([x,y,w,h,0,30,0]);}
+                else if(Name=="Avatar2 -stun"){sheetFrames.push([x,y,w,h,0,-120,0]);}
+                else{sheetFrames.push([x,y,w,h]);}
+              }
+              
+              data = {
+                  framerate: 7
+                  ,
+                  images: ["img/A2textures.png"],
+                  frames: sheetFrames,
+                  animations: {
+                      aggattack: {
+                          frames:[0,1,1,2,3,4,4,4],
+                          next:"normstance"
+                      },
+                      dodge: 5,
+                      highattack: [6,8,"highstance"],
+                      highstance: 9,
+                      lowattack: {
+                          frames: [10,11,12,13,13,13],
+                          next: "lowstance",
+                      },
+                      lowstance: 14,
+                      normstance: 15,
+                      stunned: 16
+                  }
+              }
+              return new createjs.SpriteSheet(data);         
+        }
+        
+    </script>
+</head>
+<body onLoad="init();">
+    <canvas id="demoCanvas" width="800" height="600">
+        alternate content
+    </canvas>
+</body>
+</html>
