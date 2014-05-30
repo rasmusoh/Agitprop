@@ -13,6 +13,9 @@ function KeyControl(Player) {
     KEYCODE_LEFT=37;
     KEYCODE_SPACE=32;
     KEYCODE_ENTER = 13;
+    
+KeyControl.prototype.Power = 100;
+    
 
 KeyControl.prototype.initialize = function(Player){
     this.dodgePressed = false;
@@ -33,6 +36,9 @@ KeyControl.prototype.tick = function(event){
         else if(!this.Hero.currentAnimation=="lowstance"&& this.downPressed){
             this.Hero.gotoAndPlay("lowstance");
         }
+    }
+    if(this.Power<100 && (this.Hero.inControl() || Hero.currentAnimation=="dodge")){
+        this.Power=Math.min(this.Power+event.delta/70,100);
     }
 }
 
@@ -59,14 +65,17 @@ KeyControl.prototype.handleKeyDown = function(event){
     case KEYCODE_SPACE:
         if (this.attackPressed ==false){
             this.attackPressed = true;
-            if(this.Hero.currentAnimation=="highstance"){
+            if(this.Hero.currentAnimation=="highstance"&& this.Power>=20){
                 this.Hero.gotoAndPlay("highattack");
+                this.Power-=30;
             }
-            else if(this.Hero.currentAnimation=="lowstance"){
+            else if(this.Hero.currentAnimation=="lowstance"&& this.Power>=20){
                 this.Hero.gotoAndPlay("lowattack");
+                this.Power-=30;
             }
-            else if(this.Hero.currentAnimation=="normstance"){
+            else if(this.Hero.currentAnimation=="normstance" && this.Power>=100){
                 this.Hero.gotoAndPlay("aggattack");
+                this.Power-=30;
             }
         }
         break;

@@ -24,17 +24,21 @@
         var Villain;
         var heroPP;
         var villainPP;
+        var heroPower;
         var start;
         
         //initializes the game and loads components
         function init() {
             stage = new createjs.Stage("demoCanvas");
             queue = new createjs.LoadQueue(false);
-            Hero = new Player("img/A1textures.png");
-            Villain = new Opponent("img/A2textures.png");
             queue.installPlugin(createjs.Sound);
             queue.addEventListener("complete", handleComplete);
-            queue.loadManifest([{id:"bg",src:"img/bakgrunder/4f95b45798c9e.jpg"},{id:"sound", src:"img/VEC2 Bass 007 A.mp3"}]);
+            var manifest = [
+                {id:"bg",src:"img/bakgrunder/4f95b45798c9e.jpg"},
+                {id:"a1tex",src:"img/A1textures.png"},
+                {id:"a2tex",src:"img/A2textures.png"},
+                    {id:"sound", src:"img/VEC2 Bass 007 A.mp3"}];
+            queue.loadManifest(manifest);
         }
         
         //tick function, uppdates game environment
@@ -45,8 +49,17 @@
                 Villain.tick(event);
                 handleVillainAttacks(event);
                 handleHeroAttacks(event);
-                heroPP.text = "PP: "+Hero.PP;
-                villainPP.text = "PP: "+Villain.PP;
+                
+                if(KeyboardCont.Power >=100){
+                    heroPower.graphics.clear().beginFill("FF7700").drawRect(5,65,200,50);
+                }
+                else{
+                   heroPower.graphics.clear().beginFill("fef6ad").drawRect(5,65,2*KeyboardCont.Power,50); 
+                }
+                villainPP.graphics.clear().beginFill("d93e39").drawRect(500,5,2*Villain.PP,50);
+                heroPP.graphics.clear().beginFill("d93e39").drawRect(5,5,2*Hero.PP,50);
+                
+                
                 stage.update(event);
             }
             else if(!isPaused){
@@ -72,6 +85,8 @@
         //called on loadcomplete- sets bg and startbutton, connected to handlestart
         function handleComplete(event){
             background = new createjs.Bitmap(queue.getResult("bg"));
+            Hero = new Player(queue.getResult("a1tex"));
+            Villain = new Opponent("a2tex");
 
             start = new createjs.Text();
             start.text = "START";
@@ -81,25 +96,22 @@
             start.x = 250;
             start.y = 200;
             
-            heroPP = new createjs.Text();
-            villainPP = new createjs.Text();
-            heroPP.font = "96px Oswald";
-            heroPP.color = "#FF7700";
-            heroPP.alpha = 0;
             
-            villainPP.font = "96px Oswald";
-            villainPP.color = "#FF0000";
-            villainPP.alpha = 0;
-            villainPP.x = 500;
+            heroPower = new createjs.Shape();
+            heroPP = new createjs.Shape();
+            villainPP = new createjs.Shape();
             Hero.x = 100;
             Hero.y = 200;
-            Villain.x = 300;
+            Villain.x = 300; 
             Villain.y = 200;
 
-
+            
             stage.addChild(background);  
+            
+            
             stage.addChild(heroPP);
             stage.addChild(villainPP);
+            stage.addChild(heroPower);
             stage.addChild(start);
             
             stage.update();
@@ -113,8 +125,11 @@
             start.x=350;
             villainPP.alpha =100;
             heroPP.alpha =100;
-            villainPP.text ="PP:"+Villain.PP;
-            heroPP.text ="PP:"+Hero.PP;
+            heroPower.alpha = 100;
+
+            villainPP.graphics.clear().beginFill("d93e39").drawRect(500,5,200,50);
+            heroPP.graphics.clear().beginFill("d93e39").drawRect(5,5,200,50);
+            heroPower.graphics.clear().beginFill("#FF7700").drawRect(5,65,200,50);
             Hero.reset();
             Villain.reset();
             stage.addChild(Hero);
@@ -179,14 +194,14 @@
                     Villain.PP -=20;
                     freezeframe(70,Villain);
                 }
-                if(hCurrent==7 && (vCurrent != "low"&& vCurrent!="dod")){ //highattack landed
+                if(hCurrent==9 && (vCurrent != "low"&& vCurrent!="dod")){ //highattack landed
                     Villain.gotoAndPlay("stunned");
                     Villain.stunned = true;
                     Villain.stunTimer=300;
                     Villain.PP -=10;
                     freezeframe(50,Villain);
                 } 
-                if(hCurrent==12 && (vCurrent != "high"&& vCurrent!="dod")){ //normattack landed
+                if(hCurrent==14 && (vCurrent != "high"&& vCurrent!="dod")){ //lowattack landed
                     Villain.gotoAndPlay("stunned");
                     Villain.stunned = true;
                     Villain.stunTimer=500;
