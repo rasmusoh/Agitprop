@@ -246,7 +246,7 @@
      
 
         function createSpriteSheetRed(){
-              var xmlDoc = loadXMLDoc("img/A1textures.xml");
+              var xmlDoc = loadXMLDoc("/img/A1textures.xml");
               var frames=xmlDoc.getElementsByTagName("sprite");
               var sheetFrames =[];
               for (var i = 0; i < frames.length; i++)
@@ -284,7 +284,7 @@
         }
         
         function createSpriteSheetBlue(){
-              var xmlDoc = loadXMLDoc("img/A2textures.xml");
+              var xmlDoc = loadXMLDoc("/img/A2textures.xml");
               var frames=xmlDoc.getElementsByTagName("sprite");
               var sheetFrames =[];
               for (var i = 0; i < frames.length; i++)
@@ -340,7 +340,7 @@
     </script>
 </head>
 <body onLoad="init();">
-    <canvas id="demoCanvas" width="800" height="600">
+    <canvas id="fightCanvas" width="800" height="600">
         alternate content
     </canvas>
 </body>

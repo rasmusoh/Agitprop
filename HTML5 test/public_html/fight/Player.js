@@ -80,7 +80,7 @@ Player.prototype.reset = function(){
     
     //creates and returns sprite sheet by reading the xml map
 Player.prototype.createSpriteSheet = function(img){
-    var xmlDoc = loadXMLDoc("img/A1textures.xml");
+    var xmlDoc = loadXMLDoc("../img/A1textures.xml");
     var frames=xmlDoc.getElementsByTagName("sprite");
     var sheetFrames =[];
     for (var i = 0; i < frames.length; i++)

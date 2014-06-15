@@ -2,7 +2,7 @@
 <html>
 <head>
     <script src="http://code.createjs.com/createjs-2013.12.12.min.js"> </script>
-    <script src="loadxmldoc.js" ></script>
+    <script src="/loadxmldoc.js" ></script>
     <script>
         var stage; 
         var queue;
@@ -75,7 +75,7 @@
 
         function parsedTexturePackerMap(){
               var assArray = {};
-              var xmlDoc = loadXMLDoc("img/A1textures.xml");
+              var xmlDoc = loadXMLDoc("/img/A1textures.xml");
               var frames=xmlDoc.getElementsByTagName("sprite");
               var j = 0;
               for (var i = 0; i < frames.length; i++)
@@ -96,7 +96,7 @@
     </script>
 </head>
 <body onLoad="init();">
-    <canvas id="demoCanvas" width="800" height="600">
+    <canvas id="fightCanvas" width="800" height="600">
         alternate content
     </canvas>
 </body>
