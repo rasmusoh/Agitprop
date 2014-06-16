@@ -1,0 +1,33 @@
+Förslag:
+
+[St. Voksoburg skyline. Balla ryska tak. En bro som ett tåg tuffar över. Tåget stannar vid en station]
+
+Narrator: Many years ago, a young man who would be of great significance, arrived to this very city. He came by train from the poor mining villages in the south. Here in the capital he would serve his countrymen as Vice Agitator at the most esteemed of ministries, Otdel Agitazii i Propagandy. 
+
+[St. Voksoburg centralstation. Agit prop-affischer på väggarna. Enkelt klädda civila och tjänstemän i fina uniformer]
+Narrator: To the young Agitator our great capital seemed strange and unruly, and it’s citizens rude.
+[Protagonisten går in i en man som tappar en vas. Mannan börjar skälla på protagonisten och strid inleds]
+Narrator: The Agitator didn’t have much, but he had his words!
+<Om striden vinns>
+	Narrator: And such words at that!
+</Om striden vinns>
+<Om striden förloras>
+	Narrator: And he had ... carisma
+	[protagonisten räcker over ett par sedlar till mannen]
+</Om striden förloras>
+
+[kommer till Agit Prop]
+[Får i uppdrag att åka ut till stor industriort]
+[Inser missförhållande i fabrikerna]
+[Vänder tillbaka till St. Voksoburg och vinner mot ledarskapet i debatt]
+
+Hela berättelsen är propaganda om hur protagonisten, Den Store Ledaren, kom till makten (so meta/unreliable narrator :O).  Berättarrösten är typ en lärare som föreläser för en skolklass. Greppet står och faller lite med att man har en berättarröst. Det som utspelar sig i spelet är ytterst berättelsen berättaren berättar (whoa), men sanningen skiner igenom litegrann. Det ska alltid vara en liten diskrepens mellan vad som faktiskt sker i spelet och hur berättaren beskriver det.
+•	Det impliceras att protagonisten var fattig men sägs aldrig rakt ut. Han kommer från en rik och mäktig gruvägarfamilj. 
+•	Hur får en ung och oerfaren byråkrat så fina uppdrag och ämbeten? Fett med kontakter.
+•	Vid ett flertal tillfällen möter man karaktärer som gör protagonisten en tjänst för att de ”känner hans far” eller ”kommer från samma by som han”. Det är personer som protagonisten familj har på sin pay roll.
+•	Vid vissa tillfällen försvinner fiender till protagonisten, eller det visar sig att de begått ett brott och de fängslas. Detta är tillfällen där protagonisten lejt en lönmördare eller mutat polisen.
+Idér på hur spelarens val och handlingar påverkar berättelsen:
+•	Ju sämre man spelar, dessto mindre trovärdig blir berättelsen. T ex: man misslyckas att övertala (strid) person A om x och person A tog som tur var en lång semster i Sibirien.  Om man gör bra ifrån sig så har man på riktigt tagit makten utan våld.
+•	Ju ”godare” val man gör desto mer sansad blir beskrivingen av ens hjältedåd. T ex: man omnäms med mer titlar och grejer om man är ond.
+•	De man kommer på kant med får sin roll nedspelad. T ex: nån viktig person man börjar beefa med blir anonymiserad (typ att namnet ersätts med nåt generiskt i konversationer).
+•	En klassisk så-gick-det-sen-slutscen i bästa rpg-anda där alla ens val sammanfattas och hur ens ledarskap påverkat ens land.
