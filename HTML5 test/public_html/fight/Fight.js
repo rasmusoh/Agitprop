@@ -261,5 +261,5 @@ function fightDestroy(){
     stage.enableDOMEvents(false);
     stage.removeAllChildren();
     stage.update();
-    cityInit(CityEnum.Discvojotsk);
+    backtoInterior();
 }
