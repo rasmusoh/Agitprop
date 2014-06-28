@@ -74,13 +74,13 @@ Player.prototype.reset = function(){
     this.stunned = false;
     this.alive = true;
     //this.idle = true;
-    this.PP = 100;
+    this.PP = 10;
     this.gotoAndPlay("normstance");
 }    
     
     //creates and returns sprite sheet by reading the xml map
 Player.prototype.createSpriteSheet = function(img){
-    var xmlDoc = loadXMLDoc("../img/A1textures.xml");
+    var xmlDoc = loadXMLDoc("content/img/sprites/A1textures.xml");
     var frames=xmlDoc.getElementsByTagName("sprite");
     var sheetFrames =[];
     for (var i = 0; i < frames.length; i++)

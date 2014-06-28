@@ -6,15 +6,28 @@ and open the template in the editor.
 -->
 <html>
     <head>
-        <script type="text/javascript">
-            window.location.href = "city/city.html";
-        </script>
+        <link href='http://fonts.googleapis.com/css?family=Oswald' rel='stylesheet' type='text/css'>
+        <link href="style.css" rel="stylesheet" type="text/css">
+        <script src="http://code.createjs.com/createjs-2013.12.12.min.js"> </script>
+        <!--
+
+        <script src="travel/travel.js"> </script> -->
+        <script src="temp.js"></script>
+        <script src="fight/loadxmldoc.js"></script>
+        <script src="fight/Player.js" ></script>
+        <script src="fight/KeyControl.js" ></script>
+        <script src="fight/Opponent.js" ></script>
+        <script src="fight/Fight.js"></script>
+        <script src="city/City.js"></script>
+        <script src="interior/Interior.js"></script>
+        
         <title>Agit Prop</title>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
     </head>
-    <body>
-        <div><a href="fight/fight.html">FIGHT</a></div>
-        <div><a href="city/city.html">City</a></div>
-    </body>
+    <body onLoad="gogogo()">
+    <canvas id="agitpropCanvas" width="800" height="600">
+        alternate content
+    </canvas>
+</body>
 </html>

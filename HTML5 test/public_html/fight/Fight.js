@@ -16,29 +16,28 @@ var heroPP;
 var villainPP;
 var heroPower;
 var start;
-        
+
 //initializes the game and loads components
-function init() {
-    stage = new createjs.Stage("fightCanvas");
+function fightInit() {
+    stage = new createjs.Stage("agitpropCanvas");
     queue = new createjs.LoadQueue(false);
     queue.installPlugin(createjs.Sound);
-    queue.addEventListener("complete", handleComplete);
+    queue.addEventListener("complete", fightHandleComplete);
     var manifest = [                
-        {id:"bg",src:"../img/bakgrunder/Background1.jpg"},
-        {id:"a1tex",src:"../img/A1textures.png"},
-        {id:"a2tex",src:"../img/A2textures.png"},
-        {id:"sound", src:"../img/VEC2 Bass 007 A.mp3"}];
+        {id:"bg",src:"content/img/environments/Background1.jpg"},
+        {id:"a1tex",src:"content/img/sprites/A1textures.png"},
+        {id:"a2tex",src:"content/img/sprites/A2textures.png"}];
     queue.loadManifest(manifest);
 }
         
 //tick function, uppdates game environment
-function gameTick(event){
+function fightGameTick(event){
     if(!createjs.Ticker.getPaused()){
         KeyboardCont.tick(event);
         Hero.tick(event);
         Villain.tick(event);
-        handleVillainAttacks(event);
-        handleHeroAttacks(event);
+        fightHandleVillainAttacks(event);
+        fightHandleHeroAttacks(event);
 
         if(KeyboardCont.Power >=100){
             heroPower.graphics.clear().beginFill("FF7700").drawRect(5,65,200,50);
@@ -61,11 +60,11 @@ function gameTick(event){
     }
 }
         
-function countdownTick(event){
+function fightCountdownTick(event){
     countdown-=event.delta;
     if (countdown<=0){
-        createjs.Ticker.removeEventListener("tick", countdownTick)
-        startGame();
+        createjs.Ticker.removeEventListener("tick", fightCountdownTick)
+        fightStartGame();
     }
     start.text = Math.floor(countdown/1000+1);
     stage.update(event);
@@ -73,16 +72,16 @@ function countdownTick(event){
 }
 
 //called on loadcomplete- sets bg and startbutton, connected to handlestart
-function handleComplete(event){
+function fightHandleComplete(event){
     background = new createjs.Bitmap(queue.getResult("bg"));
     Hero = new Player(queue.getResult("a1tex"));
-    Villain = new Opponent("a2tex");
+    Villain = new Opponent(queue.getResult("a2tex"));
 
     start = new createjs.Text();
     start.text = "START";
     start.font = "96px Oswald";
     start.color = "#FF7700";
-    start.addEventListener("click",handleCountdown);
+    start.addEventListener("click",fightHandleCountdown);
     start.x = 250;
     start.y = 200;
 
@@ -106,10 +105,10 @@ function handleComplete(event){
     stage.update();
 }
 
-function handleCountdown(event){
+function fightHandleCountdown(event){
     countdown = 3000;
     start.removeEventListener("click",countdown);
-    createjs.Ticker.addEventListener("tick", countdownTick);
+    createjs.Ticker.addEventListener("tick", fightCountdownTick);
     start.alpha =100;
     start.x=350;
     villainPP.alpha =100;
@@ -127,17 +126,17 @@ function handleCountdown(event){
 
 
 //starts the game, places the sprites on the canvas and adds nescessary eventListeners
-function startGame(){
+function fightStartGame(){
     //Villain.disable();
     start.alpha=0;
     KeyboardCont = new KeyControl(Hero);
-    document.onkeydown = handleKeyDown;
-    document.onkeyup = handleKeyUp;
-    createjs.Ticker.addEventListener("tick", gameTick);
+    document.onkeydown = fightHandleKeyDown;
+    document.onkeyup = fightHandleKeyUp;
+    createjs.Ticker.addEventListener("tick", fightGameTick);
 }
 
 //translates keyPresses into avatar animation change
-function handleKeyDown(e) {
+function fightHandleKeyDown(e) {
     if (!e) { var e = window.event; }
     if(e.keyCode==KEYCODE_ENTER){
         if(isPaused){
@@ -161,7 +160,7 @@ function handleKeyDown(e) {
 }
 
 //translates key releases into avatar animation change
-function handleKeyUp(e) {
+function fightHandleKeyUp(e) {
     //cross browser issues exist
     if (!e) { var e = window.event; }
     if (!createjs.Ticker.getPaused()) {
@@ -171,7 +170,7 @@ function handleKeyUp(e) {
 
 //checks for landed player attacks. If player avatar displays a "landed attack" frame 
 //while opponent isnt blocking, opponent gets stunned
-function handleHeroAttacks(event){
+function fightHandleHeroAttacks(event){
 
     if(!Villain.stunned && Villain.alive){
         hCurrent = Hero.currentFrame;
@@ -181,29 +180,29 @@ function handleHeroAttacks(event){
             Villain.stunned = true;
             Villain.stunTimer=1000;
             Villain.PP -=20;
-            freezeframe(70,Villain);
+            fightFreezeframe(70,Villain);
         }
         if(hCurrent==9 && (vCurrent != "low"&& vCurrent!="dod")){ //highattack landed
             Villain.gotoAndPlay("stunned");
             Villain.stunned = true;
             Villain.stunTimer=300;
             Villain.PP -=10;
-            freezeframe(50,Villain);
+            fightFreezeframe(50,Villain);
         } 
         if(hCurrent==14 && (vCurrent != "high"&& vCurrent!="dod")){ //lowattack landed
             Villain.gotoAndPlay("stunned");
             Villain.stunned = true;
             Villain.stunTimer=500;
             Villain.PP -=10;
-            freezeframe(50,Villain);
+            fightFreezeframe(50,Villain);
         }
         if (Villain.PP<=0){
-                handleDeath("Red Guy");
+                fightHandleDeath("Red Guy");
         }
     }
 }
 
-function freezeframe(time, guy){
+function fightFreezeframe(time, guy){
     freezetimer = time;
     if (time>50){background.alpha = 0;}
     createjs.Ticker.setPaused(true);
@@ -211,7 +210,7 @@ function freezeframe(time, guy){
 
 //checks for landed opponent attacks. If opponent displays a "landed attack" frame 
 //while player avatar isnt blocking, player gets stunned
-function handleVillainAttacks(event){
+function fightHandleVillainAttacks(event){
 
     if(!Hero.stunned && Hero.alive){
         hCurrent = Villain.currentFrame;
@@ -221,36 +220,46 @@ function handleVillainAttacks(event){
             Hero.stunned = true;
             Hero.stunTimer=1000;
             Hero.PP -=20;
-            freezeframe(70,Hero);
+            fightFreezeframe(70,Hero);
         }
         if(hCurrent==7 && (vCurrent != "low" && vCurrent != "dod") ){ //highattack landed
             Hero.gotoAndPlay("stunned");
             Hero.stunned = true;
             Hero.stunTimer=300;
             Hero.PP -=10;
-            freezeframe(30,Hero);
+            fightFreezeframe(30,Hero);
         } 
         if(hCurrent==12 && (vCurrent!="hig" && vCurrent!="dod")){ //normattack landed
             Hero.gotoAndPlay("stunned");
             Hero.stunned = true;
             Hero.stunTimer=500;
             Hero.PP -=10;
-            freezeframe(40,Hero);
+            fightFreezeframe(40,Hero);
         }
         if (Hero.PP<=0){
-                handleDeath("Blue Guy");
+                fightHandleDeath("Blue Guy");
         }
     }
 }
 
-function handleDeath(winner){
+function fightHandleDeath(winner){
     Hero.alive=false;
     Villain.alive=false;
     start.x=200;
     start.text = "RESTART?"; 
     start.alpha = 100;
     background.alpha=100;
-    start.addEventListener("click",handleCountdown);
+    start.addEventListener("click",fightHandleCountdown);
     stage.addChild(start);
-    createjs.Ticker.removeEventListener("tick", gameTick);
+    createjs.Ticker.removeEventListener("tick", fightGameTick);
+    fightDestroy();
+}
+
+
+function fightDestroy(){
+    stage.autoClear=true;
+    stage.enableDOMEvents(false);
+    stage.removeAllChildren();
+    stage.update();
+    cityInit(CityEnum.Discvojotsk);
 }

@@ -144,8 +144,8 @@ Opponent.prototype.tick = function (event) {
 }
 
 //creates and returns sprite sheet by reading the xml map
-Opponent.prototype.createSpriteSheet= function(){
-    var xmlDoc = loadXMLDoc("../img/A2textures.xml");
+Opponent.prototype.createSpriteSheet= function(img){
+    var xmlDoc = loadXMLDoc("content/img/sprites/A2textures.xml");
     var frames=xmlDoc.getElementsByTagName("sprite");
     var sheetFrames =[];
     for (var i = 0; i < frames.length; i++)
@@ -165,7 +165,7 @@ Opponent.prototype.createSpriteSheet= function(){
     data = {
         framerate: 7
         ,
-        images: ["../img/A2textures.png"],
+        images: [img],
         frames: sheetFrames,
         animations: {
             aggattack: {
