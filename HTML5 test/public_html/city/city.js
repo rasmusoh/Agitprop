@@ -1,46 +1,47 @@
+var cityStage;
 var city;
-var canvas;
-var stage;
 var background;
-var CityEnum = Object.freeze({"Voksoburg":1, "Discvojotsk":2});
 
-function init(city) 
+CityEnum = Object.freeze({"Voksoburg":1, "Discvojotsk":2});
+
+
+
+function cityInit(cityName) 
 {
-    this.city = city;
-    canvas = document.getElementById('cityCanvas');
-    stage = new createjs.Stage(canvas);
-    stage.enableMouseOver(20);
-    stage.mouseEventsEnabled = true;
+    city = cityName;
+    //this.canvas = document.getElementById('agitpropCanvas');
+    cityStage = new createjs.Stage("agitpropCanvas");
+    cityStage.enableMouseOver(20);
+    cityStage.mouseEventsEnabled = true;
     queue = new createjs.LoadQueue(false);
     queue.installPlugin(createjs.Sound);
-    queue.addEventListener("complete", handleComplete);
-    console.log('1');
-    if(city===CityEnum.Voksoburg)
+    queue.addEventListener("complete", cityHandleComplete);
+    if(cityName===CityEnum.Voksoburg)
     {
-        console.log('2');
         var manifest = [                
-            {id:"bg",src:"../img/bakgrunder/Ivan_Fomin_NKTP_Contest_Entry.jpg"}];
+            {id:"bg",src:"content/img/environments/Ivan_Fomin_NKTP_Contest_Entry.jpg"}];
     }
-    else if(city===CityEnum.Discvojotsk)
-    {var manifest = [                
-            {id:"bg",src:"../img/bakgrunder/moscow-palace-of-soviets-5.jpg"}];}
+    else if(cityName===CityEnum.Discvojotsk)
+    {
+        var manifest = [                
+            {id:"bg",src:"content/img/environments/moscow-palace-of-soviets-5.jpg"}];
+    }
     queue.loadManifest(manifest);
 }
 
-function handleComplete(event)
+function cityHandleComplete(event)
 {        
-    drawShapes();
-    stage.update();    
+    citydrawShapes();
+    cityStage.update();
 }
 
-function drawShapes()
+function citydrawShapes()
 {   
     background = new createjs.Bitmap(queue.getResult("bg"));        
         
     var fightPosX, fightPosY, TravelPosX, TravelPosY, TravelDestination;
     if(city===CityEnum.Voksoburg)
     {
-        console.log('4');
         fightPosX=630;
         fightPosY=520;
         travelPosX=100;
@@ -75,16 +76,17 @@ function drawShapes()
     fightShape.addEventListener('mouseover', function(){
         fightShape.alpha = 0.6;
         fightText.alpha = 1;
-        stage.update();
+        cityStage.update();
     });
     fightShape.addEventListener('mouseout', function(){
         fightShape.alpha = 0.3;
         fightText.alpha = 0;
-        stage.update();
+        cityStage.update();
     });
     
     fightShape.addEventListener('click', function(){
-        window.location.href = "..//fight/fight.html";
+        cityDestroy();
+
     });
     
     var travelShape = new createjs.Shape();
@@ -93,19 +95,27 @@ function drawShapes()
     travelShape.addEventListener('mouseover', function(){
         travelShape.alpha = 0.6;
         travelText.alpha = 1;
-        stage.update();
+        cityStage.update();
     });
     travelShape.addEventListener('mouseout', function(){
         travelShape.alpha = 0.3;
         travelText.alpha = 0;
-        stage.update();
+        cityStage.update();
     });
     
     travelShape.addEventListener('click', function(){
         init(cityToTravelTo);
         //window.location.href = "..//travel/travel.html?city="+cityToTravelTo;
     });
-    
-    stage.addChild(background, fightShape, fightText, travelShape, travelText);    
-    stage.update();          
+    cityStage.addChild(background, fightShape, fightText, travelShape, travelText)    ; //
+    cityStage.update();     
+};
+
+function cityDestroy(){
+    cityStage.autoClear=true;
+    //cityStage.enableEventsfalse;
+    cityStage.enableDOMEvents(false);
+    cityStage.removeAllChildren();
+    cityStage.update();
+    interiorInit();
 }

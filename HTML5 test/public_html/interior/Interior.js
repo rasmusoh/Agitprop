@@ -43,10 +43,10 @@
 
         blueguy.x = 300; 
         blueguy.y = 200;
-        background.scaleX=0.5;
-        background.scaleY=0.5;
-        foreground.scaleX=0.5;
-        foreground.scaleY=0.5;
+        background.scaleX=0.7;
+        background.scaleY=0.7;
+        foreground.scaleX=0.7;
+        foreground.scaleY=0.7;
 
         interiorStage.addChild(background); //
         interiorStage.addChild(blueguy);
