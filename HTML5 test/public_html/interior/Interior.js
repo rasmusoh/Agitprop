@@ -5,6 +5,7 @@
     var tick;
     var dialogue;
     var battleWon;
+    var isPaused;
 
     InteriorEnum = Object.freeze({"Voksoburg":1, "Discvojotsk":2});
 
@@ -29,29 +30,39 @@
     }
 
     function interiorHandleComplete(event)
-    {        
-        interiordrawShapes();
+    {   
+        isPaused = false;
         battleWon = false;
+        interiordrawShapes();
+        document.onkeydown = interiorHandleKeyDown;
         createjs.Ticker.addEventListener("tick",interiorTick);
         interiorStage.update();
     }
 
     function interiordrawShapes()
     {   
-        dialogue = new createjs.Text();
-        dialogue.text = "ARGUE?";
-        dialogue.font = "96px Oswald";
-        dialogue.color = "#FF7700";
-        dialogue.alpha = 0;
-        dialogue.x=300;
-        dialogue.y=400;
+        dialogue1 = new createjs.Text();
+        dialogue1.text = "ARGUE?";
+        dialogue1.font = "96px Oswald";
+        dialogue1.color = "#FF7700";
+        dialogue1.alpha = 0;
+        dialogue1.x=0;
+        dialogue1.y=0;
+        
+        dialogue2 = new createjs.Text();
+        dialogue2.text = "NEVERMIND";
+        dialogue2.font = "96px Oswald";
+        dialogue2.color = "#FF7700";
+        dialogue2.alpha = 0;
+        dialogue2.x=0;
+        dialogue2.y=100;
         
         background = new createjs.Bitmap(queue.getResult("bg"));
         foreground = new createjs.Bitmap(queue.getResult("fg")); 
         avatar = new createjs.Bitmap(queue.getResult("avatar")); 
         blueguy = new createjs.Bitmap(queue.getResult("blueguy"));
         
-        avatar.x = 100;
+        avatar.x = 0;
         avatar.y = 250;
         avatar.scaleX=0.5;
         avatar.scaleY=0.5;
@@ -71,49 +82,79 @@
         interiorStage.addChild(blueguy);
         interiorStage.addChild(avatar);
         interiorStage.addChild(foreground);
-        interiorStage.addChild(dialogue);
+        interiorStage.addChild(dialogue1);
+        interiorStage.addChild(dialogue2);
         interiorStage.update();     
     };
-
-    function interiorDestroy()
-    {
-        interiorStage.autoClear=true;
-        //interiorStage.enableEventsfalse;
-        interiorStage.enableDOMEvents(false);
-        interiorStage.removeAllChildren();
-        interiorStage.update();
-        fightInit();
-    }
     
     function interiorTick(event)
     {
         if(!createjs.Ticker.getPaused()){
-            background.x-=event.delta/50; 
-            foreground.x-=event.delta/40;
-            blueguy.x-=event.delta/20;
+            rekt = foreground.getTransformedBounds();
+            if(rekt.x+rekt.width>800 && avatar.x>100){
+                background.x-=event.delta/13; 
+                foreground.x-=event.delta/10;
+                blueguy.x-=event.delta/10;
+            }
+            else{
+                avatar.x+=event.delta/10;
+            }
+
             interiorStage.update();
             if(battleWon==false && blueguy.x-avatar.x<100){
                 createjs.Ticker.setPaused(true);
-                dialogue.alpha=100;
-                dialogue.addEventListener("click",interiorGoFight)
+                dialogue1.alpha=100;
+                dialogue1.addEventListener("click",interiorGoFight)
+                dialogue2.alpha=100;
+                dialogue2.addEventListener("click",backToInterior)
                 interiorStage.update();
+            }
+            if(avatar.x > 800)
+            {
+                interiorGoCity();
+            }
+        }
+    }
+    
+    function interiorHandleKeyDown(e) {
+        if(e.keyCode==32){
+            if(isPaused){
+                isPaused=false;
+                createjs.Ticker.setPaused(false);
+            }
+            else{
+                isPaused=true;
+                createjs.Ticker.setPaused(true);
             }
         }
     }
     
     function interiorGoFight()
     {
-        //interiorStage.autoClear=true;
-        //interiorStage.enableDOMEvents(false);
-        //interiorStage.removeAllChildren();
-        //interiorStage.update();
         createjs.Ticker.removeAllEventListeners();
         createjs.Ticker.setPaused(false);
         fightInit();
     }
     
+    function interiorGoCity(city)
+    {
+
+        interiorStage.autoClear = true;
+        interiorStage.removeAllChildren = true;
+        interiorStage.update();
+        createjs.Ticker.removeAllEventListeners();
+        createjs.Ticker.setPaused(false);
+        cityInit(2);
+    }
+    
     function backToInterior()
     {
+        dialogue1.alpha = 0;
+        dialogue1.removeAllEventListeners();
+        dialogue2.alpha = 0;
+        dialogue2.removeAllEventListeners();
         battleWon = true;
         createjs.Ticker.addEventListener("tick",interiorTick);
+        createjs.Ticker.setPaused(false);
+        interiorStage.update();     
     }

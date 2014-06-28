@@ -249,7 +249,7 @@ function fightHandleDeath(winner){
     start.text = "RESTART?"; 
     start.alpha = 100;
     background.alpha=100;
-    start.addEventListener("click",fightHandleCountdown);
+    //start.addEventListener("click",fightHandleCountdown);
     stage.addChild(start);
     createjs.Ticker.removeEventListener("tick", fightGameTick);
     fightDestroy();
@@ -257,9 +257,12 @@ function fightHandleDeath(winner){
 
 
 function fightDestroy(){
+    createjs.Ticker.removeAllEventListeners();
+    document.onkeydown=null;    
+    document.onkeyup=null;
     stage.autoClear=true;
     stage.enableDOMEvents(false);
     stage.removeAllChildren();
     stage.update();
-    backtoInterior();
+    backToInterior();
 }
