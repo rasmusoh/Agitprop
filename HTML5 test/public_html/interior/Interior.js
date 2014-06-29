@@ -6,6 +6,7 @@
     var dialogue;
     var battleWon;
     var isPaused;
+    var armRotateBack;
 
     InteriorEnum = Object.freeze({"Voksoburg":1, "Discvojotsk":2});
 
@@ -24,8 +25,9 @@
         var manifest = [                
             {id:"bg",src:"content/img/environments/småstad.png"},
             {id:"fg",src:"content/img/environments/staket.png"},
-            {id:"avatar",src:"content/img/sprites/AVATAR W LEGS.png"},
-            {id:"blueguy",src:"content/img/sprites/A2textures.png"}];
+            {id:"avatar",src:"content/img/sprites/guywalk.png"},
+            {id:"blueguy",src:"content/img/sprites/bluestand.png"},
+            {id:"blueguyarm",src:"content/img/sprites/smoking arm.png"}];
         queue.loadManifest(manifest);
     }
 
@@ -45,8 +47,10 @@
         
         background = new createjs.Bitmap(queue.getResult("bg"));
         foreground = new createjs.Bitmap(queue.getResult("fg")); 
-        avatar = new createjs.Bitmap(queue.getResult("avatar")); 
-        blueguy = new createjs.Bitmap(queue.getResult("blueguy"));
+        blueguy = new createjs.Bitmap(queue.getResult("blueguy")); 
+        blueguyarm = new createjs.Bitmap(queue.getResult("blueguyarm")); 
+        sheet = interiorCreateSpriteSheet(queue.getResult("avatar"));
+        avatar = new createjs.Sprite(sheet ,"walk");
         
         avatar.x = 0;
         avatar.y = 250;
@@ -54,17 +58,24 @@
         avatar.scaleY=0.5;
 
         blueguy.x = 900; 
-        blueguy.y = 250;
+        blueguy.y = 260;
         blueguy.scaleX=0.5;
         blueguy.scaleY=0.5;
-        blueguy.sourceRect = new createjs.Rectangle(641,1216,439,376);
+        
+        
+        blueguyarm.x = 1000; 
+        blueguyarm.y = 420;
+        blueguyarm.scaleX=0.5;
+        blueguyarm.scaleY=0.5;
+        blueguyarm.rotation = 180;
+        armRotateBack = false;
         
         background.scaleX=0.8;
         background.scaleY=0.8;
         foreground.scaleX=0.8;
         foreground.scaleY=0.8;
 
-        interiorStage.addChild(background,blueguy, avatar, foreground, 
+        interiorStage.addChild(background,blueguy, blueguyarm, avatar, foreground, 
             dialogue.getDialogue());
  //           dia2);
         interiorStage.update();     
@@ -72,21 +83,22 @@
     
     function interiorTick(event)
     {
-        if(!createjs.Ticker.getPaused()){
+        if(!isPaused && !createjs.Ticker.getPaused()){
             rekt = foreground.getTransformedBounds();
             if(rekt.x+rekt.width>800 && avatar.x>100){
                 background.x-=event.delta/13; 
                 foreground.x-=event.delta/10;
                 blueguy.x-=event.delta/10;
+                blueguyarm.x-=event.delta/10;
             }
             else{
                 avatar.x+=event.delta/10;
             }
 
-            interiorStage.update();
-            if(battleWon==false && blueguy.x-avatar.x<100){
+            if(battleWon==false && blueguy.x-avatar.x<143){
                 console.log('ttTalk');
                 createjs.Ticker.setPaused(true);
+                avatar.gotoAndPlay("stand");
                 dialogue.addOption("ARGUE?",interiorGoFight);                                                
                 dialogue.addOption("NEVERMIND",backToInterior);
                 interiorStage.update();
@@ -96,17 +108,29 @@
                 interiorGoCity();
             }
         }
+        
+        if(armRotateBack){
+            blueguyarm.rotation-=1.5;
+            armRotateBack = (blueguyarm.rotation>180);
+        }
+        else{
+            blueguyarm.rotation+=1.5;
+            armRotateBack = (blueguyarm.rotation>220);
+        }
+        interiorStage.update(event);
     }
     
     function interiorHandleKeyDown(e) {
-        if(e.keyCode==32){
+        if(e.keyCode==32 && !createjs.Ticker.getPaused()){
             if(isPaused){
                 isPaused=false;
-                createjs.Ticker.setPaused(false);
+                //createjs.Ticker.setPaused(false);
+                avatar.gotoAndPlay("walk");
             }
             else{
                 isPaused=true;
-                createjs.Ticker.setPaused(true);
+                //createjs.Ticker.setPaused(true);
+                avatar.gotoAndPlay("stand");
             }
         }
     }
@@ -139,6 +163,41 @@
         battleWon = true;
         createjs.Ticker.addEventListener("tick",interiorTick);
         createjs.Ticker.setPaused(false);
+        avatar.gotoAndPlay("walk");
         interiorStage.update();     
     }
+    
+    interiorCreateSpriteSheet = function(img)
+    {
+        var xmlDoc = loadXMLDoc("content/img/sprites/guywalk.xml");
+        var frames=xmlDoc.getElementsByTagName("sprite");
+        var sheetFrames =[];
+        for (var i = 0; i < frames.length; i++)
+        {
+          var frame = frames[i].attributes;
+          // Access each of the data values and construct the sourceRect.
+          var Name = frame.getNamedItem("n").nodeValue;
+          var x = frame.getNamedItem("x").nodeValue;
+          var y = frame.getNamedItem("y").nodeValue;
+          var w = frame.getNamedItem("w").nodeValue;
+          var h = frame.getNamedItem("h").nodeValue;
+          //var oX = frame.getNamedItem("offsetX").nodeValue; // custom values added on to prevent animation from jumping around
+          //var oY = frame.getNamedItem("offsetY").nodeValue; // custom values added on to prevent animation from jumping around   
+          sheetFrames.push([x,y,w,h]);
+        }
+        //puts together parameter object
+        data = {
+            framerate: 10,
+            images: [img],
+            frames: sheetFrames,
+            animations: {
+                walk: {
+                    frames:[4,5,6,7,0,1,2,3],
+                },
+                stand: 8
+            }
+        }
+        return new createjs.SpriteSheet(data); 
+    }
 
+ 
