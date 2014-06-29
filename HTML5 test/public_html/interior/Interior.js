@@ -136,7 +136,7 @@
         fightInit();
     }
     
-    function interiorGoCity(city)
+    function interiorGoCity()
     {
 
         interiorStage.autoClear = true;
@@ -144,7 +144,7 @@
         interiorStage.update();
         createjs.Ticker.removeAllEventListeners();
         createjs.Ticker.setPaused(false);
-        cityInit(2);
+        city.init(2);
     }
     
     function backToInterior()

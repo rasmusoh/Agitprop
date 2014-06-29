@@ -5,7 +5,3 @@
  */
 
 
-function gogogo ()
-{
-    city.init(city.cityEnum.Voksoburg);
-}
