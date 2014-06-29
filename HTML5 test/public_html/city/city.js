@@ -1,15 +1,24 @@
-var city =(function(){
+var City =(function(){
    var ci={},
    Stage,
-   city,
+   opts ={},
+   startTimer=0,
+   isFading = true,
+   cityName,
    background,    
    queue;
    
    ci.cityEnum = Object.freeze({"Voksoburg":1, "Discvojotsk":2});
-
-   ci.init = function (cityName) 
+    
+   ci.init = function (cName, optionals) 
    {
-       city = cityName;        
+       if(optionals)
+       {
+        opts = optionals;    
+       }
+       
+       
+       cityName = cName;        
        //canvas = document.getElementById('agitpropCanvas');
        Stage = new createjs.Stage("agitpropCanvas");
        Stage.enableMouseOver(20);
@@ -30,16 +39,42 @@ var city =(function(){
        queue.loadManifest(manifest);                
    };
 
+   function fadeIn()
+   {       
+       if (opts['fader'])
+       {            
+           opts['fader'](Stage,startTimer,isFading,postFade, true);                      
+       }
+       else
+       {
+           postFade();
+       }       
+   }
+   
+    function fadeOut()
+   {       
+       Stage.removeChild(fightText, travelText, fightShape, travelShape);
+       if (opts['fader'])
+       {                          
+           opts['fader'](Stage,startTimer,isFading,destroy, false);           
+       }
+       else
+       {
+           destroy();
+       }
+   }
    function handleComplete (event)
-   {   
+   {          
        drawShapes();        
    };
 
    function drawShapes()
-   {                
+   {   
+       console.log('city.drawshapes');
        background = new createjs.Bitmap(queue.getResult("bg"));        
+       
        var fightPosX, fightPosY, travelPosX, travelPosY, cityToTravelTo;
-       if(city===1)
+       if(cityName===1)
        {
            fightPosX=630;
            fightPosY=520;
@@ -47,7 +82,7 @@ var city =(function(){
            travelPosY=470;
            cityToTravelTo = 2;
        }
-       else if(city===2)
+       else if(cityName===2)
        {
            fightPosX=50;
            fightPosY=520;
@@ -83,7 +118,7 @@ var city =(function(){
            Stage.update();
        });
        fightShape.addEventListener('click', function(){
-           destroy();
+           fadeOut();           
        });
 
        travelShape = new createjs.Shape();
@@ -103,18 +138,30 @@ var city =(function(){
        travelShape.addEventListener('click', function(){
            alert('no hable');            
        });
-       Stage.addChild(background, fightShape, fightText, travelShape, travelText);        
+       
+        
+        
+       
+       Stage.addChild(background)
+       
+       fadeIn();       
+   }
+   
+   function postFade()
+   {
+       Stage.addChild(fightShape, fightText, travelShape, travelText);        
        Stage.addChild(travelText);
        Stage.update();  
-   }
-
-   function destroy (){
+   }   
+   
+   function destroy ()
+   {
        Stage.autoClear=true;
        //cityStage.enableEventsfalse;
        Stage.enableDOMEvents(false);
        Stage.removeAllChildren();
        Stage.update();
        interiorInit();
-   };
+   };      
    return ci;
 }());

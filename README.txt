@@ -1,5 +1,20 @@
 
-vad är gjort:
+##################
+ATT GÖRA: FEATURES
+##################
+-Pokemonzoom
+-over-the-hills-dollyzoom (när man kommer till städer)
+-travelmode m händelser
+
+##################
+ATT GÖRA: STRUKTUR
+##################
+-Göra interior objektorienterad (bg/fg-objekt som fixar parallax, animationsobjekt nåde för sprites och, easeljs-animerade)
+
+
+#########
+FIGHTMODE
+#########
 
 Ett litet fightspel i agitpropkläder. Spelaren kontrollerar röd och ska få ner den blå gubbens 
 persuasion-bar till noll.
@@ -27,7 +42,7 @@ Inspiration/riktlinje för spelkänslan är typ "mike tyson's punch out"
 
 
 
-Vad ska man göra nu:
+Vad ska man göra på fightmode:
 
 - Effekter. Två problem: Inte tillräckligt tydligt visuellt när man träffar/missar, och highstance 
   lowstancegrejen är inte tillräckligt intuitiv/lättavläst. Man kan kanske göra "prabubblor", som 
@@ -46,5 +61,3 @@ Vad ska man göra nu:
 - göra title screen
 
 - (ev) snyggare healthbars/stamina bar
-
-- börja på worldmode (kanske saxa kod från ohlook då denna hade parallaxgrejen down)

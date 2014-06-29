@@ -150,7 +150,7 @@
         interiorStage.update();
         createjs.Ticker.removeAllEventListeners();
         createjs.Ticker.setPaused(false);
-        city.init(2);
+        City.init(City.cityEnum.Discvojotsk, {"fader":fadeToFromBlack});
     }
     
     function backToInterior()
