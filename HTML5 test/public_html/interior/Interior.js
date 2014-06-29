@@ -41,21 +41,7 @@
 
     function interiordrawShapes()
     {   
-        dialogue1 = new createjs.Text();
-        dialogue1.text = "ARGUE?";
-        dialogue1.font = "96px Oswald";
-        dialogue1.color = "#FF7700";
-        dialogue1.alpha = 0;
-        dialogue1.x=0;
-        dialogue1.y=0;
-        
-        dialogue2 = new createjs.Text();
-        dialogue2.text = "NEVERMIND";
-        dialogue2.font = "96px Oswald";
-        dialogue2.color = "#FF7700";
-        dialogue2.alpha = 0;
-        dialogue2.x=0;
-        dialogue2.y=100;
+        dialogue = new Dialogue(100,100,"50px Oswald");
         
         background = new createjs.Bitmap(queue.getResult("bg"));
         foreground = new createjs.Bitmap(queue.getResult("fg")); 
@@ -78,12 +64,9 @@
         foreground.scaleX=0.8;
         foreground.scaleY=0.8;
 
-        interiorStage.addChild(background); //
-        interiorStage.addChild(blueguy);
-        interiorStage.addChild(avatar);
-        interiorStage.addChild(foreground);
-        interiorStage.addChild(dialogue1);
-        interiorStage.addChild(dialogue2);
+        interiorStage.addChild(background,blueguy, avatar, foreground, 
+            dialogue.getDialogue());
+ //           dia2);
         interiorStage.update();     
     };
     
@@ -102,11 +85,10 @@
 
             interiorStage.update();
             if(battleWon==false && blueguy.x-avatar.x<100){
+                console.log('ttTalk');
                 createjs.Ticker.setPaused(true);
-                dialogue1.alpha=100;
-                dialogue1.addEventListener("click",interiorGoFight)
-                dialogue2.alpha=100;
-                dialogue2.addEventListener("click",backToInterior)
+                dialogue.addOption("ARGUE?",interiorGoFight);                                                
+                dialogue.addOption("NEVERMIND",backToInterior);
                 interiorStage.update();
             }
             if(avatar.x > 800)
@@ -149,12 +131,14 @@
     
     function backToInterior()
     {
-        dialogue1.alpha = 0;
-        dialogue1.removeAllEventListeners();
-        dialogue2.alpha = 0;
-        dialogue2.removeAllEventListeners();
+//        dialogue1.alpha = 0;
+//        dialogue1.removeAllEventListeners();
+//        dialogue2.alpha = 0;
+//        dialogue2.removeAllEventListeners();
+        dialogue.destroy();
         battleWon = true;
         createjs.Ticker.addEventListener("tick",interiorTick);
         createjs.Ticker.setPaused(false);
         interiorStage.update();     
     }
+
