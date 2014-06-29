@@ -1,26 +1,19 @@
 var Menu =(function(){
     var ci={},
     Stage,
-    background;
+    background,
+    bikeguy,
+    starttext;
     
     ci.init = function () 
-   {
-       if(optionals)
-       {
-        opts = optionals;    
-       }
-       
-       
-       cityName = cName;        
+   {  
        //canvas = document.getElementById('agitpropCanvas');
        Stage = new createjs.Stage("agitpropCanvas");
-       Stage.enableMouseOver(20);
-       Stage.mouseEventsEnabled = true;
        queue = new createjs.LoadQueue(false);
        queue.installPlugin(createjs.Sound);
        queue.addEventListener("complete", handleComplete);
         var manifest = [                
-            {id:"bg",src:"content/img/environments/Ivan_Fomin_NKTP_Contest_Entry.jpg"},
+            {id:"bg",src:"content/img/environments/STARTSCREEN.jpg"},
             {id:"bikeguy", src:"content/img/sprites/bikeguy.png"}];           
        queue.loadManifest(manifest);                
    };
@@ -33,8 +26,43 @@ var Menu =(function(){
    function drawShapes()
    {
        background = new createjs.Bitmap(queue.getResult("bg"));
-       bikeguy
+       background.x = -250;
+       background.scaleX = 0.7;
+       background.scaleY = 0.8;
+       
+       var sheet = CreateSpriteSheet(queue.getResult("bikeguy"));
+       bikeguy = new createjs.Sprite(sheet,"peddle");
+       bikeguy.x = 800;
+       bikeguy.y = 315;
+       bikeguy.scaleX = 0.5;
+       bikeguy.scaleY = 0.5;
+       
+       starttext = new Dialogue(160,400,"96px Oswald");
+       starttext.addOption("START GAME", startGame)
+       
+       Stage.addChild(background,bikeguy, starttext.getDialogue());
+       Stage.update();
+       
+       createjs.Ticker.addEventListener("tick",tick)
    }
+   
+   function tick(e)
+   {
+       bikeguy.x-=e.delta/35;
+       Stage.update(e);
+   }
+   
+   function startGame()
+   {
+       createjs.Ticker.removeAllEventListeners();
+       starttext.destroy();
+       Stage.autoClear=true;
+       Stage.enableDOMEvents(false);
+       Stage.removeAllChildren();
+       Stage.update();
+       City.init(City.cityEnum.Voksoburg, {"fader":fadeToFromBlack}); 
+   }
+   
     
     function CreateSpriteSheet(img)
     {
@@ -56,16 +84,16 @@ var Menu =(function(){
         }
         //puts together parameter object
         data = {
-            framerate: 10,
+            framerate: 3,
             images: [img],
             frames: sheetFrames,
             animations: {
-                walk: {
+                peddle: {
                     frames:[0,1],
                 }
             }
         }
         return new createjs.SpriteSheet(data); 
     }
-    
+    return ci;
 }());

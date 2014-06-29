@@ -10,7 +10,8 @@ ATT GÖRA: FEATURES
 ATT GÖRA: STRUKTUR
 ##################
 -Göra interior objektorienterad (bg/fg-objekt som fixar parallax, animationsobjekt nåde för sprites och, easeljs-animerade)
-
+-namespaces på interior/utility/fight
+- createspritesheet som utility, specs för animationer appendade i xml
 
 #########
 FIGHTMODE
