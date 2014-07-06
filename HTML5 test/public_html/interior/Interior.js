@@ -222,7 +222,7 @@ var Interior = (function(){
         else if (opts['fader'])
         {            
             console.log('interior.ifFader');
-            opts['fader'](stage,startTimer,isFading,postFadeIn, true);                      
+            opts['fader'](stage, [background, foreground], startTimer,isFading,postFadeIn, true);                      
         }
         else
         {
@@ -235,7 +235,7 @@ var Interior = (function(){
         stage.removeChild(fightText, travelText, fightShape, travelShape);
         if (opts['fader'])
         {                          
-            opts['fader'](stage,startTimer,isFading,goToCity, false);           
+            opts['fader'](stage, [background, foreground],startTimer,isFading,goToCity, false);           
         }
         else
         {

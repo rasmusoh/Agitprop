@@ -16,9 +16,7 @@ var City =(function(){
          opts = optionals;    
         }
 
-
         cityName = cName;        
-        //canvas = document.getElementById('agitpropCanvas');
         stage = new createjs.Stage("agitpropCanvas");
         stage.enableMouseOver(20);
         stage.mouseEventsEnabled = true;
@@ -42,11 +40,11 @@ var City =(function(){
     {      
         if (opts['wellcome'])
         {
-            opts['wellcome'](stage,startTimer,isFading,postFadeIn);
+            opts['wellcome'](background, stage,startTimer,isFading,postFadeIn);
         }  
         else if (opts['fader'])
         {            
-            opts['fader'](stage,startTimer,isFading,postFadeIn, true);                      
+            opts['fader'](stage, [background],startTimer,isFading,postFadeIn, true);                      
         }
         else
         {
@@ -59,7 +57,7 @@ var City =(function(){
         stage.removeChild(fightText, travelText, fightShape, travelShape);
         if (opts['fader'])
         {                          
-            opts['fader'](stage,startTimer,isFading,(function(){destroy(); whatToInitAfter();}), false);           
+            opts['fader'](stage, [background],startTimer,isFading,(function(){destroy(); whatToInitAfter();}), false);           
         }
         else
         {
