@@ -60,7 +60,7 @@ var Menu =(function(){
        Stage.enableDOMEvents(false);
        Stage.removeAllChildren();
        Stage.update();
-       City.init(City.cityEnum.Voksoburg, {"fader":fadeToFromBlack}); 
+       City.init(City.cityEnum.Voksoburg, {"fader":fadeToFromBlack, "wellcome":wellcomeToVoksoburg}); 
    }
    
     

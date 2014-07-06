@@ -40,8 +40,12 @@ var City =(function(){
    };
 
    function fadeIn()
-   {       
-       if (opts['fader'])
+   {      
+       if (opts['wellcome'])
+       {
+           opts['wellcome'](Stage,startTimer,isFading,postFade, false);
+       }  
+       else if (opts['fader'])
        {            
            opts['fader'](Stage,startTimer,isFading,postFade, true);                      
        }
