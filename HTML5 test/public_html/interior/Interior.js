@@ -20,26 +20,30 @@ var Interior = (function(){
     inter.init = function (interiorName, optionals) 
     {
         interior = interiorName;
-        opts = optionals;
-     
-        //this.canvas = document.getElementById('agitpropCanvas');
+        opts = optionals;        
+             
         stage = new createjs.Stage("agitpropCanvas");
         stage.enableMouseOver(20);
         stage.mouseEventsEnabled = true;
-        queue = new createjs.LoadQueue(false);
-        queue.installPlugin(createjs.Sound);
+        queue = new createjs.LoadQueue(true);        
         queue.addEventListener("complete", handleComplete);
         var manifest = [                
             {id:"bg",src:"content/img/environments/småstad.png"},
             {id:"fg",src:"content/img/environments/staket.png"},
             {id:"avatar",src:"content/img/sprites/guywalk.png"},
             {id:"blueguy",src:"content/img/sprites/bluestand.png"},
-            {id:"blueguyarm",src:"content/img/sprites/smoking arm.png"}];
+            {id:"blueguyarm",src:"content/img/sprites/smoking arm.png"},            
+            {id:"crowd", src:"content/sound/crowd.mp3"}];
+        queue.installPlugin(createjs.Sound);
         queue.loadManifest(manifest);
+        
     }
 
     function handleComplete(event)
     {   
+        crowd = createjs.Sound.createInstance("crowd");        
+        crowd.volume= 0.2;       
+        crowd.play({loop:-1});
         isPaused = false;
         battleWon = false;
         drawShapes();        
@@ -56,7 +60,7 @@ var Interior = (function(){
     }
 
     function drawShapes()
-    {   
+    {           
         dialogue = new Dialogue(100,100,"50px Oswald");
         
         background = new createjs.Bitmap(queue.getResult("bg"));

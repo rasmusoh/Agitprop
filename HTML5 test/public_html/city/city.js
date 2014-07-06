@@ -20,19 +20,21 @@ var City =(function(){
         stage = new createjs.Stage("agitpropCanvas");
         stage.enableMouseOver(20);
         stage.mouseEventsEnabled = true;
-        queue = new createjs.LoadQueue(false);
-        queue.installPlugin(createjs.Sound);
+        queue = new createjs.LoadQueue(false);        
         queue.addEventListener("complete", handleComplete);
         if(cityName===Utility.cityEnum.Voksoburg)
         {
             var manifest = [                
-                {id:"bg",src:"content/img/environments/Ivan_Fomin_NKTP_Contest_Entry.jpg"}];
+                {id:"bg",src:"content/img/environments/Ivan_Fomin_NKTP_Contest_Entry.jpg"},
+                {id:"bass",src:"content/sound/VFX2 Sub 13.wav"}
+                ];
         }
         else if(cityName===Utility.cityEnum.Discvojotsk)
         {
             var manifest = [                
                 {id:"bg",src:"content/img/environments/moscow-palace-of-soviets-5.jpg"}];
         }        
+        queue.installPlugin(createjs.Sound);
         queue.loadManifest(manifest);                
     };
 
@@ -67,6 +69,8 @@ var City =(function(){
     }
     function handleComplete (event)
     {          
+        var bass = createjs.Sound.play("bass");
+        bass.volume = 0.5;
         drawShapes();        
     };
 
