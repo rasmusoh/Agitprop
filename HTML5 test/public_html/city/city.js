@@ -164,7 +164,7 @@ var City =(function(){
        Stage.enableDOMEvents(false);
        Stage.removeAllChildren();
        Stage.update();
-       interiorInit();
+       Interior.init();
    };      
    return ci;
 }());

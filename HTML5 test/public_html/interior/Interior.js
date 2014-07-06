@@ -1,23 +1,24 @@
+var Interior = (function(){
+    var inter = {},
+    stage,
+    interior,
+    background,
+    tick,
+    dialogue,
+    battleWon,
+    isPaused,
+    armRotateBack;
 
-    var interiorStage;
-    var interior;
-    var background;
-    var tick;
-    var dialogue;
-    var battleWon;
-    var isPaused;
-    var armRotateBack;
-
-    function interiorInit(interiorName) 
+    inter.init = function (interiorName) 
     {
         interior = interiorName;
         //this.canvas = document.getElementById('agitpropCanvas');
-        interiorStage = new createjs.Stage("agitpropCanvas");
-        interiorStage.enableMouseOver(20);
-        interiorStage.mouseEventsEnabled = true;
+        stage = new createjs.Stage("agitpropCanvas");
+        stage.enableMouseOver(20);
+        stage.mouseEventsEnabled = true;
         queue = new createjs.LoadQueue(false);
         queue.installPlugin(createjs.Sound);
-        queue.addEventListener("complete", interiorHandleComplete);
+        queue.addEventListener("complete", handleComplete);
         var manifest = [                
             {id:"bg",src:"content/img/environments/småstad.png"},
             {id:"fg",src:"content/img/environments/staket.png"},
@@ -27,17 +28,17 @@
         queue.loadManifest(manifest);
     }
 
-    function interiorHandleComplete(event)
+    function handleComplete(event)
     {   
         isPaused = false;
         battleWon = false;
-        interiordrawShapes();
-        document.onkeydown = interiorHandleKeyDown;
-        createjs.Ticker.addEventListener("tick",interiorTick);
-        interiorStage.update();
+        drawShapes();
+        document.onkeydown = handleKeyDown;
+        createjs.Ticker.addEventListener("tick",tick);
+        stage.update();
     }
 
-    function interiordrawShapes()
+    function drawShapes()
     {   
         dialogue = new Dialogue(100,100,"50px Oswald");
         
@@ -45,7 +46,7 @@
         foreground = new createjs.Bitmap(queue.getResult("fg")); 
         blueguy = new createjs.Bitmap(queue.getResult("blueguy")); 
         blueguyarm = new createjs.Bitmap(queue.getResult("blueguyarm")); 
-        sheet = interiorCreateSpriteSheet(queue.getResult("avatar"));
+        sheet = createSpriteSheet(queue.getResult("avatar"));
         avatar = new createjs.Sprite(sheet ,"walk");
         
         avatar.x = 0;
@@ -71,13 +72,13 @@
         foreground.scaleX=0.8;
         foreground.scaleY=0.8;
 
-        interiorStage.addChild(background,blueguy, blueguyarm, avatar, foreground, 
+        stage.addChild(background,blueguy, blueguyarm, avatar, foreground, 
             dialogue.getDialogue());
  //           dia2);
-        interiorStage.update();     
+        stage.update();     
     };
     
-    function interiorTick(event)
+    function tick(event)
     {
         if(!isPaused && !createjs.Ticker.getPaused()){
             rekt = foreground.getTransformedBounds();
@@ -95,13 +96,13 @@
                 console.log('ttTalk');
                 createjs.Ticker.setPaused(true);
                 avatar.gotoAndPlay("stand");
-                dialogue.addOption("ARGUE?",interiorGoFight);                                                
+                dialogue.addOption("ARGUE?",goFight);                                                
                 dialogue.addOption("NEVERMIND",backToInterior);
-                interiorStage.update();
+                stage.update();
             }
             if(avatar.x > 800)
             {
-                interiorGoCity();
+                goToCity();
             }
         }
         
@@ -113,10 +114,10 @@
             blueguyarm.rotation+=1.5;
             armRotateBack = (blueguyarm.rotation>220);
         }
-        interiorStage.update(event);
+        stage.update(event);
     }
     
-    function interiorHandleKeyDown(e) {
+    function handleKeyDown(e) {
         if(e.keyCode==32 && !createjs.Ticker.getPaused()){
             if(isPaused){
                 isPaused=false;
@@ -131,19 +132,19 @@
         }
     }
     
-    function interiorGoFight()
+    function goFight()
     {
         createjs.Ticker.removeAllEventListeners();
         createjs.Ticker.setPaused(false);
         fightInit();
     }
     
-    function interiorGoCity()
+    function goToCity()
     {
 
-        interiorStage.autoClear = true;
-        interiorStage.removeAllChildren = true;
-        interiorStage.update();
+        stage.autoClear = true;
+        stage.removeAllChildren = true;
+        stage.update();
         createjs.Ticker.removeAllEventListeners();
         createjs.Ticker.setPaused(false);
         City.init(Utility.cityEnum.Voksoburg, {"fader":fadeToFromBlack});
@@ -157,13 +158,13 @@
 //        dialogue2.removeAllEventListeners();
         dialogue.destroy();
         battleWon = true;
-        createjs.Ticker.addEventListener("tick",interiorTick);
+        createjs.Ticker.addEventListener("tick",tick);
         createjs.Ticker.setPaused(false);
         avatar.gotoAndPlay("walk");
-        interiorStage.update();     
+        stage.update();     
     }
     
-    interiorCreateSpriteSheet = function(img)
+    createSpriteSheet = function(img)
     {
         var xmlDoc = loadXMLDoc("content/img/sprites/guywalk.xml");
         var frames=xmlDoc.getElementsByTagName("sprite");
@@ -195,5 +196,7 @@
         }
         return new createjs.SpriteSheet(data); 
     }
+    return inter;
+ }());
 
  
