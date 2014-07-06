@@ -45,11 +45,13 @@ var City =(function(){
             opts['wellcome'](background, stage,startTimer,isFading,postFadeIn);
         }  
         else if (opts['fader'])
-        {            
+        {
+            stage.addChild(background);
             opts['fader'](stage, [background],startTimer,isFading,postFadeIn, true);                      
         }
         else
         {
+            stage.addChild(background);
             postFadeIn();
         }       
     }
@@ -142,12 +144,7 @@ var City =(function(){
 
         travelShape.addEventListener('click', function(){
             alert('no hable');            
-        });
-
-
-
-
-        stage.addChild(background)
+        });     
 
         fadeIn();       
     }
@@ -160,8 +157,7 @@ var City =(function(){
     }   
 
     function destroy ()
-    {
-        console.log('city.dest');
+    {        
         stage.autoClear=true;
         //citystage.enableEventsfalse;
         stage.enableDOMEvents(false);

@@ -9,7 +9,7 @@ function wellcomeToVoksoburg(background, stage, startTimer, isFading, postFade)
    char.y = 500;
    char.scaleX = 0.3;
    char.scaleY = 0.3;
-   stage.addChild(foreGround, char);
+   
    var filter = new createjs.ColorFilter(0,0,0,1);
    fadeArray.forEach(function(entry) {
            entry.filters = [filter];            
@@ -20,6 +20,9 @@ function wellcomeToVoksoburg(background, stage, startTimer, isFading, postFade)
     createjs.Ticker.addEventListener("tick", tickToShow);
     background.filters =[blurFilter];
     background.cache(0,0,background.image.width,background.image.height);
+    
+    stage.addChild(background, foreGround, char);
+    
     isFading =true;
     function tickToShow(event){
         startTimer +=event.delta;                             

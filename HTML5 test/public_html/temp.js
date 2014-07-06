@@ -1,5 +1,5 @@
 function gogogo ()
-{    
-    console.log('gogogo');
+{        
     Menu.init();
+    //Interior.init("first",{"fader":fadeToFromBlack})
 }

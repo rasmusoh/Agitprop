@@ -15,7 +15,16 @@ var Interior = (function(){
     armRotateBack,
     opts,
     startTimer=0,
-    isFading=true;
+    isFading=true,
+    person1,
+    person2,
+    person3,
+    cat,
+    catWalksLeft = 1,
+    catSpeedMultiplier = 8,
+    catcatchTip,
+    stateEnum = Object.freeze({"Walking":1, "Talking":2, "Standing":3}),
+    avatarState=stateEnum.Walking;
 
     inter.init = function (interiorName, optionals) 
     {
@@ -50,8 +59,7 @@ var Interior = (function(){
     }
     
     function postFadeIn()
-    {
-        console.log('interior.postFadeIn');
+    {        
         document.onkeydown = handleKeyDown;
         createjs.Ticker.addEventListener("tick",tick);
         avatar.gotoAndPlay("walk");
@@ -69,6 +77,39 @@ var Interior = (function(){
         blueguyarm = new createjs.Bitmap(queue.getResult("blueguyarm")); 
         sheet = createSpriteSheet(queue.getResult("avatar"));
         avatar = new createjs.Sprite(sheet ,"stand");
+               
+        person1 = new createjs.Shape();
+        person1.graphics.beginFill("#ff0000").drawRect(800, 300, 50, 200);
+        person2 = new createjs.Shape();
+        person2.graphics.beginFill("#00ff00").drawRect(830, 350, 50, 200);
+        person3 = new createjs.Shape();
+        person3.graphics.beginFill("#0000ff").drawRect(-200, 350, 50, 200);
+        cat = new createjs.Shape();
+        cat.graphics.beginFill("#ffffff").drawRect(0, 380, 40, 20);
+        
+        catcatchTip = new createjs.Text();
+        catcatchTip.text = "Gotta stand still and focus to catch a cat";
+        catcatchTip.font = "30px Oswald";
+        catcatchTip.color = "#FF7700";
+        catcatchTip.x = 10;
+        catcatchTip.y = 200;
+        catcatchTip.alpha=0;
+        
+        cat.x = 500;
+        cat.addEventListener("click", catchCat);
+        cat.addEventListener("mouseover", function(){cat.alpha=0.5;});
+        cat.addEventListener("mouseout", function(){cat.alpha=1});                
+        
+        catcatchDialog = new createjs.Text();
+        catcatchDialog.text = "You have gained the cat catcher argument! \n\ \n\
+                                \"This reminds me of when I catched cats \n\
+                               in a Voksoburg backalley. \n\
+                               You see it's all about perspective (...)\"";
+        catcatchDialog.font = "30px Oswald";
+        catcatchDialog.color = "#FF7700";
+        catcatchDialog.x = 50;
+        catcatchDialog.y = 50;   
+        catcatchDialog.alpha = 0;
         
         avatar.x = 0;
         avatar.y = 250;
@@ -93,26 +134,31 @@ var Interior = (function(){
         foreground.scaleX=0.8;
         foreground.scaleY=0.8;
 
-        stage.addChild(background, blueguy, blueguyarm, avatar, foreground);  
+        stage.addChild(background, blueguy, blueguyarm, avatar, person1, 
+        person2,person3, cat, foreground, catcatchTip, catcatchDialog);  
         fadeIn()
     };
     
     function tick(event)
-    {
-        if(!isPaused && !createjs.Ticker.getPaused()){
-            rekt = foreground.getTransformedBounds();
+    {                
+        if(!isPaused && !createjs.Ticker.getPaused()){            
+            rekt = foreground.getTransformedBounds();            
             if(rekt.x+rekt.width>800 && avatar.x>100){
+                person1.x-=event.delta/8;
+                person2.x-=event.delta/8;            
+                person3.x-=event.delta/32;
                 background.x-=event.delta/13; 
                 foreground.x-=event.delta/10;
                 blueguy.x-=event.delta/10;
-                blueguyarm.x-=event.delta/10;
+                blueguyarm.x-=event.delta/10;                                     
             }
             else{
                 avatar.x+=event.delta/10;
+                person3.x+=event.delta/15;
             }
 
             if(battleWon==false && blueguy.x-avatar.x<143){
-                console.log('ttTalk');
+                avatarState = stateEnum.Talking;
                 createjs.Ticker.setPaused(true);
                 avatar.gotoAndPlay("stand");
                 dialogue.addOption("ARGUE?",goFight);                                                
@@ -126,7 +172,35 @@ var Interior = (function(){
                 fadeOut();                            
             }
         }
+        else
+        {
+            person3.x+=event.delta/15;
+            person1.x-=event.delta/15;
+            person2.x-=event.delta/15;            
+        }
         
+        cat.x -= catWalksLeft*event.delta/catSpeedMultiplier;
+        if(Math.random()>0.8)
+        {            
+            catSpeedMultiplier * Math.random()+0.5;
+            if(catSpeedMultiplier < 3 || catSpeedMultiplier > 13)
+            {
+                catSpeedMultiplier=8;
+            }
+        }
+        if(Math.random()>0.95)
+        {
+            catWalksLeft = -1*catWalksLeft;            
+        }
+        
+        if(cat.x<avatar.x-300 && catWalksLeft===-1)
+        {
+            cat.x -= catWalksLeft*event.delta/catSpeedMultiplier;
+        }
+        else if(cat.x>avatar.x+300 && catWalksLeft===1)
+        {
+            cat.x -= catWalksLeft*event.delta/catSpeedMultiplier;
+        }
         if(armRotateBack){
             blueguyarm.rotation-=1.5;
             armRotateBack = (blueguyarm.rotation>180);
@@ -134,6 +208,10 @@ var Interior = (function(){
         else{
             blueguyarm.rotation+=1.5;
             armRotateBack = (blueguyarm.rotation>220);
+        }
+        if(catcatchTip.alpha>0)
+        {
+            catcatchTip.alpha-=0.02;
         }
         stage.update(event);
     }
@@ -144,11 +222,14 @@ var Interior = (function(){
                 isPaused=false;
                 //createjs.Ticker.setPaused(false);
                 avatar.gotoAndPlay("walk");
+                avatarState = stateEnum.Walking;
+                catcatchDialog.alpha = 0;
             }
             else{
                 isPaused=true;
                 //createjs.Ticker.setPaused(true);
                 avatar.gotoAndPlay("stand");
+                avatarState = stateEnum.Standing;
             }
         }
     }
@@ -162,7 +243,7 @@ var Interior = (function(){
     
     function goToCity()
     {
-        console.log('goToCity')
+        createjs.Sound.removeAllSounds();
         stage.autoClear = true;
         stage.removeAllChildren = true;
         stage.update();        
@@ -180,6 +261,7 @@ var Interior = (function(){
         createjs.Ticker.addEventListener("tick",tick);
         createjs.Ticker.setPaused(false);
         avatar.gotoAndPlay("walk");
+        avatarState = stateEnum.Walking;
         stage.update();     
     }
     
@@ -235,8 +317,7 @@ var Interior = (function(){
     }
     
     function fadeOut()
-    {       
-        stage.removeChild(fightText, travelText, fightShape, travelShape);
+    {               
         if (opts['fader'])
         {                          
             opts['fader'](stage, [background, foreground],startTimer,isFading,goToCity, false);           
@@ -244,6 +325,21 @@ var Interior = (function(){
         else
         {
             goToCity;
+        }
+    }
+    function catchCat(){                
+        if(avatarState !== stateEnum.Talking)
+        {
+            if(!isPaused)
+            {
+                catcatchTip.alpha=1;
+            }
+            else if(Math.abs(avatar.x+50-cat.x)< 100)
+            {
+                catcatchTip.alpha-=0;
+                stage.removeChild(cat);                                    
+                catcatchDialog.alpha=1;
+            }
         }
     }
     return inter;
