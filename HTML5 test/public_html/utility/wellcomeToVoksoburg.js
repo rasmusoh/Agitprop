@@ -1,4 +1,4 @@
-function wellcomeToVoksoburg(stage, startTimer, isFading, postFade, toNotFrom)
+function wellcomeToVoksoburg(stage, startTimer, isFading, postFade)
 {            
    var tintMultiplier;
    

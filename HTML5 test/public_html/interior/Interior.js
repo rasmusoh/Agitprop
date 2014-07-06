@@ -1,5 +1,10 @@
 var Interior = (function(){
     var inter = {},
+    avatar,
+    blueguy, 
+    blueguyarm,
+    foreground,
+    dialogue,
     stage,
     interior,
     background,
@@ -7,11 +12,16 @@ var Interior = (function(){
     dialogue,
     battleWon,
     isPaused,
-    armRotateBack;
+    armRotateBack,
+    opts,
+    startTimer=0,
+    isFading=true;
 
-    inter.init = function (interiorName) 
+    inter.init = function (interiorName, optionals) 
     {
         interior = interiorName;
+        opts = optionals;
+     
         //this.canvas = document.getElementById('agitpropCanvas');
         stage = new createjs.Stage("agitpropCanvas");
         stage.enableMouseOver(20);
@@ -32,10 +42,17 @@ var Interior = (function(){
     {   
         isPaused = false;
         battleWon = false;
-        drawShapes();
+        drawShapes();        
+    }
+    
+    function postFadeIn()
+    {
+        console.log('interior.postFadeIn');
         document.onkeydown = handleKeyDown;
         createjs.Ticker.addEventListener("tick",tick);
-        stage.update();
+        avatar.gotoAndPlay("walk");
+        stage.addChild(dialogue.getDialogue());
+        stage.update();        
     }
 
     function drawShapes()
@@ -47,7 +64,7 @@ var Interior = (function(){
         blueguy = new createjs.Bitmap(queue.getResult("blueguy")); 
         blueguyarm = new createjs.Bitmap(queue.getResult("blueguyarm")); 
         sheet = createSpriteSheet(queue.getResult("avatar"));
-        avatar = new createjs.Sprite(sheet ,"walk");
+        avatar = new createjs.Sprite(sheet ,"stand");
         
         avatar.x = 0;
         avatar.y = 250;
@@ -72,10 +89,8 @@ var Interior = (function(){
         foreground.scaleX=0.8;
         foreground.scaleY=0.8;
 
-        stage.addChild(background,blueguy, blueguyarm, avatar, foreground, 
-            dialogue.getDialogue());
- //           dia2);
-        stage.update();     
+        stage.addChild(background, blueguy, blueguyarm, avatar, foreground);  
+        fadeIn()
     };
     
     function tick(event)
@@ -97,12 +112,14 @@ var Interior = (function(){
                 createjs.Ticker.setPaused(true);
                 avatar.gotoAndPlay("stand");
                 dialogue.addOption("ARGUE?",goFight);                                                
-                dialogue.addOption("NEVERMIND",backToInterior);
+                dialogue.addOption("NEVERMIND",Interior.backToInterior);
                 stage.update();
             }
             if(avatar.x > 800)
             {
-                goToCity();
+                createjs.Ticker.removeAllEventListeners();
+                createjs.Ticker.setPaused(false);
+                fadeOut();                            
             }
         }
         
@@ -141,16 +158,14 @@ var Interior = (function(){
     
     function goToCity()
     {
-
+        console.log('goToCity')
         stage.autoClear = true;
         stage.removeAllChildren = true;
-        stage.update();
-        createjs.Ticker.removeAllEventListeners();
-        createjs.Ticker.setPaused(false);
+        stage.update();        
         City.init(Utility.cityEnum.Voksoburg, {"fader":fadeToFromBlack});
     }
     
-    function backToInterior()
+    inter.backToInterior = function()
     {
 //        dialogue1.alpha = 0;
 //        dialogue1.removeAllEventListeners();
@@ -195,6 +210,37 @@ var Interior = (function(){
             }
         }
         return new createjs.SpriteSheet(data); 
+    }
+    
+    function fadeIn()
+    {      
+        console.log('interior.fadeIn');
+        if (opts['wellcome'])
+        {
+            opts['wellcome'](stage,startTimer,isFading,postFadeIn);
+        }  
+        else if (opts['fader'])
+        {            
+            console.log('interior.ifFader');
+            opts['fader'](stage,startTimer,isFading,postFadeIn, true);                      
+        }
+        else
+        {
+            postFadeIn();
+        }       
+    }
+    
+    function fadeOut()
+    {       
+        stage.removeChild(fightText, travelText, fightShape, travelShape);
+        if (opts['fader'])
+        {                          
+            opts['fader'](stage,startTimer,isFading,goToCity, false);           
+        }
+        else
+        {
+            goToCity;
+        }
     }
     return inter;
  }());

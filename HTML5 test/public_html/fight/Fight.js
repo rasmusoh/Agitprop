@@ -264,5 +264,5 @@ function fightDestroy(){
     stage.enableDOMEvents(false);
     stage.removeAllChildren();
     stage.update();
-    backToInterior();
+    Interior.backToInterior();
 }
