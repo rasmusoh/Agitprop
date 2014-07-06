@@ -14,8 +14,7 @@ function init(cityFrom, cityTo)
     queue = new createjs.LoadQueue(false);
     queue.installPlugin(createjs.Sound);
     queue.addEventListener("complete", handleComplete);
-    console.log('1');
-    //if(cityFrom===CityEnum.Voksoburg &&)    
+    console.log('1');  
     
     var manifest = [                
         {id:"bg",src:"../img/bakgrunder/vasili-baksheyev-a-winter-landscape.jpg"},

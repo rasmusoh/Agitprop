@@ -8,10 +8,6 @@
     var isPaused;
     var armRotateBack;
 
-    InteriorEnum = Object.freeze({"Voksoburg":1, "Discvojotsk":2});
-
-
-
     function interiorInit(interiorName) 
     {
         interior = interiorName;
@@ -150,7 +146,7 @@
         interiorStage.update();
         createjs.Ticker.removeAllEventListeners();
         createjs.Ticker.setPaused(false);
-        City.init(City.cityEnum.Discvojotsk, {"fader":fadeToFromBlack});
+        City.init(Utility.cityEnum.Voksoburg, {"fader":fadeToFromBlack});
     }
     
     function backToInterior()

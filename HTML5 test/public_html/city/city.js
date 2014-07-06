@@ -8,7 +8,6 @@ var City =(function(){
    background,    
    queue;
    
-   ci.cityEnum = Object.freeze({"Voksoburg":1, "Discvojotsk":2});
     
    ci.init = function (cName, optionals) 
    {
@@ -26,12 +25,12 @@ var City =(function(){
        queue = new createjs.LoadQueue(false);
        queue.installPlugin(createjs.Sound);
        queue.addEventListener("complete", handleComplete);
-       if(cityName===this.cityEnum.Voksoburg)
+       if(cityName===Utility.cityEnum.Voksoburg)
        {
            var manifest = [                
                {id:"bg",src:"content/img/environments/Ivan_Fomin_NKTP_Contest_Entry.jpg"}];
        }
-       else if(cityName===this.cityEnum.Discvojotsk)
+       else if(cityName===Utility.cityEnum.Discvojotsk)
        {
            var manifest = [                
                {id:"bg",src:"content/img/environments/moscow-palace-of-soviets-5.jpg"}];
