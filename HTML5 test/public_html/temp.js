@@ -1,5 +1,6 @@
 function gogogo ()
 {        
-    Menu.init();
+    //Menu.init();
     //Interior.init("first",{"fader":fadeToFromBlack})
+    skelletonFightInit();
 }
