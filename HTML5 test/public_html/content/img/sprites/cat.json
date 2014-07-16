@@ -1,0 +1,12 @@
+{
+"framerate":4,
+"images":["cat.png"],
+"frames":{
+    "height": 242,
+    "regX": 266.95,
+    "width": 283,
+    "regY": 257.95,
+    "count": 4
+},
+"animations":{}
+}

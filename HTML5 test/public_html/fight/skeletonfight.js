@@ -1,6 +1,7 @@
 var player1 = [],
     player2 = [],    
     cardsEnum = Object.freeze({"CatCatcher":0, "AcademicRenome":1, "StrawMan":2, "Filbuster":3}),
+    buffTypeEnum = Object.freeze({"attacksBuffs":0, "moveBuffs":1, "damageBuffs":2, "credibilityBuffs":3}),
     cards = [],
     stage,
     player1Shape,
@@ -9,7 +10,10 @@ var player1 = [],
     player1Text,
     player2Text,
     cardText,
-    dia;
+    dia,
+    currentPlayer,
+    isCountdown,
+    countdown;
 
 function skelletonFightInit()
 {        
@@ -30,9 +34,12 @@ function skelletonFightInit()
     player1["moves"] = 1;   
     player1["curMoves"] = 0;
     player1["buffs"] = [];
-    player1["buffs"]["attacksBuffs"] = [];
-    player1["buffs"]["credibilityBuffs"] = [];
-    player1["buffs"]["moveBuffs"] = [];
+    player1["buffs"][buffTypeEnum.attacksBuffs] = [];
+    player1["buffs"][buffTypeEnum.attacksBuffs]["type"] = "attacks";
+    player1["buffs"][buffTypeEnum.credibilityBuffs] = [];
+    player1["buffs"][buffTypeEnum.credibilityBuffs]["type"] = "credibility";
+    player1["buffs"][buffTypeEnum.moveBuffs] = [];
+    player1["buffs"][buffTypeEnum.moveBuffs]["type"] = "move";
     player1["cards"] = [cardsEnum.CatCatcher, cardsEnum.AcademicRenome];
     player1["enemy"] = player2;     
     player1["text"] = (function(){return player1Text;});
@@ -45,12 +52,17 @@ function skelletonFightInit()
     player2["moves"] = 1;
     player2["curMoves"] = 0;
     player2["buffs"] = [];
-    player2["buffs"]["attacksBuffs"] = [];
-    player2["buffs"]["credibilityBuffs"] = [];
-    player2["buffs"]["moveBuffs"] = [];
+    player2["buffs"][buffTypeEnum.attacksBuffs] = [];
+    player2["buffs"][buffTypeEnum.attacksBuffs]["type"] = "attacks";
+    player2["buffs"][buffTypeEnum.credibilityBuffs] = [];
+    player2["buffs"][buffTypeEnum.credibilityBuffs]["type"] = "credibility";
+    player2["buffs"][buffTypeEnum.moveBuffs] = [];
+    player2["buffs"][buffTypeEnum.moveBuffs]["type"] = "move";
     player2["cards"] = [cardsEnum.Strawman, cardsEnum.Filbuster];
     player2["enemy"] = player1;        
     player2["text"] = (function(){return player2Text;});
+  
+    createjs.Ticker.addEventListener("tick", SkeletonTick);
     
     updateText(player1);
     updateText(player2);
@@ -88,8 +100,29 @@ function drawShapes()
     cardText.x = 200;
     cardText.y = 200;
     cardText.alpha=1;    
-    stage.addChild(player1Shape, player2Shape, player1Text, player2Text);    
+    stage.addChild(player1Shape, player2Shape, player1Text, player2Text, cardText);    
 }
+
+function SkeletonTick(event)
+{
+    if (isCountdown)
+    {
+        countdown-=event.delta;
+        if(countdown<=0)
+        {
+            isCountdown = false;
+            cardText.text = "";
+            playerTurn(currentPlayer["enemy"]);
+        }
+    }
+}
+
+function startCountdown(milliseconds)
+{
+    isCountdown = true;
+    countdown = milliseconds;
+}
+
 
 function updateText(player)
 {    
@@ -109,10 +142,35 @@ function updateText(player)
 //    endGame(player);
 //}
 function playerTurn(player)
-{            
-    player["curMoves"] = player["moves"]
-    choosenCard = [];
-    chooseCards(player);
+{
+    player["curMoves"] =0;
+    currentPlayer = player;    
+    choosenCard = [];     
+    if(player["curMoves"]<player["moves"])    
+    {
+        player["curMoves"]++;
+        chooseCards(player);    
+    }
+    else
+    {
+        playerTurn(player["enemy"]);       
+    }
+}
+
+function clickCard(card, player)
+{
+    dia.destroy();
+    choosenCard[card] = cards[card];    
+    stage.update();      
+    if(player["curMoves"]<player["moves"])    
+    {
+        player["curMoves"]++;
+        chooseCards(player);    
+    }
+    else
+    {
+        playerLogic(player);       
+    }
 }
 
 function chooseCards(player)
@@ -131,75 +189,71 @@ function chooseCards(player)
     stage.update();
 }
 
-function clickCard(card, player)
-{
-    dia.destroy();
-    choosenCard.push(card);    
-    stage.update();
-    player["curMoves"]--;
-    if(player["curMoves"]>0)
-    {
-        chooseCards(player);
-    }
-    else
-    {
-        playerLogic(player);
-    }
-    
-}
-
-
 function playerLogic(player)
 {
-    if(choosenCard.indexOf(cardsEnum.CatCatcher))
+    if(choosenCard.indexOf(cards[cardsEnum.CatCatcher])!==-1)
     {
-        player["attacks"]++;
+        player["buffs"][buffTypeEnum.attacksBuffs].push([2,1]);
     }
-    if(choosenCard.indexOf(cardsEnum.AcademicRenome))
+    if(choosenCard.indexOf(cards[cardsEnum.AcademicRenome])!==-1)
     {
-        player["buffs"]["credibilityBuffs"].push = [2,1];
+        player["buffs"][buffTypeEnum.credibilityBuffs].push([2,2]);
     }
-    if(choosenCard.indexOf(cardsEnum.Strawman))
+    if(choosenCard.indexOf(cards[cardsEnum.Strawman])!==-1)
     {
-        player["enemy"]["buffs"]["credibilityBuffs"].push = [-100,1];
+        player["enemy"]["buffs"][buffTypeEnum.credibilityBuffs].push([-100,1]);
     }
-    if(choosenCard.indexOf(cardsEnum.Filbuster))
+    if(choosenCard.indexOf(cards[cardsEnum.Filbuster])!==-1)
     {
-        player["enemy"]["buffs"]["moveBuffs"].push = [-1,1];
+        player["enemy"]["buffs"][buffTypeEnum.moveBuffs].push([-1,2]);                        
     }
+    var players=[];
+    players.push(player1);
+    players.push(player2);
+    players.forEach(function(plyr){
+        plyr["buffs"].forEach(function(typeOfBuff){            
+            typeOfBuff.forEach(function(buff)
+            {
+               if(buff[1]>0)
+               {
+                    player[typeOfBuff["type"]] +=buff[0];
+                    buff[1]--;
+                }
+                else
+                {                
+                    typeOfBuff.splice(typeOfBuff.indexOf(buff),1);
+                }       
+            });
+        });
+    });
     
-    //apply buffs
-    //remove all buffs cd===0
-    //countdown buffs
-    
-    if((player["credibility"] + player["dmg"])>player["enemy"]["credibility"])
+    for(i = 0; i<player["attacks"]; i++)
     {
-        player["enemy"]["hp"] -= player["dmg"];
-    }
-    else
-    {
-        var multiplier = player["enemy"]["credibility"] -player["credibility"];
-        if(math.rnd()<(0.5+0.*multiplier))
+        if((player["credibility"] + player["dmg"])>player["enemy"]["credibility"])
         {
-            player["enemy"]["hp"]--;
+            player["enemy"]["hp"] -= player["dmg"];
+        }
+        else
+        {
+            var multiplier = player["enemy"]["credibility"] -player["credibility"];
+            if(Math.random()<(0.5+0.*multiplier))
+            {
+                player["enemy"]["hp"]--;
+            }
         }
     }
-        
-    player["credibilityBuff"] = 0;
-    player["moveBuff"] = 0;
+            
     doAnimations(choosenCard, player);
-    
     updateText(player1);
     updateText(player2);
-    
-    playerTurn(player["enemy"]);
+    startCountdown(2000);
 }
 function doAnimations(animationsToDo, player)
 {
     
     animationsToDo.forEach(function(animation){
-        cardText.text = cards[animation][1];
-        //TIMER
+        cardText.text = animation[0];
+        
         stage.update();
     });    
 }

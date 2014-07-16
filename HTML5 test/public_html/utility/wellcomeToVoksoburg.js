@@ -14,8 +14,8 @@ function wellcomeToVoksoburg(background, stage, startTimer, isFading, postFade)
    fadeArray.forEach(function(entry) {
            entry.filters = [filter];            
            entry.cache(0, 0, entry.image.width, entry.image.height);
-       });
-    var blurFilter = new createjs.BlurFilter(20,20,2);
+       }); 
+    var blurFilter = new createjs.BlurFilter(20,20,1);
     
     createjs.Ticker.addEventListener("tick", tickToShow);
     background.filters =[blurFilter];

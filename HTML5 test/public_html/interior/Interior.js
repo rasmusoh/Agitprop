@@ -42,7 +42,8 @@ var Interior = (function(){
             {id:"avatar",src:"content/img/sprites/guywalk.png"},
             {id:"blueguy",src:"content/img/sprites/bluestand.png"},
             {id:"blueguyarm",src:"content/img/sprites/smoking arm.png"},            
-            {id:"crowd", src:"content/sound/crowd.mp3"}];
+            {id:"crowd", src:"content/sound/crowd.mp3"},
+            {id:"cat", src:"content/img/sprites/cat.png"}];
         queue.installPlugin(createjs.Sound);
         queue.loadManifest(manifest);
         
@@ -84,8 +85,19 @@ var Interior = (function(){
         person2.graphics.beginFill("#00ff00").drawRect(830, 350, 50, 200);
         person3 = new createjs.Shape();
         person3.graphics.beginFill("#0000ff").drawRect(-200, 350, 50, 200);
-        cat = new createjs.Shape();
-        cat.graphics.beginFill("#ffffff").drawRect(0, 380, 40, 20);
+        catsheet = new createjs.SpriteSheet({
+        "framerate":4,
+        "images":[queue.getResult("cat")],
+        "frames":{
+            "height": 242,
+            "regX": 266.95,
+            "width": 283,
+            "regY": 257.95,
+            "count": 4
+        },
+        "animations":{"walk":[0,3], "wait":[0]}
+        });
+        cat = new createjs.Sprite(catsheet, "walk");
         
         catcatchTip = new createjs.Text();
         catcatchTip.text = "Gotta stand still and focus to catch a cat";
@@ -95,7 +107,10 @@ var Interior = (function(){
         catcatchTip.y = 200;
         catcatchTip.alpha=0;
         
+        cat.scaleX =-0.4;
+        cat.scaleY =0.4;
         cat.x = 500;
+        cat.y = 300;
         cat.addEventListener("click", catchCat);
         cat.addEventListener("mouseover", function(){cat.alpha=0.5;});
         cat.addEventListener("mouseout", function(){cat.alpha=1});                
@@ -190,7 +205,8 @@ var Interior = (function(){
         }
         if(Math.random()>0.95)
         {
-            catWalksLeft = -1*catWalksLeft;            
+            catWalksLeft = -1*catWalksLeft;
+            cat.scaleX = -1*cat.scaleX;
         }
         
         if(cat.x<avatar.x-300 && catWalksLeft===-1)
