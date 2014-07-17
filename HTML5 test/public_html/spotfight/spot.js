@@ -13,7 +13,7 @@ Spot.prototype.spotLevel = 100;
 Spot.prototype.initialize = function() 
 {
     this.SpotInit();
-    this.graphics.beginFill("#FF0").drawPolyStar(0,0,200,3,0,0);
+    this.graphics.beginFill("yellow").drawPolyStar(0,0,200,3,0,0);
     this.scaleY = 4;
     this.rotation = 20;
 }

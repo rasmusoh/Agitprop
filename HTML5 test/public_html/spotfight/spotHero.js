@@ -37,11 +37,12 @@ HeroSkeleton.prototype.gotoAndPlay = function(state)
 
     if (state==="aggattack" || state==="lowatttack" || state==="highattack")
     {
-        if(this.inControl() && this.opponent.state==="fight")
+        if(this.inControl() && this.opponent.state==="fight" && 
+                    this.opponent.fightState=="normal")
         {
             if(state==="highattack")
             {
-                //this.opponent.buffCheck(); 
+                this.opponent.likeCheck(); 
             }
             else
             {

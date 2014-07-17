@@ -7,16 +7,21 @@ spotOpponent.prototype = new createjs.Container();
 spotOpponent.prototype.OpponentInit = spotOpponent.prototype.initialize;
 
 spotOpponent.prototype.state = "prefight";
+spotOpponent.prototype.fightState = "normal";
 
 spotOpponent.prototype.initialize = function(color,spot,fightShade)
 {
     this.OpponentInit();
     this.color = color;
     this.HP = 180;
+    this.Like = 0.7;
+    
     this.freeze = 0;
+    this.yVelocity = 0;
+    this.yOffset = 0;
     this.xVelocity = 0;
     this.xOffset = 0;
-    this.fightState = 0;
+    
     
     this.spot  =spot;
     this.fightShade = fightShade;
@@ -39,26 +44,58 @@ spotOpponent.prototype.initialize = function(color,spot,fightShade)
 
 spotOpponent.prototype.tick = function(event)
 {
-    if(this.state==="fight" && this.y>300-this.HP)
+    if(this.state==="fight")
     {
-        this.y-=event.delta;
-        if(this.y<300-this.HP){this.y=300-this.HP;}
-    }
+        if(this.y>300-this.HP)
+        {
+            this.y-=event.delta;
+            if(this.y<300-this.HP){this.y=300-this.HP;}
+        }
+        
+        if(this.y<300-this.HP)
+        {
+            this.y+=event.delta/10;
+            if(this.y>300-this.HP){this.y=300-this.HP;}
+        }
+
+        if(this.Like>this.spot.alpha)
+        {
+            this.spot.alpha+=event.delta/5000;
+            if(this.Like<this.spot.alpha){this.spot.alpha = this.Like;}
+        }
+        
+        if(this.Like<this.spot.alpha)
+        {
+            this.spot.alpha-=event.delta/5000;
+            if(this.Like>this.spot.alpha){this.spot.alpha = this.Like;}
+        }
+        
+        if(this.HP<90 && this.HP>0)
+        {
+            this.HP+=event.delta/50;
+            if(this.HP>90){ this.HP=90;}
+        }
+        if(this.HP>90)
+        {
+            this.HP+=event.delta/50;
+            if(this.HP>180){ this.HP=180;}
+        }
+    }  
     
-    if(this.state!="fight" && this.y<300)
+    else if(this.y<300)
     {
         this.y+=event.delta;
         if(this.y>300){this.y=300;}
-    }
-    if(this.state==="fight" && this.y<300-this.HP)
-    {
-        this.y+=event.delta/10;
-        if(this.y>300-this.HP){this.y=300-this.HP;}
     }
     
     if(this.fightState==="bigbumped")
     {
         this.bigBumpTick(event);
+    }
+    
+    if(this.fightState==="lifted")
+    {
+        this.liftTick(event);
     }
 }
  
@@ -90,12 +127,22 @@ spotOpponent.prototype.downlight = function()
 
 spotOpponent.prototype.attackCheck = function()
 {
-    this.HP-=20;
-    this.bump();
+    if(this.Like>0.3)
+    {
+        this.HP-=20;
+        this.Like-=0.10;
+        this.bump(); 
+    }
     if(this.HP<0)
     {
         this.lower();
     }
+}
+
+spotOpponent.prototype.likeCheck = function()
+{
+    this.Like+=0.20;
+    this.lift();
 }
 
 spotOpponent.prototype.bump = function()
@@ -116,8 +163,8 @@ spotOpponent.prototype.bigBumpTick = function(event)
         if(this.xVelocity>0 && this.xVelocity-event.delta/1300<0)
         {
             this.freeze=100;
-            this.opponent.graphics.beginFill(this.color).drawRect(25, 0, 50, 200);
-            this.opponent.cache(25,0,50,200);
+            this.opponent.graphics.beginFill(this.color).drawRect(50, 0, 50, 200);
+            this.opponent.cache(50,0,50,200);
         }
         if(this.xOffset<0)
         {
@@ -131,5 +178,41 @@ spotOpponent.prototype.bigBumpTick = function(event)
     {
         this.freeze=Math.max(this.freeze-event.delta,0);
     }
-    this.x += this.xVelocity*event.delta;
+}
+
+spotOpponent.prototype.lift= function()
+{
+    this.yVelocity = -1/4;
+    this.fightState="lifted"; 
+    this.filters = [
+    //new createjs.ColorFilter(1.2,1,1,1,0,0,0,0)
+    ];
+    //this.cache(50,0,50,200);
+}
+
+spotOpponent.prototype.liftTick = function(event)
+{
+    if(this.freeze===0)
+    {
+        this.opponent.y+=this.yVelocity*event.delta;
+        this.yOffset+=this.yVelocity*event.delta;
+        if(this.yVelocity<0 && this.yVelocity+event.delta/300>0){
+            this.freeze=350;
+        }
+        this.yVelocity+=event.delta/300;
+        if(this.yOffset>0)
+        {
+            this.opponent.y-=this.yOffset;
+            this.yOffset = 0;
+            this.yVelocity = 0
+            
+            //this.filters = [];
+            //this.cache(50,0,50,200);
+            this.fightState="normal";
+        }
+    }
+    else
+    {
+        this.freeze=Math.max(this.freeze-event.delta,0);
+    }
 }
