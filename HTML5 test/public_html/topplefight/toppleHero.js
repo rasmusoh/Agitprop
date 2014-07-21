@@ -35,14 +35,14 @@ HeroTopple.prototype.tick = function(event)
 HeroTopple.prototype.gotoAndPlay = function(state)
 {
 
-    if (state==="aggattack" || state==="lowatttack" || state==="highattack")
+    if (state==="aggattack" || state==="lowattack" || state==="highattack")
     {
         if(this.inControl() && this.opponent.state==="fight" && 
                     this.opponent.fightState=="normal")
         {
-            if(state==="highattack")
+            if(state==="lowattack")
             {
-                this.opponent.likeCheck(); 
+                this.opponent.pullCheck(); 
             }
             else
             {

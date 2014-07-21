@@ -6,6 +6,7 @@ var topplefight = (function(){
     stage,
     background,
     spotDown,
+    debugInfo,
     person1;
 
     inter.init = function() 
@@ -25,8 +26,12 @@ var topplefight = (function(){
 
     function drawShapes()
     {           
-        dialogue = new Dialogue(100,100,"50px Oswald");
+        aboutInfo = new createjs.Text("Topple! \nSpace             push\
+            \nSpace+down pull","30px Oswald","black");
         
+        
+        debugInfo = new createjs.Text("debug Info:","20px Oswald","black");
+        debugInfo.y=100;
         background = new createjs.Shape();
         background.graphics.beginFill("#dbeba4").drawRect(0, 0, 800, 600);
         
@@ -48,7 +53,7 @@ var topplefight = (function(){
         document.onkeydown = handleKeyDown;
         document.onkeyup = handleKeyUp;
 
-        stage.addChild(background, avatar, person1, foreground);  
+        stage.addChild(background, avatar, person1, foreground, aboutInfo,debugInfo);  
         stage.update();
     };
     
@@ -82,6 +87,8 @@ var topplefight = (function(){
                 person1.lower();
             }
         }
+        
+        debugInfo.text = person1.statusDump();
     
         stage.update(event);
     }
