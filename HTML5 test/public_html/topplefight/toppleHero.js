@@ -1,6 +1,6 @@
-function HeroTopple(color, hp, armor, opponent) 
+function HeroTopple(color) 
 {
-    this.initialize(color,armor, opponent);
+    this.initialize(color);
 }
 //inheritance
 HeroTopple.prototype = new createjs.Shape();
@@ -8,12 +8,12 @@ HeroTopple.prototype.ToppleInit = HeroTopple.prototype.initialize;
 
 //props
 HeroTopple.prototype.state = "normal";
+HeroTopple.prototype.opponent = null;
 HeroTopple.prototype.freeze = 0;
 
 //constructor
-HeroTopple.prototype.initialize = function (color, armor, opponent) 
+HeroTopple.prototype.initialize = function (color) 
 {
-    this.opponent = opponent;
     this.color = color;
     this.ToppleInit();
     this.graphics.beginFill(color).drawRect(0, 0, 50, 200);
@@ -37,12 +37,16 @@ HeroTopple.prototype.gotoAndPlay = function(state)
 
     if (state==="aggattack" || state==="lowattack" || state==="highattack")
     {
-        if(this.inControl() && this.opponent.state==="fight" && 
+        if(this.inControl() && this.opponent!=null && this.opponent.state==="fight" && 
                     this.opponent.fightState=="normal")
         {
             if(state==="lowattack")
             {
                 this.opponent.pullCheck(); 
+            }
+            else if(state==="highattack")
+            {
+                this.opponent.likeCheck(); 
             }
             else
             {

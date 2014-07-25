@@ -1,6 +1,6 @@
-function toppleOpponent(color,width,height) 
+function toppleOpponent(color,leverage,resist) 
 {
-    this.initialize(color,width,height);
+    this.initialize(color,leverage,resist);
 }
 
 toppleOpponent.prototype = new createjs.Container();
@@ -9,17 +9,18 @@ toppleOpponent.prototype.OpponentInit = toppleOpponent.prototype.initialize;
 toppleOpponent.prototype.state = "prefight";
 toppleOpponent.prototype.fightState = "normal";
 
-toppleOpponent.prototype.initialize = function(color,width,height)
+toppleOpponent.prototype.initialize = function(color,leverage,resist)
 {
+    this.HP=1;
     this.OpponentInit();
     this.color = color;
-    this.HP = 180;
-    this.Like = 0.7;
     
-    this.opponentHeight =height;
-    this.opponentWidth = width;
     
-    this.g = 9.82;
+    this.opponentHeight =200;
+    this.opponentWidth = 50;
+    
+    this.leverage = leverage;
+    this.g = resist;
     this.delta = 0;
     fps = 30;
     this.stepSize = 1000/fps;
@@ -28,16 +29,19 @@ toppleOpponent.prototype.initialize = function(color,width,height)
     this.border = new createjs.Shape();
     this.border.graphics.beginStroke("#fef6ad");
     this.border.graphics.setStrokeStyle(3); // 2 pixel
-    this.border.graphics.drawRect(0,0 ,width,height);
+    this.border.graphics.drawRect(0,0 ,50,200);
     this.border.alpha = 0;
     
     this.centre = new createjs.Shape();
-    this.centre.graphics.beginFill("#fef6ad").drawCircle(width/2,height/2, 5);
+    this.centre.graphics.beginFill("#fef6ad").drawCircle(0,0, 5);
+    this.centre.x = 50/2
+    this.centre.y = 200/2;
+    this.centre.alpha=0;
     
     this.opponent = new createjs.Shape();
-    this.opponent.graphics.beginFill(color).drawRect(0, 0, width,height);
-    this.regX = width;
-    this.regY = height;
+    this.opponent.graphics.beginFill(color).drawRect(0, 0, 50,200);
+    this.regX = 50;
+    this.regY = 200;
     
     this.xOffset = 0;
     this.xVelocity = 0;
@@ -49,7 +53,8 @@ toppleOpponent.prototype.initialize = function(color,width,height)
 toppleOpponent.prototype.statusDump = function()
 {
     dump = "angVelocity: "+this.angVelocity+"\ntorque: "+this.angVelocity+
-           "\ntoppleState: "+this.toppleState+"\nxVelocity: "+this.xVelocity;
+           "\ntoppleState: "+this.toppleState+"\nxVelocity: "+this.xVelocity+
+           "\nleverage: "+this.leverage;
     return dump;
 }
 
@@ -59,6 +64,7 @@ toppleOpponent.prototype.tick = function(event)
     if(this.stepSize<this.delta)
     {
         this.toppleTick(this.delta); //toppling physics
+        this.centre.y=this.opponentHeight-this.leverage;
         this.delta = 0;
     }
 }
@@ -66,18 +72,33 @@ toppleOpponent.prototype.tick = function(event)
 toppleOpponent.prototype.raise = function()
 {
     this.state = "fight";
-    this.downlight();
+    
+    this.centre.alpha=1;
+    this.redlight();
 }
 
 toppleOpponent.prototype.lower = function()
 {
     if(this.HP>0){this.state="prefight";}
     else{this.state = "postfight";}
+    this.downlight();
+    
+    this.centre.alpha=0;
 }
 
 toppleOpponent.prototype.highlight = function()
 {
+    this.border.graphics.beginStroke("#da3f3a");
+    this.border.graphics.setStrokeStyle(3); // 2 pixel
+    this.border.graphics.drawRect(0,0 ,this.opponentWidth,this.opponentHeight);
     this.border.alpha=1;
+}
+
+toppleOpponent.prototype.redlight = function()
+{
+    this.border.graphics.beginStroke("#fef6ad");
+    this.border.graphics.setStrokeStyle(3); // 2 pixel
+    this.border.graphics.drawRect(0,0 ,this.opponentWidth,this.opponentHeight);
 }
 
 toppleOpponent.prototype.downlight = function()
@@ -90,18 +111,25 @@ toppleOpponent.prototype.attackCheck = function()
     if(this.toppleState === "atRest" || this.toppleState === "balancing"
             || this.toppleState === "pulled")
     {
-        this.angVelocity+=40; 
-        this.toppleState = "balancing";
-        if(this.regX===0)
+        this.angVelocity+=this.leverage/3; 
+        if(this.toppleState==="atRest")
         {
-            this.regX = this.opponentWidth;
-            this.x+= this.opponentWidth;
+            this.toppleState = "balancing";
+            if(this.regX===0)
+            {
+                this.regX = this.opponentWidth;
+                this.x+= this.opponentWidth;
+            }
         }
     }
 }
 
 toppleOpponent.prototype.likeCheck = function()
 {
+    if(this.leverage<=this.opponentHeight-30)
+    {
+        //this.leverage+=20;
+    }
 }
 
 toppleOpponent.prototype.pullCheck = function()
@@ -132,11 +160,12 @@ toppleOpponent.prototype.toppleTick = function(delta)
         this.rotation+=this.angVelocity*delta/1000;
         if(this.rotation<0)
         {
+            this.leverage=Math.max(0,this.leverage+this.angVelocity/5)
             this.angVelocity = 0;
             this.rotation=0;
             this.toppleState="atRest";
         }
-        else if (this.rotation>35)
+        else if (this.rotation>25 )
         {
             this.angVelocity = 0;
             this.rotation = 35;
