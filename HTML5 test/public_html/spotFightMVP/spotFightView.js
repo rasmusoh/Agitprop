@@ -8,9 +8,8 @@ var View =(function(){
     foreground,
     stage,
     spot1,
-    opp1,
-    spot2,
-    opp2,
+    ToppleOpponentsArray=[],
+    spot2,    
     agitator;
     view.AgitatorPosition = function(X,Y)
     {
@@ -20,16 +19,13 @@ var View =(function(){
     
     view.OpponentPosition = function(id,X,Y)
     {
-        if (id===1)
-        {
-            opp1.x=X;          
-            opp1.y=Y;
-        }
-        else
-        {
-            opp2.x=X;          
-            opp2.y=Y;
-        }
+        ToppleOpponentsArray.forEach(function(opponent){
+		if(opponent.ID===id)
+                {
+        	      opponent.UpdateRotation.x=X; 
+                      opponent.UpdateRotation.y=Y; 
+                }
+       });        
     };
     view.UpdateStage = function()
     {
@@ -38,93 +34,96 @@ var View =(function(){
     
     view.UpdateRotation = function(id,trueRotation)
     {
-        if (id===1)
-       {
-            opp1.UpdateRotation(trueRotation); 
-       }
-       else
-       {
-           opp2.UpdateRotation(trueRotation);
-       }
+        ToppleOpponentsArray.forEach(function(opponent){
+		if(opponent.ID===id)
+                {
+        	      opponent.UpdateRotation(trueRotation); 
+                }
+       });        
     };
     view.InRangeOffOpponent = function(id)
     {
-       if (id===1)
-       {
-            opp1.Highlight(); 
-       }
-       else
-       {
-           opp2.Highlight();
-       }
+        ToppleOpponentsArray.forEach(function(opponent){
+            if(opponent.ID===id)
+            {
+                  opponent.Highlight(); 
+            }
+       });             
     };
     
     view.OutOfRangeOffOpponent = function(id)
     {
-        if (id===1)
-        {
-            opp1.Downlight(); 
-        }
-        else
-        {
-           opp2.Downlight();
-        }
+        ToppleOpponentsArray.forEach(function(opponent){
+            if(opponent.ID===id)
+            {
+                  opponent.Downlight(); 
+            }
+       });      
     };
     
     view.Engage = function(id)
     {
-        if (id===1)
-        {
-            opp1.Raise();        
-        }
-        else
-        {
-            opp2.Raise();       
-        }
+        ToppleOpponentsArray.forEach(function(opponent){
+            if(opponent.ID===id)
+            {
+                  opponent.Raise(); 
+            }
+       });      
     };
     
     view.Disengage = function(id)
     {       
-       if (id===1)
-        {
-            opp1.Lower();        
-        }
-        else
-        {
-            opp2.Lower();       
-        }
+       ToppleOpponentsArray.forEach(function(opponent){
+            if(opponent.ID===id)
+            {
+                  opponent.Lower(); 
+            }
+       });      
     };
     
     view.Init = function ()
     {          
+        xmlhttp=new XMLHttpRequest();            
+        xmlhttp.open("GET","Data/InteriorData.xml",false);
+        xmlhttp.send();
+        xmlDoc=xmlhttp.responseXML;
+        
         dialogue = new Dialogue(100,100,"50px Oswald");
         
+        bgColor = 	xmlDoc.documentElement.getElementsByTagName("backgroundColor")[0].childNodes[0].nodeValue; 
         background = new createjs.Shape();
-        background.graphics.beginFill("#dbeba4").drawRect(0, 0, 800, 600);
+        background.graphics.beginFill(bgColor).drawRect(0, 0, 800, 600);
         
-        fightShade1 = new createjs.Shape();
-        fightShade1.graphics.beginFill("black").drawRect(0, 0, 800, 600);
-        fightShade1.alpha = 0;
+	fgColor = xmlDoc.documentElement.getElementsByTagName("foregroundColor")[0].childNodes[0].nodeValue;        
         
         foreground = new createjs.Shape();
-        foreground.graphics.beginFill("#27231a").drawRect(0, 500, 2000, 200);
+        foreground.graphics.beginFill(fgColor).drawRect(0, 500, 2000, 200);
         
         stage = new createjs.Stage("agitpropCanvas");
         
-        cont = new Containers();
-        opp1 = new cont.ToppleOpponent("#a05f75", 10, 10);
-        opp1.x = 500;
-        opp1.y = 500;                                
-                
-        opp2 = new cont.ToppleOpponent("#a05f75", 10, 10);
-        opp2.x = 700;
-        opp2.y = 500;        
+        cont = new Containers();        
+
+        opponents = xmlDoc.documentElement.getElementsByTagName("opponent");               
+        for (var i = 0; i<opponents.length; i++)
+        {                    
+            opp = new cont.ToppleOpponent(
+                    opponents[i].getElementsByTagName("color")[0].childNodes[0].nodeValue,
+                    opponents[i].getElementsByTagName("id")[0].childNodes[0].nodeValue
+            );                
+
+            opp.x = opponents[i].getElementsByTagName("x")[0].childNodes[0].nodeValue;
+            opp.y = opponents[i].getElementsByTagName("y")[0].childNodes[0].nodeValue;
+            ToppleOpponentsArray.push(opp);
+        }       
+
         
         agitator = new cont.Agitator("#da3f3a");
         agitator.x = 0;
         agitator.y = 300;                
         
-        stage.addChild(background,  fightShade1, fightShade2,agitator, opp1, opp2, spot1, spot2, foreground);  
+        stage.addChild(background, agitator)
+        ToppleOpponentsArray.forEach(function(opponent){stage.addChild(opponent)});
+        stage.addChild(foreground);  
         stage.update();        
     };        
     return view;
