@@ -116,45 +116,49 @@ var Presenter = (function(){
     
     function toppleTick(delta)
     {
-        if(opponent.toppleState==="pushed")
+        opponents.forEach(function(opponent)
         {
-            opponent.angVelocity += opponent.resistance*delta;
-            opponent.trueRotation+=opponent.angVelocity*delta;
-            if(opponent.trueRotation<0)
+            if(opponent.state==="fight")
             {
-                opponent.leverage=Math.max(0,opponent.leverage+opponent.angVelocity/5)
-                opponent.angVelocity = 0;
-                opponent.trueRotation=0;
-                opponent.toppleState="atRest";
-            }
-            else if (opponent.trueRotation>25 )
-            {
-                opponent.angVelocity = 0;
-                opponent.trueRotation = 35;
-                opponent.toppleState="toppled";
-                opponent.opponent.graphics.beginFill("white").drawRect(0, 0, 
-                        opponent.opponentWidth,opponent.opponentHeight);
-                opponent.xVelocity = 14;
-            }
-        }
-        else if(opponent.toppleState==="pulled")
-        {
-            opponent.angVelocity -= opponent.resistance*delta;
-            opponent.trueRotation+=opponent.angVelocity*delta/1000;
-            if(opponent.trueRotation>0)
-            {
-                if(opponent.angVelocity<50)
+                if(opponent.toppleState==="pushed")
                 {
-                    opponent.angVelocity = 0;
-                    opponent.trueRotation=0;
-                    opponent.toppleState="atRest";
+                    opponent.angVelocity += opponent.resistance*delta;
+                    opponent.trueRotation+=opponent.angVelocity*delta;
+                    if(opponent.trueRotation<0)
+                    {
+                        opponent.leverage=Math.max(0,opponent.leverage+
+                                opponent.angVelocity/5)
+                        opponent.angVelocity = 0;
+                        opponent.trueRotation=0;
+                        opponent.toppleState="atRest";
+                    }
+                    else if (opponent.trueRotation>25 )
+                    {
+                        opponent.angVelocity = 0;
+                        opponent.trueRotation = 35;
+                        opponent.toppleState="toppled";
+                    }
                 }
-                else
+                else if(opponent.toppleState==="pulled")
                 {
-                    opponent.toppleState="balancing";
+                    opponent.angVelocity += -opponent.resistance*delta;
+                    opponent.trueRotation+=opponent.angVelocity*delta;
+                    if(opponent.trueRotation>0)
+                    {
+                        if(opponent.angVelocity<50)
+                        {
+                            opponent.angVelocity = 0;
+                            opponent.trueRotation=0;
+                            opponent.toppleState="atRest";
+                        }
+                        else
+                        {
+                            opponent.toppleState="balancing";
+                        }
+                    }   
                 }
-            }   
-        }
+            }
+        });
     }
     
     return presenter;
