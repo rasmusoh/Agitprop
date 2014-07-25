@@ -1,7 +1,7 @@
 var Controls = (function(){
     
     var ctrls = {}
-    ,up, down, left, right, attack;
+    ,up, down, left, right, attack,newAttack;
     ctrls.UpPressed = function(){return up;};
     ctrls.DownPressed = function(){return down;};
     ctrls.LeftPressed = function(){return left;};
@@ -9,7 +9,7 @@ var Controls = (function(){
     ctrls.AttackPressed = function(){return attack;};
     ctrls.AttackPressedNew = function()
     {
-        if(newaAttack)
+        if(newAttack)
         {
             newAttack = false;
             return true;

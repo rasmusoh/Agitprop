@@ -27,7 +27,7 @@ var Model = (function(){
     mod.Init = function()
     {
         //Should read from persistant state
-        agg = new Agitator(0, 300, "prefight");    
+        agg = new Agitator(0, 300, "standing");    
         LoadOpponents();
     };
     

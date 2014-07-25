@@ -4,6 +4,10 @@ var Presenter = (function(){
     controls,
     model,
     agitatorTimer,
+    counterVelocity =50,
+    toppleVelocity =20,
+    attackVelocity =40,
+    attackAngle=50,
     pushCharge = 150,
     pushRelease = 350,
     pullCharge = 150,
@@ -30,11 +34,19 @@ var Presenter = (function(){
     //One tick to rule them all
     function tick(event)
     {
-        //Check Controls and position
+        //Check Controls and update state logic
         updateAgitatorState(event);
-        if(agitator.state==="walkright") {agitator.x+=event.delta/10;}
+        //update topple physics
+        updateTopple(event);
+        
+        
+        //update position
+        if(agitator.state==="walkright") 
+        {
+            agitator.x+=event.delta/10;
+        }
+        
         if(agitator.state==="walkleft") {agitator.x-=event.delta/10;}
-
         opponents.forEach(function(opponent){
             view.UpdateRotation(opponent.ID,opponent.trueRotation)
             if(agitator.x > opponent.x-280 && agitator.x < opponent.x-180 && opponent.state==="prefight")
@@ -60,8 +72,6 @@ var Presenter = (function(){
             view.OpponentPosition(opponent.ID, opponent.x, opponent.y);
         });
         
-
-        
         //Update View
         view.AgitatorPosition(agitator.x, agitator.y);
         
@@ -74,14 +84,9 @@ var Presenter = (function(){
         {
             if(opponent.state==="fight"  && (opponent.toppleState === "atRest" 
                     || opponent.toppleState === "pushed" 
-                    || opponent.toppleState === "pulled"))
+                    || opponent.toppleState === "attackRelease"))
             {
-                opponent.angVelocity=-opponent.leverage;
-                
-                if(opponent.toppleState==="atRest")
-                {
-                    opponent.toppleState==="pulled";
-                }
+                opponent.toppleState==="attacking";
             }
         });
     }
@@ -92,14 +97,10 @@ var Presenter = (function(){
         {
             if(opponent.state==="fight"  && (opponent.toppleState === "atRest" 
                     || opponent.toppleState === "pushed"
-                    || opponent.toppleState === "pulled"))
+                    || opponent.toppleState === "attackRelease"))
             {
                 opponent.angVelocity+=opponent.leverage;
-                
-                if(opponent.toppleState==="atRest")
-                {
-                    opponent.toppleState==="pushed";
-                }
+                opponent.toppleState==="pushed";
             }
         });
     }
@@ -120,45 +121,122 @@ var Presenter = (function(){
         {
             if(opponent.state==="fight")
             {
-                if(opponent.toppleState==="pushed")
+                if(opponent.toppleState==="pushed" && opponent.trueRotation>=0)
                 {
                     opponent.angVelocity += opponent.resistance*delta;
                     opponent.trueRotation+=opponent.angVelocity*delta;
                     if(opponent.trueRotation<0)
                     {
-                        opponent.leverage=Math.max(0,opponent.leverage+
-                                opponent.angVelocity/5)
                         opponent.angVelocity = 0;
                         opponent.trueRotation=0;
                         opponent.toppleState="atRest";
                     }
-                    else if (opponent.trueRotation>25 )
+                    else if (opponent.trueRotation>100)
                     {
-                        opponent.angVelocity = 0;
-                        opponent.trueRotation = 35;
-                        opponent.toppleState="toppled";
+                        opponent.trueRotation = 100;
+                        if(opponent.angVelocity>toppleVelocity) 
+                        {
+                            opponent.toppleState="toppled";
+                        }
+                        else{opponent.angVelocity = 0;}
                     }
                 }
-                else if(opponent.toppleState==="pulled")
+                else if(opponent.toppleState==="pushed" && opponent.trueRotation<0)
                 {
                     opponent.angVelocity += -opponent.resistance*delta;
                     opponent.trueRotation+=opponent.angVelocity*delta;
                     if(opponent.trueRotation>0)
                     {
-                        if(opponent.angVelocity<50)
+                        if(opponent.angVelocity<counterVelocity)
                         {
                             opponent.angVelocity = 0;
                             opponent.trueRotation=0;
                             opponent.toppleState="atRest";
                         }
-                        else
-                        {
-                            opponent.toppleState="balancing";
-                        }
                     }   
+                }
+                else if(opponent.toppleState=="attacking")
+                {
+                    opponent.trueRotation+=attackVelocity;
+                    if(opponent.trueRotation>attackAngle)
+                    {
+                        opponent.toppleState=="attackRelease";
+                    }
+                }
+                else if (opponent.toppleState=="attackRelease")
+                {
+                    opponent.trueRotation-=attackVelocity;
+                    if(opponent.trueRotation<0)
+                    {
+                        opponent.trueRotation=0;
+                        opponent.toppleState="atRest";
+                    }
                 }
             }
         });
+    }
+    function updateAgitatorState(e)
+    {
+        right = controls.RightPressed();
+        left = controls.LeftPressed();
+        up = controls.UpPressed();
+        down = controls.DownPressed();
+        attack = controls.AttackPressedNew();
+        switch(agitator.state)
+        {
+            case "standing":
+                if(right){agitator.state = "walkright";}
+                if(left){agitator.state = "walkleft";}
+                if(attack)
+                {
+                    agitator.state = "pushing";
+                    agitatorTimer = pushCharge+pushRelease;
+                }
+                break;
+            case "walkright":
+                if(!right){agitator.state = "standing";}
+                if(attack)
+                {
+                    agitator.state = "pulling";
+                    agitatorTimer = pullCharge+pullRelease;
+                }
+                break;
+            case "walkleft":
+                if(!left){agitator.state = "standing";}
+                if(attack)
+                {
+                    agitator.state = "pushing";
+                    agitatorTimer = pushCharge+pushRelease;
+                }
+                break;
+            case "pushing":
+                agitatorTimer-=e.delta;
+                if(agitatorTimer<pushRelease)
+                {
+                    pushCheck();
+                }
+                if(agitatorTimer<0)
+                {
+                    agitatorTimer = 0;
+                    agitator.state = "standing";
+                }
+                break;
+                
+            case "pulling":
+                agitatorTimer-=e.delta;
+                if(agitatorTimer<pullRelease)
+                {
+                    pullCheck();
+                }
+                if(agitatorTimer<0)
+                {
+                    agitatorTimer = 0;
+                    agitator.state = "standing";
+                }
+                break;
+        }
+                
+        
     }
     
     return presenter;

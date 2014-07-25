@@ -36,7 +36,7 @@ var View =(function(){
         stage.update();
     };
     
-    view.UpdateRotation = function(id1,trueRotation)
+    view.UpdateRotation = function(id,trueRotation)
     {
         if (id===1)
        {
