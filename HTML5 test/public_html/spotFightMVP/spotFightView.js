@@ -110,28 +110,17 @@ var View =(function(){
         foreground.graphics.beginFill("#27231a").drawRect(0, 500, 2000, 200);
         
         stage = new createjs.Stage("agitpropCanvas");
-        fightShade2 = new createjs.Shape();
-        fightShade2.graphics.beginFill("black").drawRect(0, 0, 800, 600);
-        fightShade2.alpha = 0;
-        spot1 = new SpotShape();
-        spot1.x=200;
-        spot1.y=430;
-        spot1.alpha=0;
-                
-        opp1 = new OpponentContainer("#a05f75", spot1, fightShade1);
-        opp1.x = 500;
-        opp1.y = 300;        
         
-        spot2 = new SpotShape();
-        spot2.x=450;
-        spot2.y=430;
-        spot2.alpha=0;
+        cont = new Containers();
+        opp1 = new cont.ToppleOpponent("#a05f75", 10, 10);
+        opp1.x = 500;
+        opp1.y = 300;                                
                 
-        opp2 = new OpponentContainer("#a05f75", spot2, fightShade2);
+        opp2 = new cont.ToppleOpponent("#a05f75", 10, 10);
         opp2.x = 700;
         opp2.y = 300;        
         
-        agitator = new HeroShape("#da3f3a");
+        agitator = new cont.Agitator("#da3f3a");
         agitator.x = 0;
         agitator.y = 300;                
         
