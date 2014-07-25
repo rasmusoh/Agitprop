@@ -24,10 +24,12 @@ var Containers = (function(){
     cont.ToppleOpponent.prototype = new createjs.Container();
     cont.ToppleOpponent.prototype.InheritedInit = cont.ToppleOpponent.prototype.initialize;
     
-    cont.ToppleOpponent.prototype.Init = function(color,leverage,resist)
-    {        
+    cont.ToppleOpponent.prototype.Init = function(color,id)
+    {           
         cont.ToppleOpponent.prototype.InheritedInit();     
-
+        this.ID = id;
+        this.color = color; 
+        
         this.border = new createjs.Shape();
         this.border.graphics.beginStroke("#fef6ad");
         this.border.graphics.setStrokeStyle(3); // 2 pixel
