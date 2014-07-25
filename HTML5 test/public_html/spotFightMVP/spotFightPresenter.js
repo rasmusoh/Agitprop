@@ -49,10 +49,11 @@ var Presenter = (function(){
         if(agitator.state==="walkleft") {agitator.x-=event.delta/10;}
         opponents.forEach(function(opponent){
             view.UpdateRotation(opponent.ID,opponent.trueRotation)
-            if(agitator.x > opponent.x-280 && agitator.x < opponent.x-180 && opponent.state==="prefight")
+            if(agitator.x > opponent.x-280 && agitator.x < opponent.x-180 && 
+                    opponent.state==="preFight")
             {
                 view.InRangeOffOpponent(opponent.ID);
-                if(controls.AttackGetter())
+                if(controls.AttackPressed)
                 {
                     view.Engage(opponent.ID);
                     opponent.state = "fight";
@@ -65,7 +66,7 @@ var Presenter = (function(){
                 if(opponent.state==="fight")
                 {
                     view.Disengage(opponent.ID);
-                    opponent.state ="prefight";
+                    opponent.state ="preFight";
                     opponent.rising = false;
                 }
             }

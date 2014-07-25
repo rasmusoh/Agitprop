@@ -11,7 +11,7 @@
                     <resistance>10</resistance>
                     <leverage>100</leverage>
                     <x>390</x>
-                    <y>300</y>
+                    <y>500</y>
                     <id>1</id>
                     <state>preFight</state>
                 </opponent>
@@ -20,7 +20,7 @@
                     <resistance>100</resistance>
                     <leverage>10</leverage>
                     <x>700</x>
-                    <y>300</y>
+                    <y>500</y>
                     <id>2</id>
                     <state>preFight</state>                    
                 </opponent>

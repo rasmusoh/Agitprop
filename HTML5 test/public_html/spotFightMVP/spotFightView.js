@@ -114,11 +114,11 @@ var View =(function(){
         cont = new Containers();
         opp1 = new cont.ToppleOpponent("#a05f75", 10, 10);
         opp1.x = 500;
-        opp1.y = 300;                                
+        opp1.y = 500;                                
                 
         opp2 = new cont.ToppleOpponent("#a05f75", 10, 10);
         opp2.x = 700;
-        opp2.y = 300;        
+        opp2.y = 500;        
         
         agitator = new cont.Agitator("#da3f3a");
         agitator.x = 0;

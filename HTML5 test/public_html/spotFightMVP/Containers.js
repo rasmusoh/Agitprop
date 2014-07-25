@@ -34,12 +34,6 @@ var Containers = (function(){
         this.border.graphics.drawRect(0,0 ,50,200);
         this.border.alpha = 0;
 
-        this.centre = new createjs.Shape();
-        this.centre.graphics.beginFill("#fef6ad").drawCircle(0,0, 5);
-        this.centre.x = 50/2
-        this.centre.y = 200/2;
-        this.centre.alpha=0;
-
         this.opponent = new createjs.Shape();
         this.opponent.graphics.beginFill(color).drawRect(0, 0, 50,200);
         this.regX = 50;
@@ -49,23 +43,43 @@ var Containers = (function(){
         this.xVelocity = 0;
         this.angVelocity = 0;
         this.rotation = 0;
-        this.addChild(this.opponent,this.centre,this.border);
+        this.addChild(this.opponent,this.border);
     };    
     
     cont.ToppleOpponent.prototype.UpdateRotation = function(arg)
     {
-        
+        this.rotation = arg/3;
     };
     
     cont.ToppleOpponent.prototype.Highlight = function()
     {
+        this.border.graphics.beginStroke("#da3f3a");
+        this.border.graphics.setStrokeStyle(3); // 2 pixel
+        this.border.graphics.drawRect(0,0 ,this.opponentWidth,this.opponentHeight);
         this.border.alpha=1;
     };
+    
+    cont.ToppleOpponent.prototype.Redlight = function()
+    {
+        this.border.graphics.beginStroke("#fef6ad");
+        this.border.graphics.setStrokeStyle(3); // 2 pixel
+        this.border.graphics.drawRect(0,0 ,this.opponentWidth,this.opponentHeight);
+    }
 
     cont.ToppleOpponent.prototype.Downlight = function()
     {
         this.border.alpha=0;
     };
+    
+    cont.ToppleOpponent.prototype.Raise = function()
+    {
+        this.Redlight();
+    }
+
+    cont.ToppleOpponent.prototype.Lower = function()
+    {
+        this.Downlight();
+    }
     
    return cont; 
 });
