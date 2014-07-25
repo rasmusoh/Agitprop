@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<root>
+    <interiors>
+        <interior>
+            <name>interiorTest</name>
+            <backgroundColor>dbeba4</backgroundColor>
+            <opponents>
+                <opponent>
+                    <color>a05f00</color>
+                    <resistance>10</resistance>
+                    <leverage>100</leverage>
+                    <x>390</x>
+                    <y>300</y>
+                    <id>1</id>
+                    <state>preFight</state>
+                </opponent>
+                <opponent>
+                    <color>a05f75</color>
+                    <resistance>100</resistance>
+                    <leverage>10</leverage>
+                    <x>700</x>
+                    <y>300</y>
+                    <id>2</id>
+                    <state>preFight</state>                    
+                </opponent>
+            </opponents>		
+        </interior>
+    </interiors>    
+</root>

@@ -27,8 +27,7 @@ var Model = (function(){
     {
         //Should read from persistant state
         agg = new Agitator(0, 300, "prefight");    
-        opp1 = new Opponent(390, 300, false, 150, 1, "prefight");
-        opp2 = new Opponent(700, 300, false, 150, 2, "prefight");
+        LoadOpponents
     };
     
     mod.GetAgitator = function()
@@ -42,5 +41,25 @@ var Model = (function(){
     };
     //mod.SaveToPersistantState = function() {}
     
+    function LoadOpponents(){
+        xmlhttp=new XMLHttpRequest();        
+    
+        xmlhttp.open("GET","Data/InteriorData.xml",false);
+        xmlhttp.send();
+        xmlDoc=xmlhttp.responseXML;
+
+        opponents = xmlDoc.documentElement.getElementsByTagName("opponent");       
+        for (var i = 0; i<opponents.length; i++)
+        {        
+            new Opponent(
+            opponents[i].getElementsByTagName("x")[0].childNodes[0].nodeValue,
+            opponents[i].getElementsByTagName("y")[0].childNodes[0].nodeValue,
+            opponents[i].getElementsByTagName("leverage")[0].childNodes[0].nodeValue,
+            opponents[i].getElementsByTagName("resistance")[0].childNodes[0].nodeValue,
+            opponents[i].getElementsByTagName("id")[0].childNodes[0].nodeValue,
+            opponents[i].getElementsByTagName("state")[0].childNodes[0].nodeValue
+            );        
+        }                
+    }
     return mod;        
 });
