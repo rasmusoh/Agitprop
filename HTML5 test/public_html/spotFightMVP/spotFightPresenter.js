@@ -31,7 +31,7 @@ var Presenter = (function(){
     function tick(event)
     {
         //Check Controls and position
-        updateAgitatorState(event);
+        //updateAgitatorState(event);
         if(agitator.state==="walkright") {agitator.x+=event.delta/10;}
         if(agitator.state==="walkleft") {agitator.x-=event.delta/10;}
 
