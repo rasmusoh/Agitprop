@@ -75,11 +75,11 @@ var View =(function(){
     {
         if (id===1)
         {
-            opp1.Redlight();        
+            opp1.Raise();        
         }
         else
         {
-            opp2.Redlight();       
+            opp2.Raise();       
         }
     };
     
@@ -87,11 +87,11 @@ var View =(function(){
     {       
        if (id===1)
         {
-            opp1.Downlight();        
+            opp1.Lower();        
         }
         else
         {
-            opp2.Downlight();       
+            opp2.Lower();       
         }
     };
     

@@ -49,23 +49,25 @@ var Presenter = (function(){
         if(agitator.state==="walkleft") {agitator.x-=event.delta/10;}
         opponents.forEach(function(opponent){
             view.UpdateRotation(opponent.ID,opponent.trueRotation)
-            dist = opponent.x-agitator.x;
-            if(dist<200 && dist>50 && opponent.state==="preFight")
+            if(agitator.x > opponent.x-280 && agitator.x < opponent.x-180 && 
+                    opponent.state==="preFight")
             {
                 view.InRangeOffOpponent(opponent.ID);
                 if(controls.AttackPressed)
                 {
                     view.Engage(opponent.ID);
                     opponent.state = "fight";
+                    opponent.rising = true;
                 }
             }
-            if(dist>200 || dist<50 )
+            if(agitator.x < opponent.x-280 || agitator.x > opponent.x-180)
             {
                 view.OutOfRangeOffOpponent(opponent.ID);
                 if(opponent.state==="fight")
                 {
                     view.Disengage(opponent.ID);
                     opponent.state ="preFight";
+                    opponent.rising = false;
                 }
             }
             view.OpponentPosition(opponent.ID, opponent.x, opponent.y);

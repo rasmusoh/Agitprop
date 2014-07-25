@@ -73,5 +73,15 @@ var Containers = (function(){
         this.border.alpha=0;
     };
     
+    cont.ToppleOpponent.prototype.Raise = function()
+    {
+        this.Redlight();
+    }
+
+    cont.ToppleOpponent.prototype.Lower = function()
+    {
+        this.Downlight();
+    }
+    
    return cont; 
 });
