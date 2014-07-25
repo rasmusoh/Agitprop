@@ -10,14 +10,17 @@ var Model = (function(){
         this.state = state;
     };
     
-    function Opponent(x, y, rising, HP, ID, state)
+    function Opponent(x, y, leverage, resistance, trueRotation, 
+        ID, state, fightState)
     {
         this.x = x;
         this.y = y;
-        this.rising = rising;
-        this.HP = HP;
+        this.leverage = leverage;
+        this.resistance = resistance;
+        this.trueRotation = trueRotation;
         this.ID = ID;
         this.state = state;
+        this.fighState = fightState;
     };   
     mod.Init = function()
     {
