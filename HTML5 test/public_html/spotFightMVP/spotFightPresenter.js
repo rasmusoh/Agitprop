@@ -2,7 +2,15 @@ var Presenter = (function(){
     var presenter = {},
     view,
     controls,
-    model;
+    model,
+    agitatorTimer,
+    pushCharge = 150,
+    pushRelease = 350,
+    pullCharge = 150,
+    pullRelease =350,
+    physicsStepSize = 20,
+    physicsDelta = 0
+    ;
         
     var agitator, opponents;
     
@@ -21,15 +29,14 @@ var Presenter = (function(){
     
     //One tick to rule them all
     function tick(event)
-    {        
+    {
         //Check Controls and position
-        if(controls.RightGetter()){agitator.x += event.delta/5;}
-        if(controls.LeftGetter()){agitator.x -= event.delta/5;}        
+        updateAgitatorState(event);
+        if(agitator.state==="walkright") {agitator.x+=event.delta/10;}
+        if(agitator.state==="walkleft") {agitator.x-=event.delta/10;}
 
         opponents.forEach(function(opponent){
-            if(opponent.rising && opponent.y > (300-opponent.HP)){opponent.y -= event.delta/5;}        
-            if(!opponent.rising && opponent.y < 300){opponent.y += event.delta/5;}
-
+            view.UpdateRotation(opponent.ID,opponent.trueRotation)
             if(agitator.x > opponent.x-280 && agitator.x < opponent.x-180 && opponent.state==="prefight")
             {
                 view.InRangeOffOpponent(opponent.ID);
@@ -53,10 +60,102 @@ var Presenter = (function(){
             view.OpponentPosition(opponent.ID, opponent.x, opponent.y);
         });
         
+
+        
         //Update View
         view.AgitatorPosition(agitator.x, agitator.y);
         
         view.UpdateStage(event);
-    }    
+    }
+    
+    function pullCheck()
+    {
+        opponents.forEach(function(opponent)
+        {
+            if(opponent.state==="fight"  && (opponent.toppleState === "atRest" 
+                    || opponent.toppleState === "pushed" 
+                    || opponent.toppleState === "pulled"))
+            {
+                opponent.angVelocity=-opponent.leverage;
+                
+                if(opponent.toppleState==="atRest")
+                {
+                    opponent.toppleState==="pulled";
+                }
+            }
+        });
+    }
+    
+    function pushCheck()
+    {
+        opponents.forEach(function(opponent)
+        {
+            if(opponent.state==="fight"  && (opponent.toppleState === "atRest" 
+                    || opponent.toppleState === "pushed"
+                    || opponent.toppleState === "pulled"))
+            {
+                opponent.angVelocity+=opponent.leverage;
+                
+                if(opponent.toppleState==="atRest")
+                {
+                    opponent.toppleState==="pushed";
+                }
+            }
+        });
+    }
+    
+    function updateTopple(e)
+    {
+        physicsDelta+=e.delta;
+        if(physicsStepSize<physicsDelta)
+        {
+            toppleTick(physicsDelta); //toppling physics           
+            physicsDelta = 0;
+        }
+    }
+    
+    function toppleTick(delta)
+    {
+        if(opponent.toppleState==="pushed")
+        {
+            opponent.angVelocity += opponent.resistance*delta;
+            opponent.trueRotation+=opponent.angVelocity*delta;
+            if(opponent.trueRotation<0)
+            {
+                opponent.leverage=Math.max(0,opponent.leverage+opponent.angVelocity/5)
+                opponent.angVelocity = 0;
+                opponent.trueRotation=0;
+                opponent.toppleState="atRest";
+            }
+            else if (opponent.trueRotation>25 )
+            {
+                opponent.angVelocity = 0;
+                opponent.trueRotation = 35;
+                opponent.toppleState="toppled";
+                opponent.opponent.graphics.beginFill("white").drawRect(0, 0, 
+                        opponent.opponentWidth,opponent.opponentHeight);
+                opponent.xVelocity = 14;
+            }
+        }
+        else if(opponent.toppleState==="pulled")
+        {
+            opponent.angVelocity -= opponent.resistance*delta;
+            opponent.trueRotation+=opponent.angVelocity*delta/1000;
+            if(opponent.trueRotation>0)
+            {
+                if(opponent.angVelocity<50)
+                {
+                    opponent.angVelocity = 0;
+                    opponent.trueRotation=0;
+                    opponent.toppleState="atRest";
+                }
+                else
+                {
+                    opponent.toppleState="balancing";
+                }
+            }   
+        }
+    }
+    
     return presenter;
 });

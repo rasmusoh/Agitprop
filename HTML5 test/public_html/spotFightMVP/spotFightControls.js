@@ -2,12 +2,20 @@ var Controls = (function(){
     
     var ctrls = {}
     ,up, down, left, right, attack;
-    ctrls.UpGetter = function(){return up;};
-    ctrls.DownGetter = function(){return down;};
-    ctrls.LeftGetter = function(){return left;};
-    ctrls.RightGetter = function(){return right;};
-    ctrls.AttackGetter = function(){return attack;};
-    
+    ctrls.UpPressed = function(){return up;};
+    ctrls.DownPressed = function(){return down;};
+    ctrls.LeftPressed = function(){return left;};
+    ctrls.RightPressed = function(){return right;};
+    ctrls.AttackPressed = function(){return attack;};
+    ctrls.AttackPressedNew = function()
+    {
+        if(newaAttack)
+        {
+            newAttack = false;
+            return true;
+        }
+        else{return false};
+    }
         KEYCODE_W=87;
         KEYCODE_UP=38;
         KEYCODE_DOWN=40;
@@ -25,6 +33,8 @@ var Controls = (function(){
         left = false;
         right = false;      
         attack = false;
+        newAttack = false;
+        
         document.onkeydown = function (event)
         {
             handleKeyDown(event);
@@ -53,6 +63,7 @@ var Controls = (function(){
             break;
         case KEYCODE_SPACE:     
             attack = true;
+            newAttack  = true;
             break;
         }
     }

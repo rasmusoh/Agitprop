@@ -36,6 +36,17 @@ var View =(function(){
         stage.update();
     };
     
+    view.UpdateRotation = function(id1,trueRotation)
+    {
+        if (id===1)
+       {
+            opp1.UpdateRotation(trueRotation); 
+       }
+       else
+       {
+           opp2.UpdateRotation(trueRotation);
+       }
+    };
     view.InRangeOffOpponent = function(id)
     {
        if (id===1)
