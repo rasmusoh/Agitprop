@@ -2,7 +2,8 @@ var Model = (function(){
     var mod = {},
     agg,
     opp1,
-    opp2;
+    opp2,
+    OpponentsArray = [];
     function Agitator(x, y, state) 
     {
         this.x = x;
@@ -27,7 +28,7 @@ var Model = (function(){
     {
         //Should read from persistant state
         agg = new Agitator(0, 300, "prefight");    
-        LoadOpponents
+        LoadOpponents();
     };
     
     mod.GetAgitator = function()
@@ -37,7 +38,7 @@ var Model = (function(){
     
     mod.GetOpponents = function()
     {
-        return [opp1, opp2];
+        return OpponentsArray;
     };
     //mod.SaveToPersistantState = function() {}
     
@@ -51,13 +52,15 @@ var Model = (function(){
         opponents = xmlDoc.documentElement.getElementsByTagName("opponent");       
         for (var i = 0; i<opponents.length; i++)
         {        
-            new Opponent(
-            opponents[i].getElementsByTagName("x")[0].childNodes[0].nodeValue,
-            opponents[i].getElementsByTagName("y")[0].childNodes[0].nodeValue,
-            opponents[i].getElementsByTagName("leverage")[0].childNodes[0].nodeValue,
-            opponents[i].getElementsByTagName("resistance")[0].childNodes[0].nodeValue,
-            opponents[i].getElementsByTagName("id")[0].childNodes[0].nodeValue,
-            opponents[i].getElementsByTagName("state")[0].childNodes[0].nodeValue
+            OpponentsArray.push(
+                new Opponent(
+                opponents[i].getElementsByTagName("x")[0].childNodes[0].nodeValue,
+                opponents[i].getElementsByTagName("y")[0].childNodes[0].nodeValue,
+                opponents[i].getElementsByTagName("leverage")[0].childNodes[0].nodeValue,
+                opponents[i].getElementsByTagName("resistance")[0].childNodes[0].nodeValue,
+                opponents[i].getElementsByTagName("id")[0].childNodes[0].nodeValue,
+                opponents[i].getElementsByTagName("state")[0].childNodes[0].nodeValue
+                )
             );        
         }                
     }
