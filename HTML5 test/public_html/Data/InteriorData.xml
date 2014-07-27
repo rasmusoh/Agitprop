@@ -15,10 +15,10 @@
             <opponents>
                 <opponent>
                     <color>#a05f75</color>
-                    <resistance>10</resistance>
-                    <leverage>100</leverage>
+                    <resistance>3000</resistance>
+                    <leverage>300</leverage>
                     <x>390</x>
-                    <y>300</y>
+                    <y>500</y>
                     <id>1</id>
                     <state>preFight</state>
                 </opponent>
@@ -27,7 +27,7 @@
                     <resistance>100</resistance>
                     <leverage>10</leverage>
                     <x>700</x>
-                    <y>300</y>
+                    <y>500</y>
                     <id>2</id>
                     <state>preFight</state>                    
                 </opponent>
@@ -43,7 +43,7 @@
                     <resistance>100</resistance>
                     <leverage>10</leverage>
                     <x>700</x>
-                    <y>250</y>
+                    <y>500</y>
                     <id>2</id>
                     <state>preFight</state>                    
                 </opponent>

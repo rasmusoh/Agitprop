@@ -20,12 +20,13 @@ var Presenter = (function(){
     
     presenter.Init = function(viewArg, controlsArg, modelArg)
     {
+        level = "interiorTest";
         view = viewArg;
         controls = controlsArg;        
         model = modelArg;
-        view.Init();
+        view.Init(level);
         controls.Init(this);
-        model.Init();
+        model.Init(level);
         agitator = model.GetAgitator();
         opponents = model.GetOpponents();
         createjs.Ticker.addEventListener("tick",tick); 
@@ -77,8 +78,8 @@ var Presenter = (function(){
                     || opponent.toppleState === "pushed"
                     || opponent.toppleState === "attackRelease"))
             {
-                opponent.angVelocity+=opponent.leverage;
-                opponent.toppleState==="pushed";
+                opponent.angVelocity=opponent.leverage;
+                opponent.toppleState="pushed";
             }
         });
     }
@@ -99,10 +100,10 @@ var Presenter = (function(){
         {
             if(opponent.state==="fight")
             {
-                if(opponent.toppleState==="pushed" && opponent.trueRotation>=0)
+                 if(opponent.toppleState==="pushed" && opponent.trueRotation>=0)
                 {
-                    opponent.angVelocity += opponent.resistance*delta;
-                    opponent.trueRotation+=opponent.angVelocity*delta;
+                    opponent.angVelocity -= opponent.resistance*delta/1000;
+                    opponent.trueRotation+=opponent.angVelocity*delta/1000;
                     if(opponent.trueRotation<0)
                     {
                         opponent.angVelocity = 0;
@@ -121,7 +122,7 @@ var Presenter = (function(){
                 }
                 else if(opponent.toppleState==="pushed" && opponent.trueRotation<0)
                 {
-                    opponent.angVelocity += -opponent.resistance*delta;
+                    opponent.angVelocity += opponent.resistance*delta;
                     opponent.trueRotation+=opponent.angVelocity*delta;
                     if(opponent.trueRotation>0)
                     {

@@ -35,10 +35,9 @@ var Containers = (function(){
         this.border.alpha = 0;
 
         this.opponent = new createjs.Shape();
-        this.opponent.graphics.beginFill(this.color).drawRect(0, 0, 50,200);
-        this.regX = 50;
-        this.regY = 200;
-
+        this.opponent.graphics.beginFill(this.color).drawRect(0,0, 50,200);
+        this.container.regX = 50;
+        this.container.regY = 200;
         this.xOffset = 0;
         this.xVelocity = 0;
         this.angVelocity = 0;
@@ -48,7 +47,7 @@ var Containers = (function(){
     
     ToppleOpponent.prototype.UpdateRotation = function(arg)
     {
-        this.rotation = arg/3;
+        this.container.rotation = arg/3;
     };
     
     ToppleOpponent.prototype.Highlight = function()
@@ -61,9 +60,9 @@ var Containers = (function(){
     
     ToppleOpponent.prototype.Redlight = function()
     {
-        this.border.graphics.beginStroke("da3f3a");
+        this.border.graphics.beginStroke("#da3f3a");
         this.border.graphics.setStrokeStyle(3); // 2 pixel
-        this.border.graphics.drawRect(0,0 ,50,200);
+        this.border.graphics.drawRect(0,0 ,50, 200);
         this.border.alpha=1;
     };
 
