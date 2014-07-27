@@ -27,5 +27,21 @@
                 </opponent>
             </opponents>		
         </interior>
+        <interior>
+        <name>black</name>
+            <backgroundColor>#111111</backgroundColor>
+            <foregroundColor>#222222</foregroundColor>
+            <opponents>                
+                <opponent>
+                    <color>#333333</color>
+                    <resistance>100</resistance>
+                    <leverage>10</leverage>
+                    <x>700</x>
+                    <y>250</y>
+                    <id>2</id>
+                    <state>preFight</state>                    
+                </opponent>
+            </opponents>		
+        </interior>
     </interiors>    
 </root>

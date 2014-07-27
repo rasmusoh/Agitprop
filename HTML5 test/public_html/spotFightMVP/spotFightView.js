@@ -77,28 +77,36 @@ var View =(function(){
         });
     };
     
-    view.Init = function ()
-    {    
+    view.Init = function (level)
+    {            
         xmlhttp=new XMLHttpRequest();            
         xmlhttp.open("GET","Data/InteriorData.xml",false);
         xmlhttp.send();
         xmlDoc=xmlhttp.responseXML;
         
+        interiors = xmlDoc.documentElement.getElementsByTagName("interior");                       
+        for (var j=0; j<interiors.length;j++)
+        {
+            if(interiors[j].getElementsByTagName('name')[0].childNodes[0].nodeValue === level)        
+                interior = interiors[j];
+        }
+        
         dialogue = new Dialogue(100,100,"50px Oswald");
         
         background = new createjs.Shape();
-        bgColor = xmlDoc.documentElement.getElementsByTagName("backgroundColor")[0].childNodes[0].nodeValue;
+        bgColor = interior.getElementsByTagName("backgroundColor")[0].childNodes[0].nodeValue;
         background.graphics.beginFill(bgColor).drawRect(0, 0, 800, 600);
         
         
         foreground = new createjs.Shape();
-        fgColor = xmlDoc.documentElement.getElementsByTagName("foregroundColor")[0].childNodes[0].nodeValue;
+        fgColor = interior.getElementsByTagName("foregroundColor")[0].childNodes[0].nodeValue;
         foreground.graphics.beginFill("#27231a").drawRect(0, 500, 2000, 200);
         
         stage = new createjs.Stage("agitpropCanvas");
         
         cont = new Containers();        
-        opponents = xmlDoc.documentElement.getElementsByTagName("opponent");               
+        opponents = interior.getElementsByTagName("opponent");                       
+        
         for (var i = 0; i<opponents.length; i++)
         {                    
             opp = cont.GetToppleOpponent(

@@ -24,11 +24,11 @@ var Model = (function(){
         this.angVelocity = 0;
         this.toppleState = "atRest";
     };   
-    mod.Init = function()
+    mod.Init = function(level)
     {
         //Should read from persistant state
         agg = new Agitator(0, 300, "standing");    
-        LoadOpponents();
+        LoadOpponents(level);
     };
     
     mod.GetAgitator = function()
@@ -42,14 +42,22 @@ var Model = (function(){
     };
     //mod.SaveToPersistantState = function() {}
     
-    function LoadOpponents(){
+    function LoadOpponents(level){
+       
         xmlhttp=new XMLHttpRequest();        
     
         xmlhttp.open("GET","Data/InteriorData.xml",false);
         xmlhttp.send();
         xmlDoc=xmlhttp.responseXML;
+        
+        interiors = xmlDoc.documentElement.getElementsByTagName("interior");                       
+        for (var j=0; j<interiors.length;j++)
+        {
+            if(interiors[j].getElementsByTagName('name')[0].childNodes[0].nodeValue === level)        
+                interior = interiors[j];
+        }
 
-        opponents = xmlDoc.documentElement.getElementsByTagName("opponent");       
+        opponents = interior.getElementsByTagName("opponent");       
         for (var i = 0; i<opponents.length; i++)
         {        
             OpponentsArray.push(
