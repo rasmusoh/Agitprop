@@ -16,8 +16,8 @@
             <opponents>
                 <opponent>
                     <color>#a05f75</color>
-                    <resistance>3000</resistance>
-                    <leverage>300</leverage>
+                    <resistance>1000</resistance>
+                    <leverage>120</leverage>
                     <x>390</x>
                     <y>500</y>
                     <id>1</id>

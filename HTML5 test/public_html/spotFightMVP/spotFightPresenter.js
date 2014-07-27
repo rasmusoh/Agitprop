@@ -4,10 +4,10 @@ var Presenter = (function(){
     controls,
     model,
     agitatorTimer,
-    counterVelocity =50,
+    counterVelocity =300,
     toppleVelocity =20,
     attackVelocity =40,
-    attackAngle=50,
+    attackAngle=-50,
     pushCharge = 150,
     pushRelease = 350,
     pullCharge = 150,
@@ -66,7 +66,7 @@ var Presenter = (function(){
                     || opponent.toppleState === "pushed" 
                     || opponent.toppleState === "attackRelease"))
             {
-                opponent.toppleState==="attacking";
+                opponent.toppleState="attacking";
             }
         });
     }
@@ -137,16 +137,16 @@ var Presenter = (function(){
                 }
                 else if(opponent.toppleState==="attacking")
                 {
-                    opponent.trueRotation+=attackVelocity;
-                    if(opponent.trueRotation>attackAngle)
+                    opponent.trueRotation-=attackVelocity;
+                    if(opponent.trueRotation<attackAngle)
                     {
-                        opponent.toppleState==="attackRelease";
+                        opponent.toppleState="attackRelease";
                     }
                 }
                 else if (opponent.toppleState==="attackRelease")
                 {
-                    opponent.trueRotation-=attackVelocity;
-                    if(opponent.trueRotation<0)
+                    opponent.trueRotation+=attackVelocity;
+                    if(opponent.trueRotation>0)
                     {
                         opponent.trueRotation=0;
                         opponent.toppleState="atRest";
@@ -215,7 +215,7 @@ var Presenter = (function(){
                 opponent.state = "fight";
             }
         });
-        if(agitator.state==="walkright")
+        if(agitator.state==="walkleft")
         {
             agitator.state = "pulling";
             agitatorTimer = pullCharge+pullRelease;
