@@ -87,8 +87,8 @@ var Model = (function(){
         {
             exitArray.push(
                     new Exit(
-                    opponents[i].getElementsByTagName("x")[0].childNodes[0].nodeValue,
-                    opponents[i].getElementsByTagName("destination")[0].childNodes[0].nodeValue)
+                    exits[i].getElementsByTagName("x")[0].childNodes[0].nodeValue,
+                    exits[i].getElementsByTagName("destination")[0].childNodes[0].nodeValue)
                     );
         }
     }

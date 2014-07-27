@@ -5,6 +5,6 @@ function gogogo ()
     ctrls = new Controls();
     model = new Model();
     presenter = new Presenter();
-    presenter.Init(view, ctrls, model);
+    presenter.Init(view, ctrls, model, "interiorTest");
  }
  
