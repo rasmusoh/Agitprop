@@ -1,9 +1,15 @@
 var Model = (function(){
     var mod = {},
-    agg,
-    opp1,
-    opp2,
+    agg,    
+    exitArray = [],
     OpponentsArray = [];
+    
+    function Exit(x, destination)
+    {
+        this.x = x;
+        this.destination = destination;
+    }
+    
     function Agitator(x, y, state) 
     {
         this.x = x;
@@ -28,7 +34,7 @@ var Model = (function(){
     {
         //Should read from persistant state
         agg = new Agitator(0, 300, "standing");    
-        LoadOpponents(level);
+        Load(level);
     };
     
     mod.GetAgitator = function()
@@ -40,9 +46,14 @@ var Model = (function(){
     {
         return OpponentsArray;
     };
+    
+    mod.GetExits = function()
+    {
+        return exitArray;
+    };
     //mod.SaveToPersistantState = function() {}
     
-    function LoadOpponents(level){
+    function Load(level){
        
         xmlhttp=new XMLHttpRequest();        
     
@@ -71,6 +82,15 @@ var Model = (function(){
                 )
             );        
         }                
+        exits = interior.getElementsByTagName("exit");
+        for (var i = 0; i<exits.length; i++)
+        {
+            exitArray.push(
+                    new Exit(
+                    opponents[i].getElementsByTagName("x")[0].childNodes[0].nodeValue,
+                    opponents[i].getElementsByTagName("destination")[0].childNodes[0].nodeValue)
+                    );
+        }
     }
     return mod;        
 });

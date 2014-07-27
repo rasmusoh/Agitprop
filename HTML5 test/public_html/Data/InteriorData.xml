@@ -6,6 +6,12 @@
             <name>interiorTest</name>
             <backgroundColor>#dbeba4</backgroundColor>
             <foregroundColor>#27231a</foregroundColor>
+            <exits>
+                <exit>
+                    <x>600</x>
+                    <destination>black</destination>
+                </exit>
+            </exits>
             <opponents>
                 <opponent>
                     <color>#a05f75</color>
@@ -25,7 +31,7 @@
                     <id>2</id>
                     <state>preFight</state>                    
                 </opponent>
-            </opponents>		
+            </opponents>            		
         </interior>
         <interior>
         <name>black</name>
