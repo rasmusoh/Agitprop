@@ -47,33 +47,10 @@ var Presenter = (function(){
         }
         
         if(agitator.state==="walkleft") {agitator.x-=event.delta/10;}
-        opponents.forEach(function(opponent){
-            view.UpdateRotation(opponent.ID,opponent.trueRotation)
-            if(agitator.x > opponent.x-280 && agitator.x < opponent.x-180 && 
-                    opponent.state==="preFight")
-            {
-                view.InRangeOffOpponent(opponent.ID);
-                if(controls.AttackPressed)
-                {
-                    view.Engage(opponent.ID);
-                    opponent.state = "fight";
-                    opponent.rising = true;
-                }
-            }
-            if(agitator.x < opponent.x-280 || agitator.x > opponent.x-180)
-            {
-                view.OutOfRangeOffOpponent(opponent.ID);
-                if(opponent.state==="fight")
-                {
-                    view.Disengage(opponent.ID);
-                    opponent.state ="preFight";
-                    opponent.rising = false;
-                }
-            }
-            view.OpponentPosition(opponent.ID, opponent.x, opponent.y);
-        });
-        
-        //Update View
+ 
+        opponents.forEach(updateOps);
+//        
+//        //Update View
         view.AgitatorPosition(agitator.x, agitator.y);
         
         view.UpdateStage(event);
@@ -156,15 +133,15 @@ var Presenter = (function(){
                         }
                     }   
                 }
-                else if(opponent.toppleState=="attacking")
+                else if(opponent.toppleState==="attacking")
                 {
                     opponent.trueRotation+=attackVelocity;
                     if(opponent.trueRotation>attackAngle)
                     {
-                        opponent.toppleState=="attackRelease";
+                        opponent.toppleState==="attackRelease";
                     }
                 }
-                else if (opponent.toppleState=="attackRelease")
+                else if (opponent.toppleState==="attackRelease")
                 {
                     opponent.trueRotation-=attackVelocity;
                     if(opponent.trueRotation<0)
@@ -238,6 +215,34 @@ var Presenter = (function(){
         }
                 
         
+    }
+    
+    function updateOps(opponent)
+    {   
+        view.UpdateRotation(opponent.ID,opponent.trueRotation);
+        if(agitator.x > opponent.x-280 && agitator.x < opponent.x-180 && 
+                opponent.state==="preFight")
+        {
+            view.InRangeOffOpponent(opponent.ID);
+            if(controls.AttackPressed)
+            {
+                view.Engage(opponent.ID);
+                opponent.state = "fight";
+                opponent.rising = true;
+            }
+        }
+        if(agitator.x < opponent.x-280 || agitator.x > opponent.x-180)
+        {
+            view.OutOfRangeOffOpponent(opponent.ID);
+            if(opponent.state==="fight")
+            {
+                view.Disengage(opponent.ID);
+                opponent.state ="preFight";
+                opponent.rising = false;
+            }
+        }
+        view.OpponentPosition(opponent.ID, opponent.x, opponent.y);
+
     }
     
     return presenter;

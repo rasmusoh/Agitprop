@@ -16,19 +16,19 @@ var Containers = (function(){
         this.graphics.beginFill(color).drawRect(0, 0, 50, 200);
     };
     
-    cont.ToppleOpponent = function(color,leverage,resist) 
+    cont.ToppleOpponent = function(color, id) 
     {
-        cont.ToppleOpponent.prototype.Init(color,leverage,resist);
+        cont.ToppleOpponent.prototype.Init(color,id);
     };
-
+   
     cont.ToppleOpponent.prototype = new createjs.Container();
     cont.ToppleOpponent.prototype.InheritedInit = cont.ToppleOpponent.prototype.initialize;
     
     cont.ToppleOpponent.prototype.Init = function(color,id)
     {           
         cont.ToppleOpponent.prototype.InheritedInit();     
-        this.ID = id;
-        this.color = color; 
+        cont.ToppleOpponent.prototype.ID = id;
+        cont.ToppleOpponent.prototype.color = color; 
         
         this.border = new createjs.Shape();
         this.border.graphics.beginStroke("#fef6ad");
@@ -54,19 +54,14 @@ var Containers = (function(){
     };
     
     cont.ToppleOpponent.prototype.Highlight = function()
-    {
-        this.border.graphics.beginStroke("#da3f3a");
-        this.border.graphics.setStrokeStyle(3); // 2 pixel
-        this.border.graphics.drawRect(0,0 ,this.opponentWidth,this.opponentHeight);
+    {        
         this.border.alpha=1;
     };
     
     cont.ToppleOpponent.prototype.Redlight = function()
     {
-        this.border.graphics.beginStroke("#fef6ad");
-        this.border.graphics.setStrokeStyle(3); // 2 pixel
-        this.border.graphics.drawRect(0,0 ,this.opponentWidth,this.opponentHeight);
-    }
+        console.log('Redlight not implemented')
+    };
 
     cont.ToppleOpponent.prototype.Downlight = function()
     {
