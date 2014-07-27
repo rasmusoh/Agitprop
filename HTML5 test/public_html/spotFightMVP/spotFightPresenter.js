@@ -16,11 +16,10 @@ var Presenter = (function(){
     physicsDelta = 0
     ;
         
-    var agitator, opponents;
+    var agitator, opponents, exits;
     
-    presenter.Init = function(viewArg, controlsArg, modelArg)
-    {
-        level = "interiorTest";
+    presenter.Init = function(viewArg, controlsArg, modelArg, level)
+    {        
         view = viewArg;
         controls = controlsArg;        
         model = modelArg;
@@ -29,9 +28,10 @@ var Presenter = (function(){
         model.Init(level);
         agitator = model.GetAgitator();
         opponents = model.GetOpponents();
+        exits = model.GetExits();        
         createjs.Ticker.addEventListener("tick",tick); 
     };
-    
+        
     //One tick to rule them all
     function tick(event)
     {
@@ -50,8 +50,9 @@ var Presenter = (function(){
         if(agitator.state==="walkleft") {agitator.x-=event.delta/10;}
  
         opponents.forEach(updateOps);
-//        
-//        //Update View
+      
+        exits.forEach(checkExit);
+        //Update View
         view.AgitatorPosition(agitator.x, agitator.y);
         
         view.UpdateStage(event);
@@ -254,6 +255,14 @@ var Presenter = (function(){
         view.OpponentPosition(opponent.ID, opponent.x, opponent.y);
 
     }
+    
+    function checkExit(exit) 
+    {
+        if(Math.abs(agitator.x-exit.x)<10)
+        {
+            console.log("not implemented. Destination: " + xit.destination);
+        }
+    };
     
     return presenter;
 });
