@@ -1,21 +1,13 @@
-var Controls = (function(){
+var Controls = (function(presenter){
     
     var ctrls = {}
-    ,up, down, left, right, attack,newAttack;
+    ,up, down, left, right, attack,attackEvent;
     ctrls.UpPressed = function(){return up;};
     ctrls.DownPressed = function(){return down;};
     ctrls.LeftPressed = function(){return left;};
     ctrls.RightPressed = function(){return right;};
     ctrls.AttackPressed = function(){return attack;};
-    ctrls.AttackPressedNew = function()
-    {
-        if(newAttack)
-        {
-            newAttack = false;
-            return true;
-        }
-        else{return false};
-    }
+    
         KEYCODE_W=87;
         KEYCODE_UP=38;
         KEYCODE_DOWN=40;
@@ -27,13 +19,13 @@ var Controls = (function(){
         KEYCODE_SPACE=32;
         KEYCODE_ENTER = 13;
 
-    ctrls.Init = function(){        
+    ctrls.Init = function(presenter){        
         down = false;
         up = false;        
         left = false;
         right = false;      
         attack = false;
-        newAttack = false;
+        this.presenter = presenter;
         
         document.onkeydown = function (event)
         {
@@ -63,7 +55,9 @@ var Controls = (function(){
             break;
         case KEYCODE_SPACE:     
             attack = true;
-            newAttack  = true;
+            
+            this.presenter.handleAttack(); //should prolly be implemented as 
+            //  dispatched event event
             break;
         }
     }

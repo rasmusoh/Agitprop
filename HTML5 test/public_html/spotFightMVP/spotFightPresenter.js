@@ -24,11 +24,11 @@ var Presenter = (function(){
         controls = controlsArg;        
         model = modelArg;
         view.Init();
-        controls.Init();
+        controls.Init(this);
         model.Init();
         agitator = model.GetAgitator();
         opponents = model.GetOpponents();
-        createjs.Ticker.addEventListener("tick",tick);        
+        createjs.Ticker.addEventListener("tick",tick); 
     };
     
     //One tick to rule them all
@@ -159,33 +159,18 @@ var Presenter = (function(){
         left = controls.LeftPressed();
         up = controls.UpPressed();
         down = controls.DownPressed();
-        attack = controls.AttackPressedNew();
         switch(agitator.state)
         {
             case "standing":
                 if(right){agitator.state = "walkright";}
                 if(left){agitator.state = "walkleft";}
-                if(attack)
-                {
-                    agitator.state = "pushing";
-                    agitatorTimer = pushCharge+pushRelease;
-                }
+
                 break;
             case "walkright":
                 if(!right){agitator.state = "standing";}
-                if(attack)
-                {
-                    agitator.state = "pulling";
-                    agitatorTimer = pullCharge+pullRelease;
-                }
                 break;
             case "walkleft":
                 if(!left){agitator.state = "standing";}
-                if(attack)
-                {
-                    agitator.state = "pushing";
-                    agitatorTimer = pushCharge+pushRelease;
-                }
                 break;
             case "pushing":
                 agitatorTimer-=e.delta;
@@ -217,21 +202,45 @@ var Presenter = (function(){
         
     }
     
-    function updateOps(opponent)
-    {   
-        view.UpdateRotation(opponent.ID,opponent.trueRotation);
-        if(agitator.x > opponent.x-280 && agitator.x < opponent.x-180 && 
-                opponent.state==="preFight")
+   presenter.handleAttack = function(e)
+    {
+        console.log("attack!");
+        opponents.forEach(function(opponent)
         {
-            view.InRangeOffOpponent(opponent.ID);
-            if(controls.AttackPressed)
+            if(inRange(opponent))
             {
                 view.Engage(opponent.ID);
                 opponent.state = "fight";
-                opponent.rising = true;
             }
+        });
+        if(agitator.state==="walkright")
+        {
+            agitator.state = "pulling";
+            agitatorTimer = pullCharge+pullRelease;
         }
-        if(agitator.x < opponent.x-280 || agitator.x > opponent.x-180)
+        else
+        {
+            agitator.state = "pushing";
+            agitatorTimer = pushCharge+pushRelease;
+        }
+    }
+    
+    function inRange(opponent)
+    {
+        if(agitator.x > opponent.x-280 && agitator.x < opponent.x-180){
+            return true;}
+        else{return false;}
+    }
+    
+    function updateOps(opponent)
+    {   
+        view.UpdateRotation(opponent.ID,opponent.trueRotation);
+        if(inRange(opponent) && 
+                opponent.state==="preFight")
+        {
+            view.InRangeOffOpponent(opponent.ID);
+        }
+        if(!inRange(opponent))
         {
             view.OutOfRangeOffOpponent(opponent.ID);
             if(opponent.state==="fight")

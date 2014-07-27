@@ -52,13 +52,19 @@ var Containers = (function(){
     };
     
     ToppleOpponent.prototype.Highlight = function()
-    {        
+    {
+        this.border.graphics.beginStroke("#fef6ad");
+        this.border.graphics.setStrokeStyle(3); // 2 pixel
+        this.border.graphics.drawRect(0,0, 50,200);
         this.border.alpha=1;
     };
     
     ToppleOpponent.prototype.Redlight = function()
     {
-        console.log('Redlight not implemented');
+        this.border.graphics.beginStroke("da3f3a");
+        this.border.graphics.setStrokeStyle(3); // 2 pixel
+        this.border.graphics.drawRect(0,0 ,50,200);
+        this.border.alpha=1;
     };
 
     ToppleOpponent.prototype.Downlight = function()
