@@ -18,8 +18,8 @@ var View =(function(){
         opponentArray.forEach(function(opponent){
 		if(opponent.ID===id)
                 {
-        	      opponent.x=X; 
-                      opponent.y=Y; 
+        	    opponent.container.x=X; 
+                    opponent.container.y=Y; 
                 }
        });
     };
@@ -101,14 +101,18 @@ var View =(function(){
         opponents = xmlDoc.documentElement.getElementsByTagName("opponent");               
         for (var i = 0; i<opponents.length; i++)
         {                    
-            opp = new cont.ToppleOpponent(
+            opp = cont.GetToppleOpponent(
                     opponents[i].getElementsByTagName("color")[0].childNodes[0].nodeValue,
                     opponents[i].getElementsByTagName("id")[0].childNodes[0].nodeValue
             );                
 
             opp.x = opponents[i].getElementsByTagName("x")[0].childNodes[0].nodeValue;
             opp.y = opponents[i].getElementsByTagName("y")[0].childNodes[0].nodeValue;
-            opponentArray.push(opp);
+            console.log(opponentArray);
+            console.log(opponentArray[1]);
+            console.log(opponentArray[2]);
+            console.log(opp.ID);
+            opponentArray[opp.ID] = opp;
         }  
         
         agitator = new cont.Agitator("#da3f3a");
@@ -116,7 +120,7 @@ var View =(function(){
         agitator.y = 300;                
         
         stage.addChild(background, agitator);
-        opponentArray.forEach(function(opponent){stage.addChild(opponent);});       
+        opponentArray.forEach(function(opponent){stage.addChild(opponent.container);});       
         stage.addChild(foreground);  
         stage.update();        
     };        

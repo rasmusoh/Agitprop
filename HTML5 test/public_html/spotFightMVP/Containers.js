@@ -16,19 +16,17 @@ var Containers = (function(){
         this.graphics.beginFill(color).drawRect(0, 0, 50, 200);
     };
     
-    cont.ToppleOpponent = function(color, id) 
+    cont.GetToppleOpponent = function (color,id)
     {
-        cont.ToppleOpponent.prototype.Init(color,id);
+        return new ToppleOpponent(color, id);
     };
-   
-    cont.ToppleOpponent.prototype = new createjs.Container();
-    cont.ToppleOpponent.prototype.InheritedInit = cont.ToppleOpponent.prototype.initialize;
     
-    cont.ToppleOpponent.prototype.Init = function(color,id)
-    {           
-        cont.ToppleOpponent.prototype.InheritedInit();     
-        cont.ToppleOpponent.prototype.ID = id;
-        cont.ToppleOpponent.prototype.color = color; 
+    function ToppleOpponent (color, id) 
+    {
+        this.ID = id;
+        this.color = color;  
+           
+        this.container = new createjs.Container();
         
         this.border = new createjs.Shape();
         this.border.graphics.beginStroke("#fef6ad");
@@ -37,7 +35,7 @@ var Containers = (function(){
         this.border.alpha = 0;
 
         this.opponent = new createjs.Shape();
-        this.opponent.graphics.beginFill(color).drawRect(0, 0, 50,200);
+        this.opponent.graphics.beginFill(this.color).drawRect(0, 0, 50,200);
         this.regX = 50;
         this.regY = 200;
 
@@ -45,38 +43,38 @@ var Containers = (function(){
         this.xVelocity = 0;
         this.angVelocity = 0;
         this.rotation = 0;
-        this.addChild(this.opponent,this.border);
+        this.container.addChild(this.opponent,this.border);
     };    
     
-    cont.ToppleOpponent.prototype.UpdateRotation = function(arg)
+    ToppleOpponent.prototype.UpdateRotation = function(arg)
     {
         this.rotation = arg/3;
     };
     
-    cont.ToppleOpponent.prototype.Highlight = function()
+    ToppleOpponent.prototype.Highlight = function()
     {        
         this.border.alpha=1;
     };
     
-    cont.ToppleOpponent.prototype.Redlight = function()
+    ToppleOpponent.prototype.Redlight = function()
     {
-        console.log('Redlight not implemented')
+        console.log('Redlight not implemented');
     };
 
-    cont.ToppleOpponent.prototype.Downlight = function()
+    ToppleOpponent.prototype.Downlight = function()
     {
         this.border.alpha=0;
     };
     
-    cont.ToppleOpponent.prototype.Raise = function()
+    ToppleOpponent.prototype.Raise = function()
     {
         this.Redlight();
-    }
+    };
 
-    cont.ToppleOpponent.prototype.Lower = function()
+    ToppleOpponent.prototype.Lower = function()
     {
         this.Downlight();
-    }
+    };
     
    return cont; 
 });
