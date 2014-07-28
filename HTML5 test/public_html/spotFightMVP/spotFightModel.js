@@ -2,7 +2,7 @@ var Model = (function(){
     var mod = {},
     agg,    
     exitArray = [],
-    OpponentsArray = [];
+    opponentArray = [];
     
     function Exit(x, destination)
     {
@@ -34,7 +34,11 @@ var Model = (function(){
     {
         //Should read from persistant state
         agg = new Agitator(0, 300, "standing");    
-        Load(level);
+        var interior=LoadInterior(level);
+        opponentArray = LoadOpponent(interior)
+        exitArray = LoadExit(interior)
+        
+        
     };
     
     mod.GetAgitator = function()
@@ -44,7 +48,7 @@ var Model = (function(){
     
     mod.GetOpponents = function()
     {
-        return OpponentsArray;
+        return opponentArray;
     };
     
     mod.GetExits = function()
@@ -53,7 +57,7 @@ var Model = (function(){
     };
     //mod.SaveToPersistantState = function() {}
     
-    function Load(level){
+    function LoadInterior(level){
        
         xmlhttp=new XMLHttpRequest();        
     
@@ -67,11 +71,16 @@ var Model = (function(){
             if(interiors[j].getElementsByTagName('name')[0].childNodes[0].nodeValue === level)        
                 interior = interiors[j];
         }
+        return interior;
+    }
 
+    function LoadOpponent(interior)
+    {
         opponents = interior.getElementsByTagName("opponent");       
+        oA = [];
         for (var i = 0; i<opponents.length; i++)
         {        
-            OpponentsArray.push(
+            oA.push(
                 new Opponent(
                 opponents[i].getElementsByTagName("x")[0].childNodes[0].nodeValue,
                 opponents[i].getElementsByTagName("y")[0].childNodes[0].nodeValue,
@@ -81,16 +90,23 @@ var Model = (function(){
                 opponents[i].getElementsByTagName("state")[0].childNodes[0].nodeValue
                 )
             );        
-        }                
+        }    
+        return oA;
+    }
+    
+    function LoadExit(interior)
+    {
         exits = interior.getElementsByTagName("exit");
+        eA=[];
         for (var i = 0; i<exits.length; i++)
         {
-            exitArray.push(
+            eA.push(
                     new Exit(
                     exits[i].getElementsByTagName("x")[0].childNodes[0].nodeValue,
                     exits[i].getElementsByTagName("destination")[0].childNodes[0].nodeValue)
                     );
         }
+        return eA;
     }
     return mod;        
 });

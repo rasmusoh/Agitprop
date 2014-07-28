@@ -20,9 +20,13 @@ var Presenter = (function(){
     
     presenter.Init = function(viewArg, controlsArg, modelArg, level)
     {        
-        view = viewArg;
-        controls = controlsArg;        
-        model = modelArg;
+        createjs.Ticker.removeAllEventListeners();
+        if(view === undefined)
+            view = viewArg;
+        if(controls === undefined)
+            controls = controlsArg;        
+        if(model === undefined)
+            model = modelArg;
         view.Init(level);
         controls.Init(this);
         model.Init(level);
@@ -260,7 +264,7 @@ var Presenter = (function(){
     {
         if(Math.abs(agitator.x-exit.x)<10)
         {
-            console.log("not implemented. Destination: " + xit.destination);
+            presenter.Init(View, Controls, Model, exit.destination);
         }
     };
     

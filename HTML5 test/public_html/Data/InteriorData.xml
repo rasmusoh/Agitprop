@@ -8,7 +8,7 @@
             <foregroundColor>#27231a</foregroundColor>
             <exits>
                 <exit>
-                    <x>800</x>
+                    <x>200</x>
                     <destinationType>interior</destinationType>
                     <destination>black</destination>
                 </exit>
@@ -38,9 +38,13 @@
         <name>black</name>
             <backgroundColor>#111111</backgroundColor>
             <foregroundColor>#222222</foregroundColor>
-            <x>800</x>
+            <exits>
+                <exit>
+                    <x>200</x>
                     <destinationType>interior</destinationType>
                     <destination>interiorTest</destination>
+                </exit>
+            </exits>
             <opponents>                
                 <opponent>
                     <color>#333333</color>

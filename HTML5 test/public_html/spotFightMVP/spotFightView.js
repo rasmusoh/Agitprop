@@ -79,6 +79,7 @@ var View =(function(){
     
     view.Init = function (level)
     {            
+        opponentArray=[];        
         xmlhttp=new XMLHttpRequest();            
         xmlhttp.open("GET","Data/InteriorData.xml",false);
         xmlhttp.send();
@@ -102,7 +103,14 @@ var View =(function(){
         fgColor = interior.getElementsByTagName("foregroundColor")[0].childNodes[0].nodeValue;
         foreground.graphics.beginFill("#27231a").drawRect(0, 500, 2000, 200);
         
-        stage = new createjs.Stage("agitpropCanvas");
+        if(stage !== undefined)
+        {
+            stage.removeAllChildren();
+        }
+        else
+        {
+            stage = new createjs.Stage("agitpropCanvas");
+        }
         
         cont = new Containers();        
         opponents = interior.getElementsByTagName("opponent");                       
