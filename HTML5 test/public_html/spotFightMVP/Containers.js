@@ -1,20 +1,49 @@
 var Containers = (function(){    
     var cont={};
-    cont.Agitator = function (color) 
+    cont.GetAgitator = function (color, barColor) 
     {
-        cont.Agitator.prototype.Init(color);
-    };
-    //inheritance
-    cont.Agitator.prototype = new createjs.Shape();
-    cont.Agitator.prototype.InheritedInit = cont.Agitator.prototype.initialize;
-
+        return new Agitator(color, barColor);
+    };    
     //constructor
-    cont.Agitator.prototype.Init = function (color) 
+    function Agitator(agitatorColor, barColor) 
     {
-        cont.Agitator.prototype.InheritedInit();
-        this.color = color;        
-        this.graphics.beginFill(color).drawRect(0, 0, 50, 200);
+        this.container = new createjs.Container();
+        this.agitatorShape = new createjs.Shape();               
+        this.barShape1 = new createjs.Shape();
+        this.barShape2 = new createjs.Shape();
+        this.barShape3 = new createjs.Shape();
+        this.agitatorShape.graphics.beginFill(agitatorColor).drawRect(0, 0, 50, 200);
+        this.barShape1.graphics.beginFill(barColor).drawRect(0, -20, 10, 10);
+        this.barShape2.graphics.beginFill(barColor).drawRect(20, -20, 10, 10);
+        this.barShape3.graphics.beginFill(barColor).drawRect(40, -20, 10, 10);
+        this.barShape1.alpha = 0;
+        this.barShape2.alpha = 0;
+        this.barShape3.alpha = 0;
+        this.barShapeArray = [];
+        this.barShapeArray[0] = this.barShape1;
+        this.barShapeArray[1] = this.barShape2;
+        this.barShapeArray[2] = this.barShape3;
+        this.stutter = new createjs.Text();
+        this.stutter.text = "ehm... well... \n\
+                            you know.";
+        this.stutter.font = "20px Oswald";
+        this.stutter.color = "#FF7700";
+        this.stutter.x = -30;
+        this.stutter.y = -70;
+        this.stutter.alpha = 0;
+        this.container.addChild(this.agitatorShape, this.barShape1,this.barShape2,this.barShape3, this.stutter);
     };
+    
+    Agitator.prototype.SetBars = function(howmany)
+    {
+        for (i=0; i<3;i++)
+        {
+            if(i<howmany)
+                this.barShapeArray[i].alpha = 1;
+            else
+                this.barShapeArray[i].alpha = 0;
+        }                  
+    };        
     
     cont.GetToppleOpponent = function (color,id)
     {

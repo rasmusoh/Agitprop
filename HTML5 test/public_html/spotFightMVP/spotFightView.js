@@ -9,8 +9,8 @@ var View =(function(){
     agitator;
     view.AgitatorPosition = function(X,Y)
     {
-        agitator.x=X;
-        agitator.y=Y;
+        agitator.container.x=X;
+        agitator.container.y=Y;
     };
     
     view.OpponentPosition = function(id,X,Y)
@@ -77,6 +77,24 @@ var View =(function(){
         });
     };
     
+    view.AgitatorPushBar = function(pct)
+    {
+        if(pct<0.34)
+            agitator.SetBars(1);
+        else if(pct<0.67)
+            agitator.SetBars(2);
+        else if(pct>=1) 
+            agitator.SetBars(3);
+    };
+    
+    view.AgitatorStutter = function(isStuttering)
+    {
+        if(isStuttering)
+            agitator.stutter.alpha = 1;
+        else
+            agitator.stutter.alpha = 0;
+    };
+    
     view.Init = function (level)
     {            
         opponentArray=[];        
@@ -131,11 +149,9 @@ var View =(function(){
             opponentArray[opp.ID] = opp;
         }  
         
-        agitator = new cont.Agitator("#da3f3a");
-        agitator.x = 0;
-        agitator.y = 300;                
+        agitator = cont.GetAgitator("#da3f3a", "#333333");        
         
-        stage.addChild(background, agitator);
+        stage.addChild(background, agitator.container);
         opponentArray.forEach(function(opponent){stage.addChild(opponent.container);});       
         stage.addChild(foreground);  
         stage.update();        

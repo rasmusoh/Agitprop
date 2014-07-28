@@ -1,12 +1,13 @@
 var Controls = (function(presenter){
     
     var ctrls = {}
-    ,up, down, left, right, attack,attackEvent;
+    ,up, down, left, right, attack, z;
     ctrls.UpPressed = function(){return up;};
     ctrls.DownPressed = function(){return down;};
     ctrls.LeftPressed = function(){return left;};
     ctrls.RightPressed = function(){return right;};
     ctrls.AttackPressed = function(){return attack;};
+    ctrls.ZPressed = function(){return z;};
     
         KEYCODE_W=87;
         KEYCODE_UP=38;
@@ -18,6 +19,7 @@ var Controls = (function(presenter){
         KEYCODE_RIGHT=39;
         KEYCODE_SPACE=32;
         KEYCODE_ENTER = 13;
+        KEYCODE_Z = 90;
 
     ctrls.Init = function(presenter){        
         down = false;
@@ -35,7 +37,7 @@ var Controls = (function(presenter){
         {
              handleKeyUp(event);
         };   
-    }
+    };
     
     function handleKeyDown (event){
         switch (event.keyCode) {
@@ -54,10 +56,13 @@ var Controls = (function(presenter){
                 right = true;
             break;
         case KEYCODE_SPACE:     
-            attack = true;
-            
-            this.presenter.handleAttack(); //should prolly be implemented as 
+            attack = true;            
+            this.presenter.handleAttack("normal"); //should prolly be implemented as 
             //  dispatched event event
+            break;
+        case KEYCODE_Z:     
+            z = true;                        
+            this.presenter.handleAttack("filabuster");
             break;
         }
     }
