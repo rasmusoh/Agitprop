@@ -71,6 +71,7 @@ var Containers = (function(){
     {
         this.ID = id;
         this.color = color;  
+        this.facingLeft = true;
            
         this.container = new createjs.Container();
         
@@ -93,8 +94,20 @@ var Containers = (function(){
     
     ToppleOpponent.prototype.UpdateRotation = function(arg)
     {
-        this.container.rotation = arg/3;
+        
+        if(this.facingLeft)
+        {
+            this.container.rotation = arg/3;            
+            this.container.regX = 50;
+        }
+        else    
+        {
+            this.container.rotation = -arg/3;                    
+            this.container.regX = 0;
+        }
     };
+    
+    
     
     ToppleOpponent.prototype.Highlight = function()
     {
@@ -117,36 +130,35 @@ var Containers = (function(){
         this.border.alpha=0;
     };
             
-    ToppleOpponent.prototype.DamageTick = function()
-    {
-        if (this.xVelocity===14)
-        {
-            this.opponent.graphics.beginFill(this.color).drawRect(0, 0, 
-                            this.opponentWidth,this.opponentHeight);
-        }
-        if(this.xVelocity>0)
-        {
-            this.xVelocity-=40*delta/1000;
-            this.x+=this.xVelocity;
-                if(this.xVelocity<=0)
-                {
-                    this.xVelocity=0;
-                }
-        }
-        else
-        {
-            r1 = -4000;
-            this.torque = this.g*r1/100;
-            this.angVelocity += this.torque*delta/1000;
-            this.rotation+=this.angVelocity*delta/1000;
-            if(this.rotation<0)
-            {
-                this.angVelocity = 0;
-                this.rotation=0;
-                this.toppleState="atRest";
-            }
-        }
-    }
+//    ToppleOpponent.prototype.DamageTick = function()
+//    {
+//        if (this.xVelocity===14)
+//        {
+//            this.opponent.graphics.beginFill(this.color).drawRect(0, 0, 
+//                            this.opponentWidth,this.opponentHeight);
+//        }
+//        if(this.xVelocity>0)
+//        {
+//            this.xVelocity-=40*delta/1000;
+//            this.x+=this.xVelocity;
+//                if(this.xVelocity<=0)
+//                {
+//                    this.xVelocity=0;
+//                }
+//        }
+//        else
+//        {
+//            r1 = -4000;
+//            this.torque = this.g*r1/100;
+//            this.angVelocity += this.torque*delta/1000;
+//            this.rotation+=this.angVelocity*delta/1000;
+//            if(this.rotation<0)
+//            {
+//                this.angVelocity = 0;
+//                this.rotation=0;
+//            }
+//        }
+//    };
     cont.GetExit = function (destination, x) 
     {
         return new Exit(destination, x);

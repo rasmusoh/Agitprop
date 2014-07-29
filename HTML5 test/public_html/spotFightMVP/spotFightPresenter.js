@@ -56,13 +56,13 @@ var Presenter = (function(){
         if(agitator.state==="walkright") 
         {
             if(agitator.x<740)            
-                agitator.x+=event.delta/10;            
+                agitator.x+=event.delta/1;            
         }
         
         if(agitator.state==="walkleft") 
         {
             if(agitator.x>0)
-                agitator.x-=event.delta/10;
+                agitator.x-=event.delta/1;
         }
  
         opponents.forEach(updateOps);
@@ -127,7 +127,7 @@ var Presenter = (function(){
     {
         opponents.forEach(function(opponent)
         {
-            if(opponent.state==="fight")
+            if(opponent.state==="fight" || opponent.toppleState==="pushed")
             {
                 if((opponent.toppleState==="pushed" || opponent.toppleState==="filibustered") 
                         && opponent.trueRotation>=0)
@@ -272,8 +272,8 @@ var Presenter = (function(){
    presenter.handleAttack = function(typeOfAttack)
     {
             opponents.forEach(function(opponent)
-            {
-                if(inRange(opponent))
+            {                
+                if(opponent.state !== "toppled" && inRange(opponent))
                 {
                     view.Engage(opponent.ID);
                     opponent.state = "fight";
@@ -315,14 +315,27 @@ var Presenter = (function(){
     
     function inRange(opponent)
     {
-        if(agitator.x > opponent.x-280 && agitator.x < opponent.x-180){
-            return true;}
-        else{return false;}
+        if(Math.abs(agitator.x - opponent.x) < 280)
+        {
+            return true;
+        }
+        else
+        {
+            return false;
+        }
     }
     
     function updateOps(opponent)
-    {                       
-        view.UpdateRotation(opponent.ID,opponent.trueRotation);
+    {            
+        if(opponent.x<agitator.x && opponent.state==="fight")
+        {
+            view.FlipOpponent(opponent.ID, false);
+        }
+        else if(opponent.x>agitator.x && opponent.state==="fight")
+        {
+            view.FlipOpponent(opponent.ID, true);
+        }
+                
         if(inRange(opponent) && 
                 opponent.state==="preFight")
         {
@@ -334,9 +347,10 @@ var Presenter = (function(){
             if(opponent.state==="fight")
             {
                 view.Disengage(opponent.ID);
-                opponent.state ="preFight";
+                opponent.state = "preFight";
             }
         }
+        view.UpdateRotation(opponent.ID,opponent.trueRotation);
         view.OpponentPosition(opponent.ID, opponent.x, opponent.y);
 
     }

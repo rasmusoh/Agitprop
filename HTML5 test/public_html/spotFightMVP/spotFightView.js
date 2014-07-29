@@ -1,8 +1,7 @@
 var View =(function(){
     var view ={},    
     dialogue,
-    background,
-    fightShade1,    
+    background,    
     foreground,
     stage,
     opponentArray =[],
@@ -15,13 +14,8 @@ var View =(function(){
     
     view.OpponentPosition = function(id,X,Y)
     {        
-        opponentArray.forEach(function(opponent){
-		if(opponent.ID===id)
-                {
-        	    opponent.container.x=X; 
-                    opponent.container.y=Y; 
-                }
-       });
+        opponentArray[id].container.x=X; 
+        opponentArray[id].container.y=Y;         
     };
     view.UpdateStage = function()
     {
@@ -30,51 +24,26 @@ var View =(function(){
     
     view.UpdateRotation = function(id,trueRotation)
     {
-        opponentArray.forEach(function(opponent){
-                 if(opponent.ID===id)
-                 {
-                       opponent.UpdateRotation(trueRotation);                        
-                 }
-        });
+        opponentArray[id].UpdateRotation(trueRotation);                                         
     };
     view.InRangeOffOpponent = function(id)
     {
-       opponentArray.forEach(function(opponent){
-		if(opponent.ID===id)
-                {
-        	      opponent.Highlight();                      
-                }
-       });
+       opponentArray[id].Highlight();                                      
     };
     
     view.OutOfRangeOffOpponent = function(id)
     {
-        opponentArray.forEach(function(opponent){
-		if(opponent.ID===id)
-                {
-        	      opponent.Downlight();
-                }
-       });
+        opponentArray[id].Downlight();
     };
     
     view.Engage = function(id)
     {
-        opponentArray.forEach(function(opponent){
-		if(opponent.ID===id)
-                {
-        	      opponent.Redlight(); 
-                }
-       });
+        opponentArray[id].Redlight();                 
     };
     
     view.Disengage = function(id)
     {       
-        opponentArray.forEach(function(opponent){
-                 if(opponent.ID===id)
-                 {
-                       opponent.Downlight(); 
-                 }
-        });
+        opponentArray[id].Downlight();                          
     };
     
     view.AgitatorPushBar = function(pct)
@@ -95,6 +64,14 @@ var View =(function(){
             agitator.stutter.alpha = 1;
         else
             agitator.stutter.alpha = 0;
+    };
+    
+    view.FlipOpponent = function(id, facingLeft)
+    {
+        if (opponentArray[id].facingLeft !==facingLeft)
+        {
+            opponentArray[id].facingLeft=facingLeft;     
+        }
     };
     
     view.Init = function (level)
