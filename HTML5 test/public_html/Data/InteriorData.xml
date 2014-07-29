@@ -5,10 +5,11 @@
         <interior>
             <name>interiorTest</name>
             <backgroundColor>#dbeba4</backgroundColor>
-            <foregroundColor>#27231a</foregroundColor>
+            <foregroundColor>#27231a</foregroundColor>            
+            <mapWidth>700</mapWidth>
             <exits>
                 <exit>
-                    <x>800</x>
+                    <x>700</x>
                     <destinationType>interior</destinationType>
                     <destination>black</destination>
                 </exit>
@@ -18,16 +19,16 @@
                     <color>#a05f75</color>
                     <resistance>220</resistance>
                     <leverage>120</leverage>
-                    <x>390</x>
+                    <x>290</x>
                     <y>500</y>
                     <id>1</id>
                     <state>preFight</state>
                 </opponent>
                 <opponent>
                     <color>#a05321</color>
-                    <resistance>70</resistance>
-                    <leverage>35</leverage>
-                    <x>700</x>
+                    <resistance>320</resistance>
+                    <leverage>160</leverage>
+                    <x>550</x>
                     <y>500</y>
                     <id>2</id>
                     <state>preFight</state>                    
@@ -40,7 +41,7 @@
             <foregroundColor>#222222</foregroundColor>
             <exits>
                 <exit>
-                    <x>800</x>
+                    <x>700</x>
                     <destinationType>interior</destinationType>
                     <destination>interiorTest</destination>
                 </exit>

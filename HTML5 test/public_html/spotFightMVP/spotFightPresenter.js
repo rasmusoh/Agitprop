@@ -6,15 +6,17 @@ var Presenter = (function(){
     agitatorAttackTimer =0,
     attackCheckBool=false,
     stutter = false,
-    stutter2 = false,
+    firstTimeStutter = false,
     stutterDebuff =0,
     stutterTime = 1000,
     counterVelocity =300,
     toppleVelocity =20,
     attackVelocity =40,
     attackAngle=-50,
-    pushCharge = 0,
-    pushRelease = 700,
+    pushCharge = 200,
+    pushRelease = 500,
+    filibusterCharge = 0,
+    filibusterRelease = 1000,
     pullCharge = 150,
     pullRelease =350,
     physicsStepSize = 20,
@@ -53,10 +55,15 @@ var Presenter = (function(){
         //update position
         if(agitator.state==="walkright") 
         {
-            agitator.x+=event.delta/10;
+            if(agitator.x<740)            
+                agitator.x+=event.delta/10;            
         }
         
-        if(agitator.state==="walkleft") {agitator.x-=event.delta/10;}
+        if(agitator.state==="walkleft") 
+        {
+            if(agitator.x>0)
+                agitator.x-=event.delta/10;
+        }
  
         opponents.forEach(updateOps);
       
@@ -74,6 +81,7 @@ var Presenter = (function(){
         {
             if(opponent.state==="fight"  && (opponent.toppleState === "atRest" 
                     || opponent.toppleState === "pushed" 
+                    || opponent.toppleState === "filibustered" 
                     || opponent.toppleState === "attackRelease"))
             {
                 opponent.toppleState="attacking";
@@ -82,24 +90,24 @@ var Presenter = (function(){
     }
     
     function pushCheck()
-    {
-        console.log("pushC");
+    {        
         opponents.forEach(function(opponent)
         {
             if(opponent.state==="fight"  && !stutter &&(opponent.toppleState === "atRest"                     
                     || opponent.toppleState === "pushed"
+                    || opponent.toppleState === "filibustered"
                     || opponent.toppleState === "attackRelease"))
             {
-                if(agitator.state === "pushing")
+                if(agitator.state === "pushing" )
                 {
                     opponent.angVelocity=opponent.leverage;
                     opponent.toppleState="pushed";
                     
                 }
-                else if (agitator.state === "filabustering")
-                {
+                else if (agitator.state === "filibustering")
+                {                    
                     opponent.angVelocity=0.5*opponent.leverage;
-                    opponent.toppleState="pushed";
+                    opponent.toppleState="filibustered";
                 }                
             }
         });
@@ -121,16 +129,22 @@ var Presenter = (function(){
         {
             if(opponent.state==="fight")
             {
-                if(opponent.toppleState==="pushed" && opponent.trueRotation>=0)
-                {
-                    if(stutter2)
+                if((opponent.toppleState==="pushed" || opponent.toppleState==="filibustered") 
+                        && opponent.trueRotation>=0)
+                {                   
+                    if(firstTimeStutter)
                     {
                         opponent.angVelocity -= opponent.resistance*delta;                        
-                        stutter2 = false;
+                        firstTimeStutter = false;
                     }
-                    else
-                    {
-                        opponent.angVelocity -= opponent.resistance*delta/1000;
+                    else if(opponent.toppleState==="pushed")
+                    {                                                
+                        opponent.angVelocity -= opponent.resistance*delta/40000*opponent.trueRotation;
+                        opponent.trueRotation+=opponent.angVelocity*delta/1000;                        
+                    }
+                    else if(opponent.toppleState==="filibustered")
+                    {                        
+                        opponent.angVelocity -= opponent.resistance*delta/2500;                        
                         opponent.trueRotation+=opponent.angVelocity*delta/1000;                        
                     }
                     if(opponent.trueRotation<0)
@@ -145,11 +159,14 @@ var Presenter = (function(){
                         if(opponent.angVelocity>toppleVelocity) 
                         {
                             opponent.toppleState="toppled";
+                            opponent.state = "toppled";
+                            view.Disengage(opponent.ID);
                         }
                         else{opponent.angVelocity = 0;}
                     }                                            
                 }
-                else if(opponent.toppleState==="pushed" && opponent.trueRotation<0)
+                else if((opponent.toppleState==="pushed" || opponent.toppleState==="filibustered") 
+                        && opponent.trueRotation<0)
                 {
                     opponent.angVelocity += opponent.resistance*delta;
                     opponent.trueRotation+=opponent.angVelocity*delta;
@@ -219,6 +236,23 @@ var Presenter = (function(){
                 }
                 break;
                 
+            case "filibustering":                
+                agitatorAttackTimer-=e.delta;
+                if(agitatorAttackTimer<filibusterRelease && attackCheckBool)
+                {
+                    attackCheckBool = false;
+                    pushCheck();
+                }
+                if((agitatorAttackTimer+stutterDebuff)<0)
+                {
+                    stutterDebuff = 0;
+                    stutter = false;
+                    agitatorAttackTimer = 0;    
+                    view.AgitatorStutter(false);                
+                    agitator.state = "standing";
+                }                
+                break;
+                
             case "pulling":
                 agitatorAttackTimer-=e.delta;
                 if(agitatorAttackTimer)
@@ -229,19 +263,7 @@ var Presenter = (function(){
                 {
                     agitatorAttackTimer = 0;                    
                     agitator.state = "standing";
-                }
-            case "filabustering":
-                agitatorAttackTimer-=e.delta;
-                if(agitatorAttackTimer<2*pushRelease)
-                {
-                    pushCheck();
-                }
-                if(agitatorAttackTimer<0)
-                {
-                    agitatorAttackTimer = 0;
-                    agitator.state = "standing";
-                }                
-                break;
+                }            
         }
                 
         
@@ -259,10 +281,10 @@ var Presenter = (function(){
             });
             
             
-            if (agitator.state === "pushing" || agitator.state === "filabustering")
+            if (agitator.state === "pushing" || agitator.state === "filibustering")
             {
                 stutter = true;
-                stutter2 = true;
+                firstTimeStutter = true;
                 view.AgitatorStutter(true);                
                 stutterDebuff += stutterTime;
             }                        
@@ -280,13 +302,14 @@ var Presenter = (function(){
                     case "normal":
                         agitator.state = "pushing";
                         attackCheckBool = true;
-                        break;
-                    case "filabuster":
-                        agitator.state = "filabustering";
+                        agitatorAttackTimer = pushCharge+pushRelease;
+                        break;                        
+                    case "filibuster":
+                        agitator.state = "filibustering";
                         attackCheckBool = true;
+                        agitatorAttackTimer = filibusterCharge+filibusterRelease;
                         break;
-                }                
-                    agitatorAttackTimer = pushCharge+pushRelease;
+                }                                    
             }
     };
     
@@ -298,7 +321,7 @@ var Presenter = (function(){
     }
     
     function updateOps(opponent)
-    {   
+    {                       
         view.UpdateRotation(opponent.ID,opponent.trueRotation);
         if(inRange(opponent) && 
                 opponent.state==="preFight")
@@ -312,7 +335,6 @@ var Presenter = (function(){
             {
                 view.Disengage(opponent.ID);
                 opponent.state ="preFight";
-                opponent.rising = false;
             }
         }
         view.OpponentPosition(opponent.ID, opponent.x, opponent.y);

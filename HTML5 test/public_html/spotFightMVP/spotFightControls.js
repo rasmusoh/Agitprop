@@ -62,7 +62,7 @@ var Controls = (function(presenter){
             break;
         case KEYCODE_Z:     
             z = true;                        
-            this.presenter.handleAttack("filabuster");
+            this.presenter.handleAttack("filibuster");
             break;
         }
     }

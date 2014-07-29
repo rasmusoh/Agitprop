@@ -7,18 +7,18 @@ var Containers = (function(){
     //constructor
     function Agitator(agitatorColor, barColor) 
     {
+        this.agitatorColor = agitatorColor;
+        this.barColor = barColor;
         this.container = new createjs.Container();
         this.agitatorShape = new createjs.Shape();               
         this.barShape1 = new createjs.Shape();
         this.barShape2 = new createjs.Shape();
         this.barShape3 = new createjs.Shape();
         this.agitatorShape.graphics.beginFill(agitatorColor).drawRect(0, 0, 50, 200);
-        this.barShape1.graphics.beginFill(barColor).drawRect(0, -20, 10, 10);
-        this.barShape2.graphics.beginFill(barColor).drawRect(20, -20, 10, 10);
-        this.barShape3.graphics.beginFill(barColor).drawRect(40, -20, 10, 10);
-        this.barShape1.alpha = 0;
-        this.barShape2.alpha = 0;
-        this.barShape3.alpha = 0;
+        this.barShape1.graphics.beginFill(agitatorColor).drawRect(0, -20, 10, 10);
+        this.barShape2.graphics.beginFill(agitatorColor).drawRect(20, -20, 10, 10);
+        this.barShape3.graphics.beginFill(agitatorColor).drawRect(40, -20, 10, 10);
+        
         this.barShapeArray = [];
         this.barShapeArray[0] = this.barShape1;
         this.barShapeArray[1] = this.barShape2;
@@ -35,13 +35,30 @@ var Containers = (function(){
     };
     
     Agitator.prototype.SetBars = function(howmany)
-    {
-        for (i=0; i<3;i++)
+    {       
+        if(howmany===0)
         {
-            if(i<howmany)
-                this.barShapeArray[i].alpha = 1;
-            else
-                this.barShapeArray[i].alpha = 0;
+            this.barShape1.alpha = 0;
+            this.barShape2.alpha = 0;
+            this.barShape3.alpha = 0;
+            this.barShape1.graphics.beginFill(this.barColor).drawRect(0, -20, 10, 10);
+            this.barShape2.graphics.beginFill(this.barColor).drawRect(20, -20, 10, 10);
+            this.barShape3.graphics.beginFill(this.barColor).drawRect(40, -20, 10, 10);
+        }
+        else if(howmany===1)
+        {
+            this.barShape1.alpha = 1;                        
+        }
+        else if(howmany===2)
+        {
+            this.barShape2.alpha = 1;            
+        }
+        else if(howmany===3)
+        {
+            this.barShape3.alpha = 1;            
+            this.barShape1.graphics.beginFill(this.agitatorColor).drawRect(0, -20, 10, 10);
+            this.barShape2.graphics.beginFill(this.agitatorColor).drawRect(20, -20, 10, 10);
+            this.barShape3.graphics.beginFill(this.agitatorColor).drawRect(40, -20, 10, 10);
         }                  
     };        
     
@@ -99,17 +116,7 @@ var Containers = (function(){
     {
         this.border.alpha=0;
     };
-    
-    ToppleOpponent.prototype.Raise = function()
-    {
-        this.Redlight();
-    };
-
-    ToppleOpponent.prototype.Lower = function()
-    {
-        this.Downlight();
-    };
-    
+            
     ToppleOpponent.prototype.DamageTick = function()
     {
         if (this.xVelocity===14)
@@ -139,6 +146,25 @@ var Containers = (function(){
                 this.toppleState="atRest";
             }
         }
+    }
+    cont.GetExit = function (destination, x) 
+    {
+        return new Exit(destination, x);
+    };    
+    //constructor
+    function Exit(destination, x) 
+    {
+        this.container = new createjs.Container();
+        var exitSign = new createjs.Text();
+        var exitDoor = new createjs.Shape();
+        this.container.x = x;
+        this.container.y = 290;
+        exitSign.y = -20;
+        exitSign.font = "15px Oswald";
+        exitSign.color = "#FF7700";
+        exitSign.text = "Exit to " + destination;       
+        exitDoor.graphics.beginFill("#111111").drawRect(0, 0, 80, 210);
+        this.container.addChild(exitSign, exitDoor);
     }
     
    return cont; 
