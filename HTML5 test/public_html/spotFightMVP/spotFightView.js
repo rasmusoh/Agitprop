@@ -6,26 +6,27 @@ var View =(function(){
     stage,
     opponentArray =[],
     agitator,
-    startPanX= 400,
-    startPan = false,
+    halfCanvasWidth,    
+    instructText,
+    mapWidth,
     oneContainer
     ;
     view.AgitatorPosition = function(X,Y)
     {                             
         
-        if (agitator.container.x < startPanX)
+        if (agitator.container.x < halfCanvasWidth)
         {            
                
         }
-        else if(agitator.container.x > 1500-startPanX)
+        else if(agitator.container.x > mapWidth-halfCanvasWidth)
         {
             
         }
         else //if (agitator.container.x > startPanX)
         {                        
             oneContainer.x -= X-agitator.container.x;
-        }        
-                
+            instructText.x+= X-agitator.container.x;
+        }                
         agitator.container.x=X;
         agitator.container.y=Y;
     };
@@ -95,6 +96,7 @@ var View =(function(){
     view.Init = function (level)
     {            
         opponentArray=[];        
+        halfCanvasWidth = document.getElementById('agitpropCanvas').width/2;
         xmlhttp=new XMLHttpRequest();            
         xmlhttp.open("GET","Data/InteriorData.xml",false);
         xmlhttp.send();
@@ -108,7 +110,7 @@ var View =(function(){
         }
         
         dialogue = new Dialogue(100,100,"50px Oswald");
-        var instructText = new createjs.Text();
+        instructText = new createjs.Text();
         instructText.text = "\
                 Arrows: move\n\
                 space: normal attack\n\
@@ -121,12 +123,12 @@ var View =(function(){
         
         background = new createjs.Shape();
         bgColor = interior.getElementsByTagName("backgroundColor")[0].childNodes[0].nodeValue;
-        background.graphics.beginFill(bgColor).drawRect(0, 0, 1500, 600);
-        
-        
+        mapWidth = interior.getElementsByTagName("mapWidth")[0].childNodes[0].nodeValue;
+        background.graphics.beginFill(bgColor).drawRect(0, 0, mapWidth, 600);
+                
         foreground = new createjs.Shape();
         fgColor = interior.getElementsByTagName("foregroundColor")[0].childNodes[0].nodeValue;
-        foreground.graphics.beginFill("#27231a").drawRect(0, 500, 2000, 200);
+        foreground.graphics.beginFill(fgColor).drawRect(0, 500, 2000, 200);
         
         if(stage !== undefined)
         {
