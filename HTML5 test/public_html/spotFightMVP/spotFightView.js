@@ -5,9 +5,27 @@ var View =(function(){
     foreground,
     stage,
     opponentArray =[],
-    agitator;
+    agitator,
+    startPanX= 400,
+    startPan = false,
+    oneContainer
+    ;
     view.AgitatorPosition = function(X,Y)
-    {
+    {                             
+        
+        if (agitator.container.x < startPanX)
+        {            
+               
+        }
+        else if(agitator.container.x > 1500-startPanX)
+        {
+            
+        }
+        else //if (agitator.container.x > startPanX)
+        {                        
+            oneContainer.x -= X-agitator.container.x;
+        }        
+                
         agitator.container.x=X;
         agitator.container.y=Y;
     };
@@ -103,7 +121,7 @@ var View =(function(){
         
         background = new createjs.Shape();
         bgColor = interior.getElementsByTagName("backgroundColor")[0].childNodes[0].nodeValue;
-        background.graphics.beginFill(bgColor).drawRect(0, 0, 800, 600);
+        background.graphics.beginFill(bgColor).drawRect(0, 0, 1500, 600);
         
         
         foreground = new createjs.Shape();
@@ -145,10 +163,17 @@ var View =(function(){
                     exits[i].getElementsByTagName("x")[0].childNodes[0].nodeValue));            
         }
         
-        stage.addChild(background, agitator.container);
-        opponentArray.forEach(function(opponent){stage.addChild(opponent.container);});       
-        eA.forEach(function(exit){stage.addChild(exit.container);});                       
-        stage.addChild(foreground, instructText);  
+        oneContainer = new createjs.Container();
+        oneContainer.addChild(background, agitator.container);
+        opponentArray.forEach(function(opponent){oneContainer.addChild(opponent.container);});       
+        eA.forEach(function(exit){oneContainer.addChild(exit.container);});                       
+        oneContainer.addChild(foreground, instructText);
+        stage.addChild(oneContainer);
+        
+//        stage.addChild(background, agitator.container);
+//        opponentArray.forEach(function(opponent){stage.addChild(opponent.container);});       
+//        eA.forEach(function(exit){stage.addChild(exit.container);});                       
+//        stage.addChild(foreground, instructText);  
         stage.update();        
     };        
     return view;

@@ -6,10 +6,10 @@
             <name>interiorTest</name>
             <backgroundColor>#dbeba4</backgroundColor>
             <foregroundColor>#27231a</foregroundColor>            
-            <mapWidth>700</mapWidth>
+            <mapWidth>1500</mapWidth>
             <exits>
                 <exit>
-                    <x>700</x>
+                    <x>1400</x>
                     <destinationType>interior</destinationType>
                     <destination>black</destination>
                 </exit>
@@ -39,6 +39,7 @@
         <name>black</name>
             <backgroundColor>#111111</backgroundColor>
             <foregroundColor>#222222</foregroundColor>
+            <mapWidth>700</mapWidth>
             <exits>
                 <exit>
                     <x>700</x>

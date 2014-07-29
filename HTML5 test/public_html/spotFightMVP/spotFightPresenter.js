@@ -20,7 +20,8 @@ var Presenter = (function(){
     pullCharge = 150,
     pullRelease =350,
     physicsStepSize = 20,
-    physicsDelta = 0
+    physicsDelta = 0,
+    mapInfo
     ;
         
     var agitator, opponents, exits;
@@ -39,8 +40,11 @@ var Presenter = (function(){
         model.Init(level);
         agitator = model.GetAgitator();
         opponents = model.GetOpponents();
-        exits = model.GetExits();        
-        createjs.Ticker.addEventListener("tick",tick); 
+        exits = model.GetExits();     
+        mapInfo = model.GetMapInfo();
+        createjs.Ticker.addEventListener("tick",tick);
+        //initial position for the Agitator
+        view.AgitatorPosition(agitator.x, agitator.y);
     };
         
     //One tick to rule them all
@@ -55,21 +59,22 @@ var Presenter = (function(){
         //update position
         if(agitator.state==="walkright") 
         {
-            if(agitator.x<740)            
-                agitator.x+=event.delta/1;            
+            if(agitator.x<mapInfo["mapWidth"])            
+                agitator.x+=event.delta/5;            
         }
         
         if(agitator.state==="walkleft") 
         {
             if(agitator.x>0)
-                agitator.x-=event.delta/1;
+                agitator.x-=event.delta/5;
         }
  
         opponents.forEach(updateOps);
       
         exits.forEach(checkExit);
         //Update View
-        view.AgitatorPosition(agitator.x, agitator.y);
+        if(agitator.state ==="walkleft" || agitator.state ==="walkright")
+            view.AgitatorPosition(agitator.x, agitator.y);
         view.AgitatorPushBar(1-((agitatorAttackTimer+stutterDebuff)/(pushRelease+pushCharge)));
         
         view.UpdateStage(event);

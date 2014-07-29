@@ -2,7 +2,8 @@ var Model = (function(){
     var mod = {},
     agg,    
     exitArray = [],
-    opponentArray = [];
+    opponentArray = [],
+    mapInfo = [];
     
     function Exit(x, destination)
     {
@@ -34,11 +35,10 @@ var Model = (function(){
     {
         //Should read from persistant state
         agg = new Agitator(0, 300, "standing");    
-        var interior=LoadInterior(level);
-        opponentArray = LoadOpponent(interior)
-        exitArray = LoadExit(interior)
-        
-        
+        var interior=LoadInterior(level);        
+        opponentArray = LoadOpponent(interior);
+        exitArray = LoadExit(interior);        
+        mapInfo = LoadMapInfo(interior);
     };
     
     mod.GetAgitator = function()
@@ -54,6 +54,11 @@ var Model = (function(){
     mod.GetExits = function()
     {
         return exitArray;
+    };
+    
+    mod.GetMapInfo = function()
+    {
+        return mapInfo;
     };
     //mod.SaveToPersistantState = function() {}
     
@@ -107,6 +112,13 @@ var Model = (function(){
                     );
         }
         return eA;
+    }
+    
+    function LoadMapInfo(interior)
+    {
+        mapInfo=[];
+        mapInfo["mapWidth"]= interior.getElementsByTagName("mapWidth")[0].childNodes[0].nodeValue;                
+        return mapInfo;
     }
     return mod;        
 });
