@@ -129,9 +129,9 @@ var View =(function(){
         dialogue = new Dialogue(100,100,"50px Oswald");
         instructText = new createjs.Text();
         instructText.text = "\
-                Arrows: move\n\
+                <- and ->: move\n\
                 space: normal attack\n\
-                z: filabuster (disregard dicplacements effect on angular velocity)\n\
+                z: PULL\n\
                 bars: remember to breathe!";
         instructText.font = "20px Oswald";
         instructText.color = "#FF7700";

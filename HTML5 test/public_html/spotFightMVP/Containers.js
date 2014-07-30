@@ -104,6 +104,9 @@ var Containers = (function(){
         {
             barArray[1].alpha = 1;                        
             barArray[2].alpha = 0;
+            barArray[1].graphics.beginFill(this.barColor).drawRect(0, 0, 10, 10);
+            barArray[2].graphics.beginFill(this.barColor).drawRect(20,0, 10, 10);
+            barArray[3].graphics.beginFill(this.barColor).drawRect(40,0, 10, 10);
         }
         else if(howmany===2)
         {
@@ -116,9 +119,9 @@ var Containers = (function(){
         else if(howmany===3)
         {
             barArray[3].alpha = 1;
-            barArray[1].graphics.beginFill(this.agitatorColor).drawRect(0, 0, 10, 10);
-            barArray[2].graphics.beginFill(this.agitatorColor).drawRect(20,0, 10, 10);
-            barArray[3].graphics.beginFill(this.agitatorColor).drawRect(40,0, 10, 10);
+            barArray[1].graphics.beginFill("#110000").drawRect(0, 0, 10, 10);
+            barArray[2].graphics.beginFill("#110000").drawRect(20,0, 10, 10);
+            barArray[3].graphics.beginFill("#110000").drawRect(40,0, 10, 10);
         }
     };        
     
