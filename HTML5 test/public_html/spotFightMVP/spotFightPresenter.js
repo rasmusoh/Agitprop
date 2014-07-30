@@ -22,7 +22,8 @@ var Presenter = (function(){
     physicsStepSize = 20,
     physicsDelta = 0,
     mapInfo,
-    postAgitation = false
+    postAgitation = false,
+    agitatorIsAgitated = false
     ;
         
     var agitator, opponents, exits;
@@ -59,7 +60,7 @@ var Presenter = (function(){
         {
             agitator.agitation -= event.delta/8000;
         }                                  
-        if(agitator.agitation <=0)
+        if(agitator.agitation <=0.25)
         {
             postAgitation = false;
         }
@@ -67,6 +68,7 @@ var Presenter = (function(){
         if(agitator.agitation <=0.8)
         {
             view.AgitatorAgitated(false);
+            agitatorIsAgitated = false;
         }
         
         view.AgitationBars(agitator.agitation);
@@ -113,9 +115,10 @@ var Presenter = (function(){
     function pushCheck()
     {
         var agitationMultplier;
-        if(agitator.agitation>=1)
+        if(agitatorIsAgitated===true)
         {
             agitationMultplier = 2;
+            agitatorIsAgitated=false;
         }
         else
         {
@@ -149,6 +152,7 @@ var Presenter = (function(){
         if(agitator.agitation >= 1)
         {
             view.AgitatorAgitated(true);                    
+            agitatorIsAgitated=true;
         }
     }
     
