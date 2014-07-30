@@ -6,5 +6,6 @@ function gogogo ()
     model = new Model();
     presenter = new Presenter();
     presenter.Init(view, ctrls, model, "interiorTest");
- }
+    //toppleTesting.init();
+  }
  
