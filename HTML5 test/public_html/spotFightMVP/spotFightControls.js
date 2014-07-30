@@ -20,6 +20,7 @@ var Controls = (function(presenter){
         KEYCODE_SPACE=32;
         KEYCODE_ENTER = 13;
         KEYCODE_Z = 90;
+        KEYCODE_X = 88;
 
     ctrls.Init = function(presenter){        
         down = false;
@@ -55,14 +56,14 @@ var Controls = (function(presenter){
         case KEYCODE_D:
                 right = true;
             break;
-        case KEYCODE_SPACE:     
-            attack = true;            
-            this.presenter.handleAttack("normal"); //should prolly be implemented as 
-            //  dispatched event event
+        case KEYCODE_X:     
+            x = true;
+            if(up){this.presenter.handleAttack("stun");}
+            else{this.presenter.handleAttack("push");}
             break;
         case KEYCODE_Z:     
             z = true;                        
-            this.presenter.handleAttack("filibuster");
+            this.presenter.handleAttack("pull");
             break;
         }
     }
@@ -83,8 +84,11 @@ var Controls = (function(presenter){
         case KEYCODE_D:
                 right = false;
             break;
-        case KEYCODE_SPACE:   
+        case KEYCODE_X:   
                 attack = false;
+            break;
+        case KEYCODE_Z:     
+                z = false;
             break;
         }
     }

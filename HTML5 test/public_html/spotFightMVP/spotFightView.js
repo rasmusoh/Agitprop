@@ -33,7 +33,7 @@ var View =(function(){
     
     view.OpponentPosition = function(id,X,Y)
     {        
-        opponentArray[id].container.x=X; 
+        opponentArray[id].container.x=parseInt(X)+opponentArray[id].container.regX; 
         opponentArray[id].container.y=Y;         
     };
     view.UpdateStage = function()
@@ -65,6 +65,11 @@ var View =(function(){
         opponentArray[id].Downlight();                          
     };
     
+    view.getOpponentContainers = function()
+    {
+        return opponentArray;
+    }
+    
     view.AgitatorPushBar = function(pct)
     {
         if(pct<0.25)
@@ -87,10 +92,7 @@ var View =(function(){
     
     view.FlipOpponent = function(id, facingLeft)
     {
-        if (opponentArray[id].facingLeft !==facingLeft)
-        {
-            opponentArray[id].facingLeft=facingLeft;     
-        }
+        opponentArray[id].flip(facingLeft);
     };
     
     view.Init = function (level)

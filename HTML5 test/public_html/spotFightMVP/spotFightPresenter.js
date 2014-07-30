@@ -13,10 +13,10 @@ var Presenter = (function(){
     toppleVelocity =20,
     attackVelocity =40,
     attackAngle=-50,
-    pushCharge = 200,
-    pushRelease = 500,
-    filibusterCharge = 0,
-    filibusterRelease = 1000,
+    pushCharge = 100,
+    pushRelease = 200,
+    stunCharge = 0,
+    stunRelease = 1000,
     pullCharge = 150,
     pullRelease =350,
     physicsStepSize = 20,
@@ -24,7 +24,7 @@ var Presenter = (function(){
     mapInfo
     ;
         
-    var agitator, opponents, exits;
+    var agitator, opponents, opponentContainers,exits;
     
     presenter.Init = function(viewArg, controlsArg, modelArg, level)
     {        
@@ -40,6 +40,7 @@ var Presenter = (function(){
         model.Init(level);
         agitator = model.GetAgitator();
         opponents = model.GetOpponents();
+        opponentContainers = view.getOpponentContainers();
         exits = model.GetExits();     
         mapInfo = model.GetMapInfo();
         createjs.Ticker.addEventListener("tick",tick);
@@ -52,8 +53,6 @@ var Presenter = (function(){
     {                
         //Check Controls and update state logic        
         updateAgitatorState(event);
-        //update topple physics
-        updateTopple(event);
         
         
         //update position
@@ -80,131 +79,6 @@ var Presenter = (function(){
         view.UpdateStage(event);
     }
     
-    function pullCheck()
-    {
-        opponents.forEach(function(opponent)
-        {
-            if(opponent.state==="fight"  && (opponent.toppleState === "atRest" 
-                    || opponent.toppleState === "pushed" 
-                    || opponent.toppleState === "filibustered" 
-                    || opponent.toppleState === "attackRelease"))
-            {
-                opponent.toppleState="attacking";
-            }
-        });
-    }
-    
-    function pushCheck()
-    {        
-        opponents.forEach(function(opponent)
-        {
-            if(opponent.state==="fight"  && !stutter &&(opponent.toppleState === "atRest"                     
-                    || opponent.toppleState === "pushed"
-                    || opponent.toppleState === "filibustered"
-                    || opponent.toppleState === "attackRelease"))
-            {
-                if(agitator.state === "pushing" )
-                {
-                    opponent.angVelocity=opponent.leverage;
-                    opponent.toppleState="pushed";
-                    
-                }
-                else if (agitator.state === "filibustering")
-                {                    
-                    opponent.angVelocity=0.5*opponent.leverage;
-                    opponent.toppleState="filibustered";
-                }                
-            }
-        });
-    }
-    
-    function updateTopple(e)
-    {
-        physicsDelta+=e.delta;
-        if(physicsStepSize<physicsDelta)
-        {
-            toppleTick(physicsDelta); //toppling physics           
-            physicsDelta = 0;
-        }
-    }
-    
-    function toppleTick(delta)
-    {
-        opponents.forEach(function(opponent)
-        {
-            if(opponent.state==="fight" || opponent.toppleState==="pushed")
-            {
-                if((opponent.toppleState==="pushed" || opponent.toppleState==="filibustered") 
-                        && opponent.trueRotation>=0)
-                {                   
-                    if(firstTimeStutter)
-                    {
-                        opponent.angVelocity -= opponent.resistance*delta;                        
-                        firstTimeStutter = false;
-                    }
-                    else if(opponent.toppleState==="pushed")
-                    {                                                
-                        opponent.angVelocity -= opponent.resistance*delta/40000*opponent.trueRotation;
-                        opponent.trueRotation+=opponent.angVelocity*delta/1000;                        
-                    }
-                    else if(opponent.toppleState==="filibustered")
-                    {                        
-                        opponent.angVelocity -= opponent.resistance*delta/2500;                        
-                        opponent.trueRotation+=opponent.angVelocity*delta/1000;                        
-                    }
-                    if(opponent.trueRotation<0)
-                    {
-                        opponent.angVelocity = 0;
-                        opponent.trueRotation=0;
-                        opponent.toppleState="atRest";
-                    }
-                    else if (opponent.trueRotation>100)
-                    {
-                        opponent.trueRotation = 100;
-                        if(opponent.angVelocity>toppleVelocity) 
-                        {
-                            opponent.toppleState="toppled";
-                            opponent.state = "toppled";
-                            view.Disengage(opponent.ID);
-                        }
-                        else{opponent.angVelocity = 0;}
-                    }                                            
-                }
-                else if((opponent.toppleState==="pushed" || opponent.toppleState==="filibustered") 
-                        && opponent.trueRotation<0)
-                {
-                    opponent.angVelocity += opponent.resistance*delta;
-                    opponent.trueRotation+=opponent.angVelocity*delta;
-                    if(opponent.trueRotation>0)
-                    {
-                        if(opponent.angVelocity<counterVelocity)
-                        {
-                            opponent.angVelocity = 0;
-                            opponent.trueRotation=0;
-                            opponent.toppleState="atRest";
-                        }
-                    }   
-                }
-                else if(opponent.toppleState==="attacking")
-                {
-                    opponent.trueRotation-=attackVelocity;
-                    if(opponent.trueRotation<attackAngle)
-                    {
-                        opponent.toppleState="attackRelease";
-                    }
-                }
-                else if (opponent.toppleState==="attackRelease")
-                {
-                    opponent.trueRotation+=attackVelocity;
-                    if(opponent.trueRotation>0)
-                    {
-                        opponent.trueRotation=0;
-                        opponent.toppleState="atRest";
-                    }
-                }
-            }
-        });
-    }
     function updateAgitatorState(e)
     {
         var right = controls.RightPressed();
@@ -229,7 +103,7 @@ var Presenter = (function(){
                 if(agitatorAttackTimer<pushRelease && attackCheckBool)
                 {          
                     attackCheckBool = false;
-                    pushCheck();
+                    attackCheck("push");
                 }
                 if((agitatorAttackTimer+stutterDebuff)<0)
                 {
@@ -241,12 +115,12 @@ var Presenter = (function(){
                 }
                 break;
                 
-            case "filibustering":                
+            case "pulling":                
                 agitatorAttackTimer-=e.delta;
-                if(agitatorAttackTimer<filibusterRelease && attackCheckBool)
+                if(agitatorAttackTimer<pullRelease && attackCheckBool)
                 {
                     attackCheckBool = false;
-                    pushCheck();
+                    attackCheck("pull");
                 }
                 if((agitatorAttackTimer+stutterDebuff)<0)
                 {
@@ -257,21 +131,25 @@ var Presenter = (function(){
                     agitator.state = "standing";
                 }                
                 break;
-                
-            case "pulling":
+
+            case "stunning":                
                 agitatorAttackTimer-=e.delta;
-                if(agitatorAttackTimer)
+                if(agitatorAttackTimer<stunRelease && attackCheckBool)
                 {
-                    pullCheck();
+                    attackCheckBool = false;
+                    attackCheck("stun");
                 }
-                if(agitatorAttackTimer<0)
+                if((agitatorAttackTimer+stutterDebuff)<0)
                 {
-                    agitatorAttackTimer = 0;                    
+                    stutterDebuff = 0;
+                    stutter = false;
+                    agitatorAttackTimer = 0;    
+                    view.AgitatorStutter(false);                
                     agitator.state = "standing";
-                }            
+                }                
+                break;
+                        
         }
-                
-        
     }
     
    presenter.handleAttack = function(typeOfAttack)
@@ -286,33 +164,32 @@ var Presenter = (function(){
             });
             
             
-            if (agitator.state === "pushing" || agitator.state === "filibustering")
+            if (agitator.state === "pushing" || agitator.state === "pulling"
+                    || agitator.state === "stunning")
             {
                 stutter = true;
                 firstTimeStutter = true;
                 view.AgitatorStutter(true);                
                 stutterDebuff += stutterTime;
             }                        
-            
-            else if(agitator.state==="walkleft")
-            {
-                agitator.state = "pulling";
-                agitatorAttackTimer = pullCharge+pullRelease;
-            }
-            
             else
             {
                 switch(typeOfAttack)
                 {
-                    case "normal":
+                    case "push":
                         agitator.state = "pushing";
                         attackCheckBool = true;
                         agitatorAttackTimer = pushCharge+pushRelease;
                         break;                        
-                    case "filibuster":
-                        agitator.state = "filibustering";
+                    case "pull":
+                        agitator.state = "pulling";
                         attackCheckBool = true;
-                        agitatorAttackTimer = filibusterCharge+filibusterRelease;
+                        agitatorAttackTimer = pullCharge+pullRelease;
+                        break;
+                    case "stun":
+                        agitator.state = "stunning";
+                        attackCheckBool = true;
+                        agitatorAttackTimer = pushCharge+pushRelease;
                         break;
                 }                                    
             }
@@ -328,6 +205,17 @@ var Presenter = (function(){
         {
             return false;
         }
+    }
+    
+    function attackCheck(typeOfAttack)
+    {
+        opponents.forEach(function(opponent)
+        {                
+            if(opponent.state !== "toppled" && inRange(opponent))
+            {
+                opponentContainers[opponent.ID].attackCheck(typeOfAttack);
+            }
+        });
     }
     
     function updateOps(opponent)
@@ -355,7 +243,6 @@ var Presenter = (function(){
                 opponent.state = "preFight";
             }
         }
-        view.UpdateRotation(opponent.ID,opponent.trueRotation);
         view.OpponentPosition(opponent.ID, opponent.x, opponent.y);
 
     }

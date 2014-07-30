@@ -67,7 +67,7 @@ var Containers = (function(){
         return new ToppleOpponent(color, id);
     };
     
-    function ToppleOpponent (color, id) 
+    function ToppleOpponent (color, id, model) 
     {
         this.ID = id;
         this.color = color;  
@@ -80,34 +80,92 @@ var Containers = (function(){
         this.border.graphics.setStrokeStyle(3); // 2 pixel
         this.border.graphics.drawRect(0,0 ,50,200);
         this.border.alpha = 0;
+        
+        this.toppleState = "atRest";
 
         this.opponent = new createjs.Shape();
         this.opponent.graphics.beginFill(this.color).drawRect(0,0, 50,200);
         this.container.regX = 50;
         this.container.regY = 200;
-        this.xOffset = 0;
-        this.xVelocity = 0;
-        this.angVelocity = 0;
-        this.rotation = 0;
         this.container.addChild(this.opponent,this.border);
     };    
     
-    ToppleOpponent.prototype.UpdateRotation = function(arg)
+    
+    ToppleOpponent.prototype.attackCheck = function(attackType)
     {
-        
-        if(this.facingLeft)
+        if(this.toppleState === "atRest" 
+                || this.toppleState === "pushed" 
+                || this.toppleState === "stun"
+                || this.toppleState === "pulled")
         {
-            this.container.rotation = arg/3;            
-            this.container.regX = 50;
-        }
-        else    
-        {
-            this.container.rotation = -arg/3;                    
-            this.container.regX = 0;
+            switch(attackType)
+            {
+                case "push":
+                    this.changeState("pushed");
+                    newRotation = this.container.rotation
+                            +100/(Math.abs(this.container.rotation)+10);
+                    times = [600,150,250];
+                    break;
+                    
+                case "strongPush":
+                    this.changeState("pushed");
+                    newRotation = this.container.rotation+5;
+                    times = [300,100,200];
+                    break;
+                case "pull":
+                    this.changeState("pulled");
+                    newRotation = this.container.rotation
+                            -200/(Math.abs(this.container.rotation)+20);
+                    times = [500,150,500];
+                    break;
+                case "stun":
+                    this.changeState("stunned");
+                    newRotation = this.container.rotation;
+                    times = [0,800,0];
+                    break;
+            }
+            if(!this.facingLeft)
+            {
+                newRotation = -newRotation;
+            }
+            if(newRotation<0)
+            {
+                this.container.regX =0;
+            }
+            else
+            {
+                this.container.regX =50;
+            }
+            createjs.Tween.removeTweens(this.container);
+            tween = createjs.Tween.get(this.container)
+                .to({rotation:newRotation},times[0],createjs.Ease.backOut)
+                .wait(times[1])
+                .to({rotation:0},times[2],createjs.Ease.quadIn)
+                .call(this.changeState,["atRest"]);
         }
     };
     
+    ToppleOpponent.prototype.changeState = function(state)
+    {
+        this.toppleState = state;
+    }
     
+   
+   ToppleOpponent.prototype.flip = function(facingLeft)
+   {
+       if(this.facingLeft!=facingLeft)
+       {
+           this.facingLeft=facingLeft;
+           if(this.container.regX ===50)
+           {
+               this.container.regX=0;
+           }
+           else
+           {
+               this.container.regX=50;
+           }
+       }
+   }
     
     ToppleOpponent.prototype.Highlight = function()
     {
@@ -130,35 +188,6 @@ var Containers = (function(){
         this.border.alpha=0;
     };
             
-//    ToppleOpponent.prototype.DamageTick = function()
-//    {
-//        if (this.xVelocity===14)
-//        {
-//            this.opponent.graphics.beginFill(this.color).drawRect(0, 0, 
-//                            this.opponentWidth,this.opponentHeight);
-//        }
-//        if(this.xVelocity>0)
-//        {
-//            this.xVelocity-=40*delta/1000;
-//            this.x+=this.xVelocity;
-//                if(this.xVelocity<=0)
-//                {
-//                    this.xVelocity=0;
-//                }
-//        }
-//        else
-//        {
-//            r1 = -4000;
-//            this.torque = this.g*r1/100;
-//            this.angVelocity += this.torque*delta/1000;
-//            this.rotation+=this.angVelocity*delta/1000;
-//            if(this.rotation<0)
-//            {
-//                this.angVelocity = 0;
-//                this.rotation=0;
-//            }
-//        }
-//    };
     cont.GetExit = function (destination, x) 
     {
         return new Exit(destination, x);
