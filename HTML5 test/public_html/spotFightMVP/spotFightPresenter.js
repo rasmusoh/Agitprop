@@ -21,7 +21,8 @@ var Presenter = (function(){
     pullRelease =350,
     physicsStepSize = 20,
     physicsDelta = 0,
-    mapInfo
+    mapInfo,
+    postAgitation = false
     ;
         
     var agitator, opponents, exits;
@@ -49,11 +50,26 @@ var Presenter = (function(){
         
     //One tick to rule them all
     function tick(event)
-    {                
+    {                        
         //Check Controls and update state logic        
         updateAgitatorState(event);
         //update topple physics
         updateTopple(event);
+        if(agitator.agitation >0)
+        {
+            agitator.agitation -= event.delta/8000;
+        }                                  
+        if(agitator.agitation <=0)
+        {
+            postAgitation = false;
+        }
+        
+        if(agitator.agitation <=0.8)
+        {
+            view.AgitatorAgitated(false);
+        }
+        
+        view.AgitationBars(agitator.agitation);
         
         
         //update position
@@ -75,7 +91,7 @@ var Presenter = (function(){
         //Update View
         if(agitator.state ==="walkleft" || agitator.state ==="walkright")
             view.AgitatorPosition(agitator.x, agitator.y);
-        view.AgitatorPushBar(1-((agitatorAttackTimer+stutterDebuff)/(pushRelease+pushCharge)));
+        view.CDBars(1-((agitatorAttackTimer+stutterDebuff)/(pushRelease+pushCharge)));
         
         view.UpdateStage(event);
     }
@@ -95,7 +111,16 @@ var Presenter = (function(){
     }
     
     function pushCheck()
-    {        
+    {
+        var agitationMultplier;
+        if(agitator.agitation>=1)
+        {
+            agitationMultplier = 2;
+        }
+        else
+        {
+            agitationMultplier = 1;
+        }
         opponents.forEach(function(opponent)
         {
             if(opponent.state==="fight"  && !stutter &&(opponent.toppleState === "atRest"                     
@@ -105,17 +130,26 @@ var Presenter = (function(){
             {
                 if(agitator.state === "pushing" )
                 {
-                    opponent.angVelocity=opponent.leverage;
+                    opponent.angVelocity=opponent.leverage*agitationMultplier;
                     opponent.toppleState="pushed";
                     
                 }
                 else if (agitator.state === "filibustering")
                 {                    
-                    opponent.angVelocity=0.5*opponent.leverage;
+                    opponent.angVelocity=0.5*opponent.leverage*agitationMultplier;
                     opponent.toppleState="filibustered";
                 }                
             }
         });
+        if(agitator.agitation <1)
+        {
+            agitator.agitation += 0.34;
+            view.AgitatorAgitated(false);
+        }                                                        
+        if(agitator.agitation >= 1)
+        {
+            view.AgitatorAgitated(true);                    
+        }
     }
     
     function updateTopple(e)
@@ -129,7 +163,7 @@ var Presenter = (function(){
     }
     
     function toppleTick(delta)
-    {
+    {        
         opponents.forEach(function(opponent)
         {
             if(opponent.state==="fight" || opponent.toppleState==="pushed")
@@ -149,7 +183,7 @@ var Presenter = (function(){
                     }
                     else if(opponent.toppleState==="filibustered")
                     {                        
-                        opponent.angVelocity -= opponent.resistance*delta/2500;                        
+                        opponent.angVelocity -= opponent.resistance*delta/5000;                        
                         opponent.trueRotation+=opponent.angVelocity*delta/1000;                        
                     }
                     if(opponent.trueRotation<0)
@@ -300,8 +334,12 @@ var Presenter = (function(){
                 agitatorAttackTimer = pullCharge+pullRelease;
             }
             
-            else
+            else if(postAgitation === false)
             {
+                if(agitator.agitation >1)
+                {
+                    postAgitation = true;
+                }
                 switch(typeOfAttack)
                 {
                     case "normal":
@@ -314,7 +352,7 @@ var Presenter = (function(){
                         attackCheckBool = true;
                         agitatorAttackTimer = filibusterCharge+filibusterRelease;
                         break;
-                }                                    
+                }                                                                                                           
             }
     };
     

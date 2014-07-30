@@ -17,7 +17,7 @@
             <opponents>
                 <opponent>
                     <color>#a05f75</color>
-                    <resistance>220</resistance>
+                    <resistance>270</resistance>
                     <leverage>120</leverage>
                     <x>290</x>
                     <y>500</y>
@@ -26,7 +26,7 @@
                 </opponent>
                 <opponent>
                     <color>#a05321</color>
-                    <resistance>320</resistance>
+                    <resistance>380</resistance>
                     <leverage>160</leverage>
                     <x>550</x>
                     <y>500</y>

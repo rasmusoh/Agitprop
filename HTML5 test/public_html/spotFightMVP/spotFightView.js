@@ -65,16 +65,28 @@ var View =(function(){
         opponentArray[id].Downlight();                          
     };
     
-    view.AgitatorPushBar = function(pct)
+    view.CDBars = function(pct)
     {
         if(pct<0.25)
-            agitator.SetBars(0);
+            agitator.SetCDBars(0);
         else if(pct<0.50)
-            agitator.SetBars(1);
+            agitator.SetCDBars(1);
         else if(pct<0.75)
-            agitator.SetBars(2);
+            agitator.SetCDBars(2);
         else if(pct>=1) 
-            agitator.SetBars(3);
+            agitator.SetCDBars(3);
+    };
+    
+    view.AgitationBars = function(pct)
+    {
+        if(pct<0.25)
+            agitator.SetAgitationBars(0);
+        else if(pct<0.50)
+            agitator.SetAgitationBars(1);
+        else if(pct<0.75)
+            agitator.SetAgitationBars(2);
+        else if(pct>=1) 
+            agitator.SetAgitationBars(3);
     };
     
     view.AgitatorStutter = function(isStuttering)
@@ -91,6 +103,11 @@ var View =(function(){
         {
             opponentArray[id].facingLeft=facingLeft;     
         }
+    };
+    
+    view.AgitatorAgitated = function(isAgitated)
+    {
+        agitator.Agitated(isAgitated);
     };
     
     view.Init = function (level)

@@ -16,6 +16,7 @@ var Model = (function(){
         this.x = x;
         this.y = y;
         this.state = state;
+        this.agitation = 0
     };
     
     function Opponent(x, y, leverage, resistance, 
