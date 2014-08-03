@@ -5,15 +5,7 @@
         <interior>
             <name>interiorTest</name>
             <backgroundColor>#dbeba4</backgroundColor>
-            <foregroundColor>#27231a</foregroundColor>            
-            <mapWidth>1500</mapWidth>
-            <exits>
-                <exit>
-                    <x>1400</x>
-                    <destinationType>interior</destinationType>
-                    <destination>black</destination>
-                </exit>
-            </exits>
+            <foregroundColor>#27231a</foregroundColor>                                    
             <opponents>
                 <opponent>
                     <color>#a05f75</color>
@@ -33,48 +25,68 @@
                     <id>2</id>
                     <state>preFight</state>                    
                 </opponent>
-            </opponents>            		            
-            <tracks> 
-            <track>
-                <ID>1</ID>
-                <points>
-                    <point>
-                        <x>0</x>
-                        <y>450</y>
-                    </point>
-                    <point>
-                        <x>800</x>
+            </opponents>  
+            <geometry>
+                <mapWidth>1500</mapWidth>
+                <exits>
+                    <exit>
+                        <x>1400</x>
+                        <destinationType>interior</destinationType>
+                        <destination>black</destination>
+                    </exit>
+                </exits>          		            
+                <tracks> 
+                <track>
+                    <ID>1</ID>
+                    <EntryType>Climbing</EntryType>
+                    <ExitType>Climbing</ExitType>
+                    <points>
+                        <point>
+                            <x>0</x>
+                            <y>450</y>
+                        </point>
+                        <point>
+                            <x>800</x>
+                            <y>500</y>
+                        </point>
+                    </points>
+                </track>
+                <track>
+                    <ID>2</ID>
+                    <EntryType>Climbing</EntryType>
+                    <ExitType>Climbing</ExitType>
+                    <points>
+                        <point>
+                            <x>0</x>
+                            <y>450</y>
+                        </point>
+                        <point>
+                            <x>800</x>
+                            <y>500</y>
+                        </point>
+                    </points>
+                </track>
+            </tracks>               
+            <barriers>
+                <barrier>                    
+                    <points>
+                        <point></point>
+                        <x>100</x>
                         <y>500</y>
-                    </point>
-                </points>
-            </track>
-            <track>
-                <ID>2</ID>
-                <points>
-                    <point>
-                        <x>0</x>
-                        <y>450</y>
-                    </point>
-                    <point>
-                        <x>800</x>
-                        <y>500</y>
-                    </point>
-                </points>
-            </track>
-        </tracks>               
+                        <point></point>
+                        <point></point>
+                        <x>100</x>
+                        <y>300</y>
+                        <point></point>
+                    </points>
+                </barrier>
+            </barriers>
+        </geometry>
         </interior>
         <interior>
         <name>black</name>
             <backgroundColor>#111111</backgroundColor>
-            <foregroundColor>#222222</foregroundColor>
-            <mapWidth>700</mapWidth>
-            <exits>
-                <exit>
-                    <x>700</x>
-                    <destinationType>interior</destinationType>
-                    <destination>interiorTest</destination>
-                </exit>
-            </exits>
+            <foregroundColor>#222222</foregroundColor>            
             <opponents>                
                 <opponent>
                     <color>#333333</color>
@@ -86,6 +98,62 @@
                     <state>preFight</state>                    
                 </opponent>
             </opponents>		
+            <geometry>
+                <mapWidth>800</mapWidth>                
+                <exits>
+                    <exit>
+                        <x>700</x>
+                        <destinationType>interior</destinationType>
+                        <destination>interiorTest</destination>
+                    </exit>            
+                </exits>          		            
+                <tracks> 
+                <track>
+                    <ID>1</ID>
+                    <EntryType>Walking up the stairs</EntryType>
+                    <ExitType>Walking down the stairs</ExitType>
+                    <points>
+                        <point>
+                            <x>0</x>
+                            <y>450</y>
+                        </point>
+                        <point>
+                            <x>800</x>
+                            <y>500</y>
+                        </point>
+                    </points>
+                </track>
+                <track>
+                    <ID>2</ID>
+                    <EntryType>Climbing</EntryType>
+                    <ExitType>Climbing</ExitType>
+                    <points>
+                        <point>
+                            <x>0</x>
+                            <y>450</y>
+                        </point>
+                        <point>
+                            <x>800</x>
+                            <y>500</y>
+                        </point>
+                    </points>
+                </track>
+            </tracks>               
+            <barriers>
+                <barrier>                    
+                    <points>
+                        <point></point>
+                        <x>100</x>
+                        <y>500</y>
+                        <point></point>
+                        <point></point>
+                        <x>100</x>
+                        <y>300</y>
+                        <point></point>
+                    </points>
+                </barrier>
+            </barriers>
+        </geometry>
         </interior>
     </interiors>    
 </root>

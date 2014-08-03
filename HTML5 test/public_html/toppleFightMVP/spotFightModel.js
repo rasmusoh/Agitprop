@@ -20,8 +20,7 @@ var Model = (function(){
         this.agitation = 0;
     };
     
-    function Opponent(x, y, leverage, resistance, 
-        ID, state)
+    function Opponent(x, y, leverage, resistance, ID, state)
     {
         this.x = x;
         this.y = y;
@@ -77,7 +76,8 @@ var Model = (function(){
         interiors = xmlDoc.documentElement.getElementsByTagName("interior");                       
         for (var j=0; j<interiors.length;j++)
         {
-            if(interiors[j].getElementsByTagName('name')[0].childNodes[0].nodeValue === level)        
+            if(interiors[j].getElementsByTagName('name')[0].
+                    childNodes[0].nodeValue === level)        
                 interior = interiors[j];
         }
         return interior;
@@ -91,12 +91,18 @@ var Model = (function(){
         {        
             oA.push(
                 new Opponent(
-                opponents[i].getElementsByTagName("x")[0].childNodes[0].nodeValue,
-                opponents[i].getElementsByTagName("y")[0].childNodes[0].nodeValue,
-                opponents[i].getElementsByTagName("leverage")[0].childNodes[0].nodeValue,
-                opponents[i].getElementsByTagName("resistance")[0].childNodes[0].nodeValue,
-                opponents[i].getElementsByTagName("id")[0].childNodes[0].nodeValue,
-                opponents[i].getElementsByTagName("state")[0].childNodes[0].nodeValue
+                opponents[i].getElementsByTagName("x")[0].
+                childNodes[0].nodeValue,
+                opponents[i].getElementsByTagName("y")[0].
+                        childNodes[0].nodeValue,
+                opponents[i].getElementsByTagName("leverage")[0].
+                        childNodes[0].nodeValue,
+                opponents[i].getElementsByTagName("resistance")[0].
+                        childNodes[0].nodeValue,
+                opponents[i].getElementsByTagName("id")[0].
+                        childNodes[0].nodeValue,
+                opponents[i].getElementsByTagName("state")[0].
+                        childNodes[0].nodeValue
                 )
             );        
         }    
@@ -105,14 +111,17 @@ var Model = (function(){
     
     function LoadExit(interior)
     {
-        exits = interior.getElementsByTagName("exit");
+        geometry = interior.getElementsByTagName("geometry")[0];
+        exits = geometry.getElementsByTagName("exit");
         eA=[];
         for (var i = 0; i<exits.length; i++)
         {
             eA.push(
                     new Exit(
-                    exits[i].getElementsByTagName("x")[0].childNodes[0].nodeValue,
-                    exits[i].getElementsByTagName("destination")[0].childNodes[0].nodeValue)
+                    exits[i].getElementsByTagName("x")[0].childNodes[0].
+                    nodeValue,
+                    exits[i].getElementsByTagName("destination")[0].
+                            childNodes[0].nodeValue)
                     );
         }
         return eA;
@@ -121,22 +130,57 @@ var Model = (function(){
     function LoadMapInfo(interior)
     {
         var mapInfo=[];
-        mapInfo["mapWidth"]= interior.getElementsByTagName("mapWidth")[0].childNodes[0].nodeValue;
-        mapInfo["tracks"] = [];                
-        var tracks = interior.getElementsByTagName("tracks")[0].getElementsByTagName("track");
+        geometry = interior.getElementsByTagName("geometry")[0];
+        mapInfo["mapWidth"]= geometry.getElementsByTagName("mapWidth")[0].
+                childNodes[0].nodeValue;
+        mapInfo["tracks"] = [];               
+        mapInfo["barriers"] = [];                
+        
+        var tracks = geometry.getElementsByTagName("tracks")[0].
+                getElementsByTagName("track");        
+        var barriers = geometry.getElementsByTagName("barriers")[0].
+                getElementsByTagName("barrier");
+        
         for (var i = 0; i<tracks.length; i++)
         {            
-            var ID = tracks[i].getElementsByTagName("ID")[0].childNodes[0].nodeValue;
-            var points = tracks[i].getElementsByTagName("points")[0].getElementsByTagName("point");
+            var ID = tracks[i].getElementsByTagName("ID")[0].childNodes[0].
+                    nodeValue;                        
+            var points = tracks[i].getElementsByTagName("points")[0].
+                    getElementsByTagName("point");
             mapInfo["tracks"][ID] = [];            
+            mapInfo["tracks"][ID]["EntryType"] = tracks[i].
+                    getElementsByTagName("EntryType")[0].childNodes[0].
+                    nodeValue;
+            mapInfo["tracks"][ID]["ExitType"] = tracks[i].
+                    getElementsByTagName("ExitType")[0].childNodes[0].
+                    nodeValue;
             mapInfo["tracks"][ID]["points"] = [];            
             for (var j = 0; j<points.length; j++)
             {
                 mapInfo["tracks"][ID]["points"][j] =[];
-                mapInfo["tracks"][ID]["points"][j]["x"]= points[j].getElementsByTagName("x")[0].childNodes[0].nodeValue;
-                mapInfo["tracks"][ID]["points"][j]["y"]= points[j].getElementsByTagName("y")[0].childNodes[0].nodeValue;
+                mapInfo["tracks"][ID]["points"][j]["x"]= points[j].
+                        getElementsByTagName("x")[0].childNodes[0].nodeValue;
+                mapInfo["tracks"][ID]["points"][j]["y"]= points[j].
+                        getElementsByTagName("y")[0].childNodes[0].nodeValue;
             }            
         }
+        
+        for (var i = 0; i<barriers.length; i++)
+        {                        
+            var points = tracks[i].getElementsByTagName("points")[0].
+                    getElementsByTagName("point");
+            mapInfo["barriers"][i] = [];                        
+            mapInfo["barriers"][i]["points"] = [];
+            for (var j = 0; j<points.length; j++)
+            {
+                mapInfo["barriers"][i]["points"][j] =[];
+                mapInfo["barriers"][i]["points"][j]["x"]= points[j].
+                        getElementsByTagName("x")[0].childNodes[0].nodeValue;
+                mapInfo["barriers"][i]["points"][j]["y"]= points[j].
+                        getElementsByTagName("y")[0].childNodes[0].nodeValue;
+            }            
+        }
+        
         return mapInfo;
     }
     return mod;        
