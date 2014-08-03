@@ -74,13 +74,13 @@ var Presenter = (function(){
         
         
         //update position
-        if(agitator.state==="walkright") 
+        if(agitator.state==="walkRight") 
         {
             if(agitator.x<mapInfo["mapWidth"])            
                 agitator.x+=event.delta/5;            
         }
         
-        if(agitator.state==="walkleft") 
+        if(agitator.state==="walkLeft") 
         {
             if(agitator.x>0)
                 agitator.x-=event.delta/5;
@@ -90,7 +90,7 @@ var Presenter = (function(){
       
         exits.forEach(checkExit);
         //Update View
-        if(agitator.state ==="walkleft" || agitator.state ==="walkright")
+        if(agitator.state ==="walkLeft" || agitator.state ==="walkRight")
         {
             view.AgitatorPosition(agitator.x, agitator.y);
         }
@@ -102,6 +102,7 @@ var Presenter = (function(){
     function attackCheck()
     {
         var agitationMultplier;
+        
         if(agitatorIsAgitated===true)
         {
             agitationMultplier = 2;
@@ -113,7 +114,7 @@ var Presenter = (function(){
         }
         opponents.forEach(function(opponent)
         {
-            if(opponent.state==="fight" && !stutter )
+            if(opponent.fightState==="fight" && !stutter )
             {   
                 if(agitator.fightState === "pulling" )
                 {
@@ -155,14 +156,14 @@ var Presenter = (function(){
     {        
         opponents.forEach(function(opponent)
         {
-            if(opponent.state==="fight")
+            if(opponent.fightState==="fight")
             {                                                    
                 opponent.angVelocity -= opponent.resistance*delta/40000*opponent.trueRotation;
                 opponent.angVelocity/=1.02;                    
                 opponent.trueRotation+=opponent.angVelocity*delta/1000;                                                            
                 if(opponent.trueRotation>100)
                 {
-                    opponent.state = "toppled";
+                    opponent.fightState = "toppled";
                    view.Disengage(opponent.ID);
                 }
                 //stops completly at low speed
@@ -172,7 +173,7 @@ var Presenter = (function(){
                     opponent.angVelocity = 0;                   
                 }
             }
-            else if(opponent.state === "preFight")
+            else if(opponent.fightState === "preFight")
             {
                 opponent.trueRotation = 0;                   
                 opponent.angVelocity = 0;                   
@@ -186,14 +187,14 @@ var Presenter = (function(){
         switch(agitator.state)
         {
             case "standing":
-                if(right){agitator.state = "walkright";}
-                if(left){agitator.state = "walkleft";}
+                if(right){agitator.state = "walkRight";}
+                if(left){agitator.state = "walkLeft";}
 
                 break;
-            case "walkright":
+            case "walkRight":
                 if(!right){agitator.state = "standing";}
                 break;
-            case "walkleft":
+            case "walkLeft":
                 if(!left){agitator.state = "standing";}
                 break;
         }
@@ -207,6 +208,7 @@ var Presenter = (function(){
                 {          
                     attackCheckBool = false;
                     attackCheck();
+                    agitator.isAttacking = true;
                 }
                 if((agitatorAttackTimer+stutterDebuff)<0)
                 {
@@ -215,6 +217,7 @@ var Presenter = (function(){
                     agitatorAttackTimer = 0;    
                     view.AgitatorStutter(false);                
                     agitator.fightState = "N/a";
+                    agitator.isAttacking = false;
                 }
                 break;
                 
@@ -224,6 +227,7 @@ var Presenter = (function(){
                 {
                     attackCheckBool = false;
                     attackCheck();
+                    agitator.isAttacking = true;
                 }
                 if((agitatorAttackTimer+stutterDebuff)<0)
                 {
@@ -232,6 +236,7 @@ var Presenter = (function(){
                     agitatorAttackTimer = 0;    
                     view.AgitatorStutter(false);                
                     agitator.fightState = "N/a";
+                    agitator.isAttacking = false;
                 }                
                 break;
                 
@@ -241,6 +246,7 @@ var Presenter = (function(){
                 {
                     attackCheckBool = false;
                     attackCheck();
+                    agitator.isAttacking = true;
                 }
                 if((agitatorAttackTimer+stutterDebuff)<0)
                 {
@@ -248,6 +254,7 @@ var Presenter = (function(){
                     agitator.fightState = "N/a";
                     stutter = false;                    
                     view.AgitatorStutter(false);                
+                    agitator.isAttacking = false;
                 }                                            
                 break;       
         }
@@ -259,26 +266,24 @@ var Presenter = (function(){
     {
             opponents.forEach(function(opponent)
             {                
-                if(opponent.state !== "toppled" && inRange(opponent))
+                if(opponent.fightState !== "toppled" && inRange(opponent))
                 {
                     view.Engage(opponent.ID);
-                    opponent.state = "fight";
+                    opponent.fightState = "fight";
                 }
             });
             
             
-            if (agitator.fightState === "pushing" || agitator.fightState === "filibustering" 
-                    || agitator.fightState === "pulling")
+            if(agitator.fightState !== "N/a")
             {
                 stutter = true;
                 firstTimeStutter = true;
                 view.AgitatorStutter(true);                
                 stutterDebuff += stutterTime;
-            }                        
-                                    
+            }                                                            
             else if(postAgitation === false)
             {
-                if(agitator.agitation >1)
+                if(agitator.agitation > 1)
                 {
                     postAgitation = true;
                 }
@@ -318,32 +323,62 @@ var Presenter = (function(){
     
     function updateOps(opponent)
     {            
-        if(opponent.x<agitator.x && opponent.state==="fight")
+        if(opponent.fightState==="fight")
         {
-            view.FlipOpponent(opponent.ID, false);
-        }
-        else if(opponent.x>agitator.x && opponent.state==="fight")
-        {
-            view.FlipOpponent(opponent.ID, true);
+            opponent.state = "standing";
+            if(opponent.x<agitator.x)
+            {
+                view.FlipOpponent(opponent.ID, false);
+            }
+            else if(opponent.x>agitator.x)
+            {
+                view.FlipOpponent(opponent.ID, true);
+            }
         }
                 
-        if(inRange(opponent) && 
-                opponent.state==="preFight")
+        if(inRange(opponent) && opponent.fightState==="preFight")
         {
             view.InRangeOffOpponent(opponent.ID);
         }
-        if(!inRange(opponent))
+        else if (!inRange(opponent))
         {
             view.OutOfRangeOffOpponent(opponent.ID);
-            if(opponent.state==="fight")
+            if(opponent.fightState==="fight")
             {
                 view.Disengage(opponent.ID);
-                opponent.state = "preFight";
+                opponent.fightState = "preFight";
             }
         }
-        view.UpdateRotation(opponent.ID,opponent.trueRotation);
-        view.OpponentPosition(opponent.ID, opponent.x, opponent.y);
-
+        if(opponent.fightState!=="fight")
+        {            
+            if(Math.random()>0.99)            
+            {
+                if(Math.random()>0.8)
+                {
+                    opponent.state = "walkLeft";
+                }
+                else if (Math.random()>0.5)
+                {
+                    opponent.state = "walkRight";
+                }
+                else 
+                {
+                    opponent.state = "standing";
+                }
+            }
+        }                
+        
+        if(opponent.state==="walkRight") 
+        {                      
+            opponent.x+=0;            
+        }        
+        else if(opponent.state==="walkLeft") 
+        {            
+            opponent.x-=0;
+        }
+                
+        view.OpponentPosition(opponent.ID, opponent.x, opponent.y);                    
+        view.UpdateRotation(opponent.ID,opponent.trueRotation);        
     }
     
     function checkExit(exit) 

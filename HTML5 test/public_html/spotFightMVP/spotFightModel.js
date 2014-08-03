@@ -16,8 +16,8 @@ var Model = (function(){
         this.x = x;
         this.y = y;
         this.state = state;
-        this.fightState = state;
-        this.agitation = 0
+        this.fightState = "N/a";        
+        this.agitation = 0;
     };
     
     function Opponent(x, y, leverage, resistance, 
@@ -28,11 +28,13 @@ var Model = (function(){
         this.leverage = leverage;
         this.resistance = resistance;
         this.ID = ID;
-        this.state = state;
+        this.state = "standing";
+        this.fightState = state;
         this.trueRotation = 0;
         this.angVelocity = 0;
         this.toppleState = "atRest";
-    };   
+    };           
+    
     mod.Init = function(level)
     {
         //Should read from persistant state
