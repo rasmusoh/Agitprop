@@ -33,7 +33,35 @@
                     <id>2</id>
                     <state>preFight</state>                    
                 </opponent>
-            </opponents>            		
+            </opponents>            		            
+            <tracks> 
+            <track>
+                <ID>1</ID>
+                <points>
+                    <point>
+                        <x>0</x>
+                        <y>450</y>
+                    </point>
+                    <point>
+                        <x>800</x>
+                        <y>500</y>
+                    </point>
+                </points>
+            </track>
+            <track>
+                <ID>2</ID>
+                <points>
+                    <point>
+                        <x>0</x>
+                        <y>450</y>
+                    </point>
+                    <point>
+                        <x>800</x>
+                        <y>500</y>
+                    </point>
+                </points>
+            </track>
+        </tracks>               
         </interior>
         <interior>
         <name>black</name>

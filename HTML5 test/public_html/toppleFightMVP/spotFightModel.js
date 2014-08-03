@@ -120,8 +120,23 @@ var Model = (function(){
     
     function LoadMapInfo(interior)
     {
-        mapInfo=[];
-        mapInfo["mapWidth"]= interior.getElementsByTagName("mapWidth")[0].childNodes[0].nodeValue;                
+        var mapInfo=[];
+        mapInfo["mapWidth"]= interior.getElementsByTagName("mapWidth")[0].childNodes[0].nodeValue;
+        mapInfo["tracks"] = [];                
+        var tracks = interior.getElementsByTagName("tracks")[0].getElementsByTagName("track");
+        for (var i = 0; i<tracks.length; i++)
+        {            
+            var ID = tracks[i].getElementsByTagName("ID")[0].childNodes[0].nodeValue;
+            var points = tracks[i].getElementsByTagName("points")[0].getElementsByTagName("point");
+            mapInfo["tracks"][ID] = [];            
+            mapInfo["tracks"][ID]["points"] = [];            
+            for (var j = 0; j<points.length; j++)
+            {
+                mapInfo["tracks"][ID]["points"][j] =[];
+                mapInfo["tracks"][ID]["points"][j]["x"]= points[j].getElementsByTagName("x")[0].childNodes[0].nodeValue;
+                mapInfo["tracks"][ID]["points"][j]["y"]= points[j].getElementsByTagName("y")[0].childNodes[0].nodeValue;
+            }            
+        }
         return mapInfo;
     }
     return mod;        
