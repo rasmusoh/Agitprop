@@ -86,7 +86,10 @@ var Presenter = (function(){
                 agitator.x-=event.delta/5;
         }
  
-        opponents.forEach(updateOps);
+        opponents.forEach(function(opponent)
+        {
+            updateOps(event, opponent)
+        });
       
         exits.forEach(checkExit);
         //Update View
@@ -210,36 +213,8 @@ var Presenter = (function(){
                     attackCheck();
                     agitator.isAttacking = true;
                 }
-                if((agitatorAttackTimer+stutterDebuff)<0)
-                {
-                    stutterDebuff = 0;
-                    stutter = false;
-                    agitatorAttackTimer = 0;    
-                    view.AgitatorStutter(false);                
-                    agitator.fightState = "N/a";
-                    agitator.isAttacking = false;
-                }
+
                 break;
-                
-            case "filibustering":                
-                agitatorAttackTimer-=e.delta;
-                if(agitatorAttackTimer<filibusterRelease && attackCheckBool)
-                {
-                    attackCheckBool = false;
-                    attackCheck();
-                    agitator.isAttacking = true;
-                }
-                if((agitatorAttackTimer+stutterDebuff)<0)
-                {
-                    stutterDebuff = 0;
-                    stutter = false;
-                    agitatorAttackTimer = 0;    
-                    view.AgitatorStutter(false);                
-                    agitator.fightState = "N/a";
-                    agitator.isAttacking = false;
-                }                
-                break;
-                
             case "pulling":
                 agitatorAttackTimer-=e.delta;
                 if(agitatorAttackTimer<pushRelease && attackCheckBool)
@@ -247,16 +222,22 @@ var Presenter = (function(){
                     attackCheckBool = false;
                     attackCheck();
                     agitator.isAttacking = true;
-                }
+                }                                     
+                break;      
+            case "dodging":                                   
+                break;  
+            case "stuttering": 
+                agitatorAttackTimer-=e.delta;
                 if((agitatorAttackTimer+stutterDebuff)<0)
                 {
-                    agitatorAttackTimer = 0;                    
-                    agitator.fightState = "N/a";
-                    stutter = false;                    
+                    stutterDebuff = 0;
+                    stutter = false;
+                    agitatorAttackTimer = 0;    
                     view.AgitatorStutter(false);                
+                    agitator.fightState = "N/a";
                     agitator.isAttacking = false;
-                }                                            
-                break;       
+                }
+                break;  
         }
                 
         
@@ -272,14 +253,8 @@ var Presenter = (function(){
                     opponent.fightState = "fight";
                 }
             });
-            
-            
             if(agitator.fightState !== "N/a")
             {
-                stutter = true;
-                firstTimeStutter = true;
-                view.AgitatorStutter(true);                
-                stutterDebuff += stutterTime;
             }                                                            
             else if(postAgitation === false)
             {
@@ -321,7 +296,50 @@ var Presenter = (function(){
         }
     }
     
-    function updateOps(opponent)
+    function OpsAttackCheck(opponent)
+    {
+        if(agitator.state !== "dodging" && agitator.state !== "stuttering")
+        {
+            stutter = true;
+            view.AgitatorStutter(true);                
+            stutterDebuff += stutterTime;
+        }
+        else if(agitator.state === "dodging")
+        {
+            opponent.fightState = "vulnerable";
+            view.changeState(opponent.ID, "vulnerable");
+        }
+    }
+    
+    function OpsFightUpdate(event,opponent)
+    {
+        opponent.attackTimer-event.delta;
+        if(opponent.attackTimer<0)
+        {
+            switch(opponent.fightState)
+            {
+                case "ready":
+                    opponent.fightState = "attacking";
+                    view.changeState(opponent.ID, "attacking");
+                    break;
+                case "attacking":
+                    opponent.fightState = "attackelease";
+                    view.changeState(opponent.ID, "attackelease");                    
+                    OpsAttackCheck(opponent);
+                    break;
+                case "attackelease":
+                    opponent.fightState = "ready";
+                    view.changeState(opponent.ID, "ready");
+                    break;
+                case "vulnerable":
+                    opponent.fightState = "ready";
+                    view.changeState(opponent.ID, "ready");            
+                    break;
+            }            
+        }
+    }
+    
+    function updateOps(event,opponent)
     {            
         if(opponent.fightState==="fight")
         {
