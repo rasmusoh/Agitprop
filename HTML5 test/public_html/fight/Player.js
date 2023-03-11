@@ -74,7 +74,7 @@ Player.prototype.reset = function(){
     this.stunned = false;
     this.alive = true;
     //this.idle = true;
-    this.PP = 10;
+    this.PP = 100;
     this.gotoAndPlay("normstance");
 }    
     

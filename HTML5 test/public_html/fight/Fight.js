@@ -212,6 +212,7 @@ function fightFreezeframe(time, guy){
 //while player avatar isnt blocking, player gets stunned
 function fightHandleVillainAttacks(event){
 
+    console.log(Hero.PP);
     if(!Hero.stunned && Hero.alive){
         hCurrent = Villain.currentFrame;
         vCurrent = Hero.currentAnimation.slice(0,3);
@@ -219,21 +220,21 @@ function fightHandleVillainAttacks(event){
             Hero.gotoAndPlay("stunned");
             Hero.stunned = true;
             Hero.stunTimer=1000;
-            Hero.PP -=20;
+            Hero.PP -=2;
             fightFreezeframe(70,Hero);
         }
         if(hCurrent==7 && (vCurrent != "low" && vCurrent != "dod") ){ //highattack landed
             Hero.gotoAndPlay("stunned");
             Hero.stunned = true;
             Hero.stunTimer=300;
-            Hero.PP -=10;
+            Hero.PP -=1;
             fightFreezeframe(30,Hero);
         } 
         if(hCurrent==12 && (vCurrent!="hig" && vCurrent!="dod")){ //normattack landed
             Hero.gotoAndPlay("stunned");
             Hero.stunned = true;
             Hero.stunTimer=500;
-            Hero.PP -=10;
+            Hero.PP -=1;
             fightFreezeframe(40,Hero);
         }
         if (Hero.PP<=0){
