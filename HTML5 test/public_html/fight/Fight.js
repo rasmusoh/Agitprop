@@ -43,10 +43,10 @@ function fightGameTick(event){
             heroPower.graphics.clear().beginFill("FF7700").drawRect(5,65,200,50);
         }
         else{
-           heroPower.graphics.clear().beginFill("fef6ad").drawRect(5,65,2*KeyboardCont.Power,50); 
+           heroPower.graphics.clear().beginFill("#fef6ad").drawRect(5,65,2*KeyboardCont.Power,50); 
         }
-        villainPP.graphics.clear().beginFill("d93e39").drawRect(500,5,2*Villain.PP,50);
-        heroPP.graphics.clear().beginFill("d93e39").drawRect(5,5,2*Hero.PP,50);
+        villainPP.graphics.clear().beginFill("#d93e39").drawRect(500,5,2*Villain.PP,50);
+        heroPP.graphics.clear().beginFill("#d93e39").drawRect(5,5,2*Hero.PP,50);
 
 
         stage.update(event);
@@ -115,8 +115,8 @@ function fightHandleCountdown(event){
     heroPP.alpha =100;
     heroPower.alpha = 100;
 
-    villainPP.graphics.clear().beginFill("d93e39").drawRect(500,5,200,50);
-    heroPP.graphics.clear().beginFill("d93e39").drawRect(5,5,200,50);
+    villainPP.graphics.clear().beginFill("#d93e39").drawRect(500,5,200,50);
+    heroPP.graphics.clear().beginFill("#d93e39").drawRect(5,5,200,50);
     heroPower.graphics.clear().beginFill("#FF7700").drawRect(5,65,200,50);
     Hero.reset();
     Villain.reset();
